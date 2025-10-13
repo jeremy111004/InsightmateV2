@@ -1,0 +1,249 @@
+/* src/index.css */
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset min */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+#root {
+  min-height: 100%;
+  width: 100%;
+}
+
+/* Helpers */
+.full-bleed {
+  width: 100vw;
+  max-width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+.bg-app {
+  background-color: var(--app-bg) !important;
+}
+
+/* Fond global */
+:root {
+  --app-bg: #0b1220;
+}
+html,
+body {
+  background: var(--app-bg);
+  color: #e5e7eb;
+  overflow-x: hidden;
+}
+#root {
+  background: var(--app-bg);
+}
+
+/* ✅ Noir en haut, lueur bleue en bas */
+.hero-surface {
+  position: relative;
+  background: var(--app-bg);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Kill toute grille résiduelle si un composant tente d'en mettre */
+.no-grid,
+.no-grid::before,
+.no-grid::after {
+  background-image: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* --- NAV glass (quasi transparent) --- */
+/* Barre sticky "glass" — teinte navy, quasi transparente, sans gris */
+.nav-glass {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(6, 10, 18, 0.12); /* tint NAVY (pas un gris) */
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    /* trait fin inside */ 0 8px 20px rgba(0, 0, 0, 0.25); /* ombre subtile */
+}
+
+/* Légère atténuation vers le bas pour bien se fondre dans le hero */
+.nav-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 10, 18, 0.28) 0%,
+    rgba(6, 10, 18, 0.1) 70%,
+    transparent 100%
+  );
+}
+
+/* Fallback si pas de blur (vieux navigateurs) */
+@supports not (backdrop-filter: blur(1px)) {
+  .nav-glass {
+    background: rgba(6, 10, 18, 0.85);
+  }
+}
+
+/* --- Glow discret pour le texte (utilisé sur “données”) --- */
+.text-glow {
+  filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.35))
+    drop-shadow(0 0 6px rgba(99, 102, 241, 0.25));
+}
+
+/* --- Hero gradient, un peu plus lumineux en bas --- */
+.hero-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+      1100px 560px at 50% 112%,
+      rgba(59, 130, 246, 0.28),
+      rgba(59, 130, 246, 0.1) 52%,
+      transparent 70%
+    ),
+    linear-gradient(to bottom, #0b0f1a 0%, #0b1220 40%, #0c1729 100%);
+}
+/* Bouton gradient bleu (rappel du "données") */
+.btn-blue-grad {
+  background-image: linear-gradient(
+    90deg,
+    #dbe3ff 0%,
+    #c5d1ff 40%,
+    #8ec6ff 100%
+  );
+  color: #0b1220; /* lisible sur gradient clair */
+}
+.btn-blue-grad:hover {
+  filter: brightness(0.98);
+}
+/* Surface pro pour la zone d'action (navy → navy) */
+.panel-surface {
+  position: relative;
+  background: linear-gradient(180deg, #0b1220 0%, #0c182b 65%, #0b1220 100%);
+}
+.panel-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    900px 420px at 50% 110%,
+    rgba(59, 130, 246, 0.18),
+    transparent 70%
+  );
+}
+
+/* Cartes "glass" sobres et nettes */
+.card-glass {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Micro interactions élégantes */
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+    0 10px 30px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+/* Petites pastilles d’info */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.75rem;
+  color: #dbeafe;
+}
+
+/* Joli kbd */
+kbd {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+/* ====== Animations pro (sans lib) ====== */
+
+/* entrée douce : fade + légère montée + blur */
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+/* entrée douce horizontale (utile si besoin) */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* base (évite jank) */
+.reveal-base {
+  will-change: transform, opacity, filter;
+}
+
+/* version “immédiate” (au mount) — tu poses --delay: .1s par ex. */
+.animate-in {
+  animation: fade-up 0.55s var(--delay, 0s) cubic-bezier(0.22, 0.61, 0.36, 1)
+    both;
+}
+
+/* version au scroll (IO) : initiale cachée */
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  filter: blur(6px);
+}
+.reveal.is-visible {
+  animation: fade-up 0.55s var(--delay, 0s) cubic-bezier(0.22, 0.61, 0.36, 1)
+    both;
+}

@@ -1,0 +1,8 @@
+export { default as ConnectorsPage } from "./ConnectorsPage";
+export { default as AccessProPage } from "./AccessProPage";
+export { default as PricingOptimizer } from "./PricingOptimizer";
+export { default as EcoLabelPage } from "./EcoLabelPage";
+export { default as SalesDemo } from "./SalesDemo";
+export { default as CashflowDemo } from "./CashflowDemo";
+export { default as EncaissementsDemo } from "./EncaissementsDemo";
+export default {};
