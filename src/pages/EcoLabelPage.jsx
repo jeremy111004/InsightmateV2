@@ -182,6 +182,7 @@ function IAAdvisorLandscape({ actions = [] }) {
       <div className="mt-3 grid md:grid-cols-3 gap-3 relative">
         {list.map((a, idx) => (
           <motion.div
+            initial={false}
             key={a.id}
             whileHover={{ y: -2 }}
             className="rounded-2xl border bg-white/80 dark:bg-slate-900/80 p-4 ring-1 ring-black/5 hover:ring-emerald-500 transition"
