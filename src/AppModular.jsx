@@ -6,16 +6,15 @@ import ErrorBoundary from "./components/ErrorBoundary.jsx";
 // Pages (code-splitting)
 const HomePage = React.lazy(() => import("./pages/HomePage.jsx"));
 const SalesDemo = React.lazy(() => import("./pages/SalesDemo.jsx"));
-const Client = React.lazy(() => import("./pages/ClientRisk.jsx"));
+const ClientRisk = React.lazy(() => import("./pages/ClientRisk.jsx"));
 const EcoLabelPage = React.lazy(() => import("./pages/EcoLabelPage.jsx"));
 const PricingOptimizer = React.lazy(() =>
   import("./pages/PricingOptimizer.jsx")
 );
 const AccessProPage = React.lazy(() => import("./pages/AccessProPage.jsx"));
-// ANCHOR: IMPORT_PAGES
-import RiskHub from "./pages/RiskHub.jsx";
-import LeakageRadar from "./pages/LeakageRadar";
-import ClientRisk from "./pages/ClientRisk";
+const RiskHub = React.lazy(() => import("./pages/RiskHub.jsx"));
+// NOTE: LeakageRadar is expected to be used inside RiskHub or ClientRisk pages,
+// so we don't import it here globally.
 
 const TABS = [
   { key: "home", label: "Accueil", Comp: HomePage },
@@ -25,13 +24,12 @@ const TABS = [
   { key: "pricing", label: "Pricing", Comp: PricingOptimizer },
   { key: "risk", label: "Risque", Comp: RiskHub },
   { key: "pro", label: "Aide", Comp: AccessProPage },
-  // ANCHOR: ADD_TAB_RISK
 ];
 
 const TAB_KEYS = new Set(TABS.map((t) => t.key));
 
 export default function AppModular() {
-  // init: hash > localStorage > défaut
+  // init: hash > localStorage > default
   const initial = React.useMemo(() => {
     const fromHash = (window.location.hash || "").replace(/^#/, "");
     if (TAB_KEYS.has(fromHash)) return fromHash;
@@ -51,7 +49,7 @@ export default function AppModular() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
   React.useEffect(() => {
-    // Safari/Chrome: remonte en haut pour déclencher les inView correctement
+    // ensure scroll top for inView triggers
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [tab]);
 
@@ -64,7 +62,6 @@ export default function AppModular() {
 
   const Active = (TABS.find((t) => t.key === tab) || TABS[0]).Comp;
 
-  // ✅ 1) NOUVEAU: juste ça
   const isHome = tab === "home";
   const goTo = (key) => TAB_KEYS.has(key) && setTab(key);
 
@@ -73,9 +70,7 @@ export default function AppModular() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 nav-glass">
         <div
-          className="max-w-7xl mx-auto w-full px-4 md:px-6 py-3
-               flex flex-wrap items-center justify-center
-               gap-2 md:gap-3"
+          className="max-w-7xl mx-auto w-full px-4 md:px-6 py-3 flex flex-wrap items-center justify-center gap-2 md:gap-3"
           role="tablist"
           aria-label="Sections InsightMate"
         >
@@ -121,7 +116,6 @@ export default function AppModular() {
                 </div>
               }
             >
-              {/* ✅ 2) NOUVEAU: on passe goTo UNIQUEMENT à la Home */}
               <Active key={tab} {...(isHome ? { goTo } : {})} />
             </React.Suspense>
           </section>
