@@ -23,7 +23,8 @@ import {
 } from "lucide-react";
 import Papa from "papaparse";
 
-import useCashRiskEngine from "../hooks/useCashRiskEngine";
+
+import useCashRiskEngine from "../hooks/usecashriskengine.jsx";
 
 import RiskCard from "../components/risk/RiskCard";
 import RiskRibbon from "../components/risk/RiskRibbon";
