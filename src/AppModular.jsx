@@ -13,6 +13,7 @@ const PricingOptimizer = React.lazy(() =>
 );
 const AccessProPage = React.lazy(() => import("./pages/AccessProPage.jsx"));
 const RiskHub = React.lazy(() => import("./pages/RiskHub.jsx"));
+const Connecteurs = React.lazy(() => import("./pages/Connecteurs.jsx"));
 // NOTE: LeakageRadar is expected to be used inside RiskHub or ClientRisk pages,
 // so we don't import it here globally.
 
@@ -24,6 +25,7 @@ const TABS = [
   { key: "pricing", label: "Pricing", Comp: PricingOptimizer },
   { key: "risk", label: "Risque", Comp: RiskHub },
   { key: "pro", label: "Aide", Comp: AccessProPage },
+  { key: "connectors", label: "Connecteurs Auto", Comp: Connecteurs },
 ];
 
 const TAB_KEYS = new Set(TABS.map((t) => t.key));
