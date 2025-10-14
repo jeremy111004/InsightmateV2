@@ -34,7 +34,6 @@ import {
   ReferenceLine,
   Legend,
   ComposedChart,
-  Bar,
 } from "recharts";
 
 import {
@@ -158,7 +157,7 @@ function IAAdvisorLandscape({ actions = [] }) {
       className="rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
     >
       <motion.div
-        aria-hidden
+        aria-hidden={true}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 0.25 }}
         viewport={{ once: true, amount: 0.3 }}
@@ -179,7 +178,7 @@ function IAAdvisorLandscape({ actions = [] }) {
         </div>
       </div>
 
-      <div className="mt-3 grid md:grid-cols-3 gap-3 relative">
+      <div className="mt-3 grid md:grid-cols-3 gap-3 auto-rows-min">
         {list.map((a, idx) => (
           <motion.div
             initial={false}
@@ -269,7 +268,7 @@ function PressBox({ items = PRESS_SELECTION }) {
       title="Sélection — Presse & insights"
       icon={<Newspaper className="w-5 h-5" />}
     >
-      <div className="grid md:grid-cols-3 gap-3">
+      <div className="grid md:grid-cols-3 gap-3 auto-rows-min">
         {items.map((it, i) => (
           <a
             key={i}
@@ -279,7 +278,7 @@ function PressBox({ items = PRESS_SELECTION }) {
             className="group flex items-start gap-3 rounded-2xl border p-3 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-black/5 hover:ring-2 hover:ring-emerald-500 transition relative overflow-hidden"
           >
             <motion.div
-              aria-hidden
+              aria-hidden={true}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 0.2 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -390,7 +389,7 @@ function SubsidyBox({ totalKg, electricityDeltaKwhMonth = 0, tCO2eYear }) {
         Vos émissions actuelles ≈ <b>{fmt(totalKg)}</b> kgCO₂e / 30j (soit ~
         <b>{fmt(tCO2eYear, 2)}</b> tCO₂e/an).
       </div>
-      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
+      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3 auto-rows-min">
         {programs.map((p) => (
           <a
             key={p.key}
@@ -400,7 +399,7 @@ function SubsidyBox({ totalKg, electricityDeltaKwhMonth = 0, tCO2eYear }) {
             className="rounded-2xl border p-3 bg-white/70 dark:bg-slate-900/60 hover:ring-2 hover:ring-emerald-500 transition relative overflow-hidden"
           >
             <motion.div
-              aria-hidden
+              aria-hidden={true}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 0.18 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -525,7 +524,7 @@ function ExecutiveSummarySection({
       }
     >
       {/* ligne 1 : 3 tuiles compactes */}
-      <div className="grid lg:grid-cols-12 gap-5">
+      <div className="grid lg:grid-cols-12 gap-5 auto-rows-min items-start">
         {/* Ce mois-ci */}
         <motion.div
           initial={{ y: 8, opacity: 0 }}
@@ -534,15 +533,13 @@ function ExecutiveSummarySection({
           className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
         >
           <motion.div
-            aria-hidden
+            aria-hidden={true}
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.25 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6 }}
-            className="pointer-events-none absolute -inset-1 blur-2xl"
+            animate={{ opacity: 0.18 }}
+            className="pointer-events-none absolute -inset-1 blur-lg"
             style={{
               background:
-                "radial-gradient(60% 60% at 90% 10%, rgba(16,185,129,.15), transparent 60%)",
+                "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)",
             }}
           />
           <div className="text-sm text-slate-600 relative">Ce mois-ci</div>
@@ -570,7 +567,7 @@ function ExecutiveSummarySection({
             {hasInt ? fmt(intensity, 2) : "—"}{" "}
             <span className="text-base">kg/€</span>
           </div>
-          <div className="w-full h-40">
+          <div className="w-full h-[220px]">
             <ResponsiveContainer>
               <RadialBarChart
                 innerRadius="65%"
@@ -608,7 +605,7 @@ function ExecutiveSummarySection({
           className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
         >
           <motion.div
-            aria-hidden
+            aria-hidden={true}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 0.22 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -623,7 +620,7 @@ function ExecutiveSummarySection({
             Composition des émissions
           </div>
           <div className="mt-2 grid grid-cols-2 gap-2 relative">
-            <div className="h-40">
+            <div className="h-[220px]">
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
@@ -669,7 +666,7 @@ function ExecutiveSummarySection({
       </div>
 
       {/* ligne 2 : courbe + conseiller */}
-      <div className="mt-5 grid xl:grid-cols-12 gap-5">
+      <div className="mt-5 grid xl:grid-cols-12 gap-5 auto-rows-min items-start">
         {/* Courbe */}
         <motion.div
           initial={{ y: 8, opacity: 0 }}
@@ -677,7 +674,7 @@ function ExecutiveSummarySection({
           className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
         >
           <motion.div
-            aria-hidden
+            aria-hidden={true}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 0.2 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -803,8 +800,8 @@ function TablePreview({ rows = [], title = "Aperçu", max = 25 }) {
   return (
     <div className="rounded-2xl border bg-white/60 dark:bg-slate-900/60 backdrop-blur p-3">
       <div className="text-sm font-medium mb-2">{title}</div>
-      <div className="overflow-auto rounded-xl border">
-        <table className="min-w-full text-sm">
+      <div className="overflow-auto rounded-xl border min-h-[200px]">
+        <table className="min-w-full text-sm table-auto">
           <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
               {cols.map((c) => (
@@ -872,16 +869,17 @@ export default function EcoLabelPage() {
   const demoBankRows = useMemo(() => parseCsvText(DEMO_BANK_CSV), []);
 
   /* --- Données (connecteurs) --- */
-  const bankingRowsRaw = useDataset("banking") || [];
-  const salesRowsRaw = useDataset("sales") || [];
+  const { rows: bankingRowsStore } = useDataset("banking") || { rows: [] };
+  const { rows: salesRowsStore } = useDataset("sales") || { rows: [] };
 
-  const bankingRowsBase = Array.isArray(bankingRowsRaw)
-    ? bankingRowsRaw
-    : parseCsvText(String(bankingRowsRaw || ""));
+  const bankingRowsBase =
+    Array.isArray(bankingRowsStore) && bankingRowsStore.length
+      ? bankingRowsStore
+      : [];
   const salesRowsBase =
-    Array.isArray(salesRowsRaw) && salesRowsRaw.length
-      ? salesRowsRaw
-      : parseCsvText(String(SAMPLE_SALES || ""));
+    Array.isArray(salesRowsStore) && salesRowsStore.length
+      ? salesRowsStore
+      : [];
 
   /* --- CSV upload overrides --- */
   const fileInputRef = useRef(null);
@@ -1021,8 +1019,16 @@ export default function EcoLabelPage() {
     0,
     Math.round(electricity + fuel + shipping + sectorOther)
   );
-  const intensity = last30Revenue > 0 ? totalKg / last30Revenue : Infinity;
-  const { grade } = ecoGradeFromIntensity(intensity);
+
+  // Intensité sûre (jamais Infinity/NaN)
+  const rawIntensity = last30Revenue > 0 ? totalKg / last30Revenue : NaN;
+  const intensity =
+    Number.isFinite(rawIntensity) && rawIntensity >= 0 ? rawIntensity : null;
+  const { grade: gradeLetter, color: gradeColor } = ecoGradeFromIntensity(
+    Number.isFinite(rawIntensity) && rawIntensity >= 0
+      ? rawIntensity
+      : sectorFactor || 1
+  );
 
   /* --- Séries intensité (pour spark) --- */
   const [ecoWindow, setEcoWindow] = useState(30);
@@ -1116,7 +1122,7 @@ export default function EcoLabelPage() {
       });
     }
     // Shipping
-    if ((last30Orders || 0) > 0) {
+    if ((displayOrders || 0) > 0) {
       const perOrder = Number(shipKgOrder) || 0;
       const deltaOrder = Math.max(1, Math.ceil(perOrder * 0.3)); // -30%/commande
       out.push({
@@ -1125,12 +1131,12 @@ export default function EcoLabelPage() {
         cause: `Moyenne ~${fmt(perOrder, 2)} kg/commande`,
         solution:
           "Plus de relais/route, packaging allégé, regroupement & règles anti-express/air par défaut.",
-        impactKg: deltaOrder * last30Orders,
+        impactKg: deltaOrder * displayOrders,
         perOrderDelta: deltaOrder,
       });
     }
     return out;
-  }, [electricity, fuel, shipKgOrder, last30Orders, elecFactor]);
+  }, [electricity, fuel, shipKgOrder, displayOrders, elecFactor]);
 
   /* --- RENDER --- */
   const sectorMedian = sectorFactor || 0;
@@ -1155,8 +1161,19 @@ export default function EcoLabelPage() {
     });
   }, [intensitySeries]);
 
+  // Nudge Recharts (Safari/Vercel) pour garantir le layout après montage
+  useEffect(() => {
+    const kick = () => window.dispatchEvent(new Event("resize"));
+    const a = setTimeout(kick, 60);
+    const b = setTimeout(kick, 300);
+    return () => {
+      clearTimeout(a);
+      clearTimeout(b);
+    };
+  }, []);
+
   return (
-    <div className="max-w-7xl mx-auto px-3 md:px-4">
+    <div className="max-w-7xl mx-auto w-full px-3 md:px-4 py-4 relative min-h-[640px]">
       <Section
         title="Éco-Label (estimation pédagogique)"
         icon={<Leaf className="w-5 h-5 text-emerald-600" />}
@@ -1186,7 +1203,7 @@ export default function EcoLabelPage() {
                   sector: { key: sector, factor: sectorFactor },
                   totals: {
                     last30Revenue,
-                    last30Orders,
+                    last30Orders: displayOrders,
                     totalKg,
                     intensity: Number.isFinite(intensity)
                       ? +intensity.toFixed(3)
@@ -1248,12 +1265,10 @@ export default function EcoLabelPage() {
             initial={{ scale: 0.97, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${
-              ecoGradeFromIntensity(intensity).color
-            } text-2xl font-bold shadow relative overflow-hidden`}
+            className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${gradeColor} text-2xl font-bold shadow relative overflow-hidden`}
           >
             <motion.div
-              aria-hidden
+              aria-hidden={true}
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.18 }}
               className="pointer-events-none absolute -inset-1 blur-lg"
@@ -1262,7 +1277,7 @@ export default function EcoLabelPage() {
                   "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)",
               }}
             />
-            {ecoGradeFromIntensity(intensity).grade}
+            {gradeLetter}
           </motion.div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -1344,12 +1359,11 @@ export default function EcoLabelPage() {
           spark={ecoSpark}
           aiPlan={aiPlan}
           targetIntensity={
-            ecoGradeFromIntensity(intensity).grade === "A" ||
-            ecoGradeFromIntensity(intensity).grade === "B"
+            gradeLetter === "A" || gradeLetter === "B"
               ? 0.2
-              : ecoGradeFromIntensity(intensity).grade === "C"
+              : gradeLetter === "C"
               ? 0.5
-              : ecoGradeFromIntensity(intensity).grade === "D"
+              : gradeLetter === "D"
               ? 1.0
               : 1.5
           }
@@ -1432,7 +1446,7 @@ export default function EcoLabelPage() {
           title="Aperçu des fichiers importés"
           icon={<Upload className="w-5 h-5" />}
         >
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 auto-rows-min">
             <TablePreview rows={salesRowsInput} title="Ventes (CSV actif)" />
             <TablePreview rows={bankingRows} title="Banque (CSV actif)" />
           </div>
