@@ -1,6 +1,15 @@
 // src/pages/HomePage.jsx
 import React from "react";
-import { ArrowRight, BarChart3, Wallet, Leaf, Tags, LogIn } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  Wallet,
+  Leaf,
+  Tags,
+  LogIn,
+  User,
+  PlayCircle,
+} from "lucide-react";
 
 /* --- Helpers déjà utilisés précédemment --- */
 function Pill({ icon, children }) {
@@ -413,8 +422,86 @@ export default function HomePage({ goTo = () => {} }) {
         </div>
       </section>
 
+      {/* --- NOUVELLE SECTION : À PROPOS + VIDÉO --- */}
+      <section className="relative py-14 md:py-20">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            {/* Colonne texte */}
+            <FadeInOnView>
+              <div className="rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-6">
+                <div className="inline-flex items-center gap-2 text-white/80 text-xs">
+                  <span className="inline-grid place-items-center w-7 h-7 rounded-md bg-white/10 ring-1 ring-white/15">
+                    <User className="w-4 h-4" />
+                  </span>
+                  <span>À propos</span>
+                </div>
+                <h3 className="mt-3 text-2xl md:text-3xl font-semibold">
+                  InsightMate par{" "}
+                  <span className="bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-indigo-300 bg-clip-text text-transparent">
+                    Jérémy Duriez
+                  </span>
+                </h3>
+                <p className="mt-3 text-white/80 text-sm leading-relaxed">
+                  Data & Risk. Je construis des outils concrets pour aider les
+                  PME à décider vite et bien : prévisions, trésorerie, pricing,
+                  risques. Mon approche : simple à utiliser, robuste sous le capot.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <a
+                    href="#about-video"
+                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition text-sm"
+                  >
+                    <PlayCircle className="w-4 h-4" />
+                    Regarder la vidéo (90s)
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/jeremy-duriez"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-white text-slate-900 hover:bg-white/90 transition text-sm font-semibold"
+                  >
+                    Me suivre sur LinkedIn
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            </FadeInOnView>
+
+            {/* Colonne vidéo */}
+            <FadeInOnView delay={0.08}>
+              <div
+                id="about-video"
+                className="relative rounded-3xl overflow-hidden border border-white/12 bg-white/6 backdrop-blur p-3"
+              >
+                <div className="relative aspect-video w-full rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900">
+                  {/* Placez ici votre <iframe> YouTube/Vimeo OU un <video> HTML5 */}
+                  {/* Exemple (remplacez src) :
+                      <iframe className="w-full h-full rounded-2xl" src="https://www.youtube.com/embed/XXXX" title="Présentation InsightMate" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                  */}
+                  <a
+                    href="#"
+                    title="Bientôt disponible"
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm">
+                      <PlayCircle className="h-5 w-5" />
+                      Votre vidéo arrive
+                    </span>
+                  </a>
+                </div>
+                <div className="mt-3 text-xs text-white/60">
+                  Astuce : une vidéo courte (60–90s) expliquant qui vous êtes
+                  + ce que l’on fait en 3 clics convertit très bien.
+                </div>
+              </div>
+            </FadeInOnView>
+          </div>
+        </div>
+      </section>
+
       <footer className="py-10 text-center text-xs text-white/55 bg-app">
-        © {new Date().getFullYear()} InsightMate — Démo
+        © {new Date().getFullYear()} InsightMate — Démo · Créé par{" "}
+        <span className="text-white/70 font-semibold">Jérémy Duriez</span>
       </footer>
     </div>
   );
