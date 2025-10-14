@@ -4,11 +4,12 @@ import {
   ArrowRight,
   BarChart3,
   Wallet,
-  Leaf,
-  Tags,
   LogIn,
   User,
   PlayCircle,
+  Plug,
+  Headphones,
+  CalendarClock,
 } from "lucide-react";
 
 /* --- Helpers déjà utilisés précédemment --- */
@@ -88,29 +89,23 @@ export default function HomePage({ goTo = () => {} }) {
         <div className="hero-content relative max-w-7xl mx-auto w-full px-4 md:px-8 pt-20 pb-14 md:pt-28 md:pb-16 text-center">
           <div className="mb-5 flex flex-wrap gap-2 justify-center">
             <Pill
-              icon={
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-              }
+              icon={<span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />}
             >
               IA intégrée
             </Pill>
             <Pill
-              icon={
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block" />
-              }
+              icon={<span className="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block" />}
             >
               Smart Forecast
             </Pill>
             <Pill
-              icon={
-                <span className="w-1.5 h-1.5 rounded-full bg-pink-400 inline-block" />
-              }
+              icon={<span className="w-1.5 h-1.5 rounded-full bg-pink-400 inline-block" />}
             >
               Accès beta gratuit
             </Pill>
           </div>
 
-          {/* Titre XL + “données” plus brillante (dégradé éclairci + glow) */}
+          {/* Titre XL */}
           <h1 className="text-[56px] md:text-[88px] font-extrabold tracking-[-0.02em] leading-[1.05]">
             Vos{" "}
             <span className="text-glow bg-gradient-to-r from-[#e8ecff] via-[#cfd7ff] to-[#90c9ff] bg-clip-text text-transparent">
@@ -124,11 +119,9 @@ export default function HomePage({ goTo = () => {} }) {
           </h1>
 
           <p className="mt-6 max-w-4xl mx-auto text-xl md:text-2xl text-white/90">
-            Parce que nous croyons que l’analyse de données doit être{" "}
-            <span className="font-semibold">gratuite</span>, nous offrons un{" "}
-            <span className="font-semibold">accès libre</span> à un outil avancé
-            d’aide à la décision. Transformez ventes, trésorerie et prévisions
-            en actions concrètes — simple, rapide, conçu pour les PME.
+            Outil <span className="font-semibold">libre d’accès</span> pour visualiser vos KPI.
+            <br className="hidden md:block" />
+            Besoin d’aller vite ? Nos <span className="font-semibold">services d’onboarding</span> branchent vos données, configurent vos dashboards et forment l’équipe.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-4 justify-center items-center">
@@ -140,16 +133,17 @@ export default function HomePage({ goTo = () => {} }) {
               <ArrowRight className="w-5 h-5" />
             </button>
 
-            <button
-              onClick={() => goTo("cash")}
+            <a
+              href="/support"
               className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 border border-white/15 bg-white/5 text-white hover:bg-white/10 text-base md:text-lg transition"
             >
-              Voir comment ça booste mes ventes
-            </button>
+              <CalendarClock className="w-5 h-5" />
+              Onboarding & audit 15 min
+            </a>
           </div>
 
           <div className="mt-4 text-sm text-white/65">
-            Accès libre (bêta ouverte) • Aucune carte requise
+            Accès libre (bêta ouverte) • Services optionnels selon besoin
           </div>
 
           {/* KPI plus grands */}
@@ -163,9 +157,7 @@ export default function HomePage({ goTo = () => {} }) {
                   <span className="inline-grid place-items-center w-8 h-8 rounded-md bg-emerald-500/20 ring-1 ring-white/15">
                     ✅
                   </span>
-                  <div className="font-medium text-base">
-                    Temps gagné (reporting auto)
-                  </div>
+                  <div className="font-medium text-base">Temps gagné (reporting auto)</div>
                 </div>
                 <div className="mt-2 text-4xl md:text-5xl font-extrabold">
                   ~{seenTime ? <Counter to={8} duration={1.2} /> : 0} h{" "}
@@ -186,18 +178,11 @@ export default function HomePage({ goTo = () => {} }) {
                   <span className="inline-grid place-items-center w-8 h-8 rounded-md bg-indigo-500/20 ring-1 ring-white/15">
                     📈
                   </span>
-                  <div className="font-medium text-base">
-                    Marge (prix & mix)
-                  </div>
+                  <div className="font-medium text-base">Marge (prix & mix)</div>
                 </div>
                 <div className="mt-2 text-4xl md:text-5xl font-extrabold">
-                  +
-                  {seenMrg ? (
-                    <Counter to={2.4} decimals={1} duration={1.2} />
-                  ) : (
-                    "0.0"
-                  )}
-                  % <span className="font-semibold text-2xl">de marge</span>
+                  +{seenMrg ? <Counter to={2.4} decimals={1} duration={1.2} /> : "0.0"}%
+                  <span className="font-semibold text-2xl"> de marge</span>
                 </div>
                 <div className="mt-1 text-sm text-white/70">
                   Focus best-sellers, prix ajustés intelligemment.
@@ -214,9 +199,7 @@ export default function HomePage({ goTo = () => {} }) {
                   <span className="inline-grid place-items-center w-8 h-8 rounded-md bg-fuchsia-500/20 ring-1 ring-white/15">
                     🗓️
                   </span>
-                  <div className="font-medium text-base">
-                    Anticipation trésorerie
-                  </div>
+                  <div className="font-medium text-base">Anticipation trésorerie</div>
                 </div>
                 <div className="mt-2 text-4xl md:text-5xl font-extrabold">
                   {seenCash ? <Counter to={15} duration={1.2} /> : 0} j{" "}
@@ -234,18 +217,16 @@ export default function HomePage({ goTo = () => {} }) {
       {/* SECTION cartes — apparition au scroll */}
       <section className="relative py-12 md:py-14">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white">
-            Ce qui change la donne
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-semibold text-white">Ce qui change la donne</h2>
           <p className="mt-2 text-base text-white/70">
-            Pensé pour les PME : rapide, lisible, et vraiment actionnable.
+            Outil gratuit pour explorer — services pour accélérer et industrialiser.
           </p>
 
           <div className="mt-7 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               {
                 title: "Prévisions auto",
-                desc: "Choix du meilleur modèle sans réglages. Zéro ligne droite gênante.",
+                desc: "Choix du meilleur modèle sans réglages. Pas de tuning obscur.",
                 icon: <BarChart3 className="w-4 h-4" />,
               },
               {
@@ -260,7 +241,7 @@ export default function HomePage({ goTo = () => {} }) {
               },
               {
                 title: "Respect des données",
-                desc: "Agrégats uniquement pour l’IA complète. Vos ventes restent privées.",
+                desc: "Imports locaux + connecteurs en lecture seule. Vos ventes restent privées.",
                 icon: <LogIn className="w-4 h-4" />,
               },
             ].map((c, i) => (
@@ -280,22 +261,18 @@ export default function HomePage({ goTo = () => {} }) {
         </div>
       </section>
 
-      {/* Bande claire inchangée */}
-      {/* DEMOS RAPIDES — version pro */}
+      {/* DEMOS RAPIDES — adapté services + nouveaux onglets */}
       <section className="relative full-bleed panel-surface py-14 md:py-20">
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
             <div>
-              <h3 className="text-2xl md:text-3xl font-semibold text-white">
-                Passez à l’action
-              </h3>
+              <h3 className="text-2xl md:text-3xl font-semibold text-white">Passez à l’action</h3>
               <p className="text-sm text-white/70">
-                Choisissez un parcours et on vous y amène directement.
+                Testez gratuitement, puis laissez-nous connecter et mettre en production.
               </p>
             </div>
             <div className="text-xs text-white/60">
-              Astuce&nbsp;: <kbd>⌘</kbd>+<kbd>K</kbd> pour ouvrir la palette
-              (bientôt)
+              Astuce&nbsp;: <kbd>⌘</kbd>+<kbd>K</kbd> pour ouvrir la palette (bientôt)
             </div>
           </div>
 
@@ -307,9 +284,7 @@ export default function HomePage({ goTo = () => {} }) {
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-white/80 text-sm">
-                    Parcours principal
-                  </div>
+                  <div className="text-white/80 text-sm">Parcours principal</div>
                   <div className="mt-1 text-xl md:text-2xl font-semibold text-white">
                     Démo Ventes en 30&nbsp;s
                   </div>
@@ -318,10 +293,7 @@ export default function HomePage({ goTo = () => {} }) {
               </div>
 
               <ul className="mt-4 space-y-2 text-sm text-white/80">
-                <li>
-                  • Importez un CSV (ou connecteur) et obtenez vos KPI
-                  instantanément
-                </li>
+                <li>• Import CSV (ou connecteur), KPI instantanés</li>
                 <li>• Prévisions automatiques & segmentation smart</li>
                 <li>• Recos actionnables (prix, mix, best-sellers)</li>
               </ul>
@@ -340,23 +312,18 @@ export default function HomePage({ goTo = () => {} }) {
               </div>
             </button>
 
-            {/* Raccourcis */}
-            <div className="md:col-span-7 grid sm:grid-cols-2 gap-5">
+            {/* Raccourcis mis à jour */}
+            <div className="md:col-span-7 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               <button
                 onClick={() => goTo("cash")}
                 className="text-left rounded-3xl card-glass card-hover p-5"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-emerald-500/20 ring-1 ring-white/15">
-                    💶
-                  </span>
-                  <div className="text-lg font-medium text-white">
-                    Trésorerie & Alertes
-                  </div>
+                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-emerald-500/20 ring-1 ring-white/15">💶</span>
+                  <div className="text-lg font-medium text-white">Trésorerie & Alertes</div>
                 </div>
                 <p className="mt-2 text-sm text-white/75">
-                  Projetez le solde, détectez les risques tôt, alertes
-                  automatiques.
+                  Projetez le solde, détectez les risques tôt, alertes automatiques.
                 </p>
               </button>
 
@@ -365,9 +332,7 @@ export default function HomePage({ goTo = () => {} }) {
                 className="text-left rounded-3xl card-glass card-hover p-5"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-indigo-500/20 ring-1 ring-white/15">
-                    🏷️
-                  </span>
+                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-indigo-500/20 ring-1 ring-white/15">🏷️</span>
                   <div className="text-lg font-medium text-white">Pricing</div>
                 </div>
                 <p className="mt-2 text-sm text-white/75">
@@ -380,49 +345,64 @@ export default function HomePage({ goTo = () => {} }) {
                 className="text-left rounded-3xl card-glass card-hover p-5"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-teal-500/20 ring-1 ring-white/15">
-                    ♻️
-                  </span>
-                  <div className="text-lg font-medium text-white">
-                    Éco-Label
-                  </div>
+                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-teal-500/20 ring-1 ring-white/15">♻️</span>
+                  <div className="text-lg font-medium text-white">Éco-Label</div>
                 </div>
                 <p className="mt-2 text-sm text-white/75">
                   Intensité kg/€, décomposition, plan d’actions conforme.
                 </p>
               </button>
 
-              <button
-                onClick={() => goTo("pro")}
+              {/* Support & Onboarding (service) */}
+              <a
+                href="/support"
                 className="text-left rounded-3xl card-glass card-hover p-5"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-fuchsia-500/20 ring-1 ring-white/15">
-                    🔌
+                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15">
+                    <Headphones className="w-4 h-4" />
                   </span>
-                  <div className="text-lg font-medium text-white">
-                    Accès Pro
-                  </div>
+                  <div className="text-lg font-medium text-white">Support & Onboarding</div>
                 </div>
                 <p className="mt-2 text-sm text-white/75">
-                  Connecteurs, exports, et options avancées.
+                  Setup clé en main, mapping données, formation. <strong>Audit 15 min offert.</strong>
                 </p>
-              </button>
+                <div className="mt-3 chip">Service</div>
+              </a>
+
+              {/* Connecteurs (non-fonctionnels) */}
+              <a
+                href="/connecteurs"
+                className="relative text-left rounded-3xl card-glass card-hover p-5"
+                title="Bientôt disponible"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15">
+                    <Plug className="w-4 h-4" />
+                  </span>
+                  <div className="text-lg font-medium text-white">Connecteurs</div>
+                </div>
+                <p className="mt-2 text-sm text-white/75">
+                  Stripe, Banque (Bridge/Powens), Shopify/Presta… <em>aperçu visuel pour l’instant</em>.
+                </p>
+                <div className="mt-3 chip">Bientôt</div>
+                <div className="pointer-events-none absolute -right-4 top-3 rotate-12">
+                  <span className="rounded bg-gradient-to-r from-fuchsia-600 to-indigo-600 px-2 py-0.5 text-[10px] font-semibold tracking-wider">DISPO BIENTÔT</span>
+                </div>
+              </a>
             </div>
           </div>
 
-          {/* Bande d’aides ultra discrète */}
+          {/* Bande d’aides cohérente avec services */}
           <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-white/60">
-            <span className="chip">
-              Glissez-déposez votre CSV pour démarrer
-            </span>
-            <span className="chip">Aucune carte requise</span>
-            <span className="chip">Annulable à tout moment</span>
+            <span className="chip">Glissez-déposez votre CSV pour démarrer</span>
+            <span className="chip">Onboarding en &lt; 7 jours</span>
+            <span className="chip">Audit gratuit 15 min</span>
           </div>
         </div>
       </section>
 
-      {/* --- NOUVELLE SECTION : À PROPOS + VIDÉO --- */}
+      {/* --- À PROPOS + VIDÉO --- */}
       <section className="relative py-14 md:py-20">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
@@ -442,9 +422,8 @@ export default function HomePage({ goTo = () => {} }) {
                   </span>
                 </h3>
                 <p className="mt-3 text-white/80 text-sm leading-relaxed">
-                  Data & Risk. Je construis des outils concrets pour aider les
-                  PME à décider vite et bien : prévisions, trésorerie, pricing,
-                  risques. Mon approche : simple à utiliser, robuste sous le capot.
+                  Outil gratuit pour tester, service pour accélérer. On connecte vos données,
+                  on met vos KPI en production, on forme votre équipe — simplement.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <a
@@ -455,12 +434,10 @@ export default function HomePage({ goTo = () => {} }) {
                     Regarder la vidéo (90s)
                   </a>
                   <a
-                    href="https://www.linkedin.com/in/jeremy-duriez"
-                    target="_blank"
-                    rel="noreferrer"
+                    href="/support"
                     className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-white text-slate-900 hover:bg-white/90 transition text-sm font-semibold"
                   >
-                    Me suivre sur LinkedIn
+                    Découvrir l’onboarding
                     <ArrowRight className="w-4 h-4" />
                   </a>
                 </div>
@@ -469,20 +446,10 @@ export default function HomePage({ goTo = () => {} }) {
 
             {/* Colonne vidéo */}
             <FadeInOnView delay={0.08}>
-              <div
-                id="about-video"
-                className="relative rounded-3xl overflow-hidden border border-white/12 bg-white/6 backdrop-blur p-3"
-              >
+              <div id="about-video" className="relative rounded-3xl overflow-hidden border border-white/12 bg-white/6 backdrop-blur p-3">
                 <div className="relative aspect-video w-full rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900">
-                  {/* Placez ici votre <iframe> YouTube/Vimeo OU un <video> HTML5 */}
-                  {/* Exemple (remplacez src) :
-                      <iframe className="w-full h-full rounded-2xl" src="https://www.youtube.com/embed/XXXX" title="Présentation InsightMate" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                  */}
-                  <a
-                    href="#"
-                    title="Bientôt disponible"
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
+                  {/* Placez ici votre iframe YouTube/Vimeo ou un <video> */}
+                  <a href="#" title="Bientôt disponible" className="absolute inset-0 flex items-center justify-center">
                     <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm">
                       <PlayCircle className="h-5 w-5" />
                       Votre vidéo arrive
@@ -490,8 +457,7 @@ export default function HomePage({ goTo = () => {} }) {
                   </a>
                 </div>
                 <div className="mt-3 text-xs text-white/60">
-                  Astuce : une vidéo courte (60–90s) expliquant qui vous êtes
-                  + ce que l’on fait en 3 clics convertit très bien.
+                  60–90s : qui vous êtes + ce qu’on fait en 3 clics → très bon taux de conversion.
                 </div>
               </div>
             </FadeInOnView>
