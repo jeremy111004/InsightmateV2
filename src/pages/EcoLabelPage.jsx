@@ -34,6 +34,7 @@ import {
   ReferenceLine,
   Legend,
   ComposedChart,
+  Bar,
 } from "recharts";
 
 import {
@@ -869,17 +870,16 @@ export default function EcoLabelPage() {
   const demoBankRows = useMemo(() => parseCsvText(DEMO_BANK_CSV), []);
 
   /* --- Données (connecteurs) --- */
-  const { rows: bankingRowsStore } = useDataset("banking") || { rows: [] };
-  const { rows: salesRowsStore } = useDataset("sales") || { rows: [] };
+  const bankingRowsRaw = useDataset("banking") || [];
+  const salesRowsRaw = useDataset("sales") || [];
 
-  const bankingRowsBase =
-    Array.isArray(bankingRowsStore) && bankingRowsStore.length
-      ? bankingRowsStore
-      : [];
+  const bankingRowsBase = Array.isArray(bankingRowsRaw)
+    ? bankingRowsRaw
+    : parseCsvText(String(bankingRowsRaw || ""));
   const salesRowsBase =
-    Array.isArray(salesRowsStore) && salesRowsStore.length
-      ? salesRowsStore
-      : [];
+    Array.isArray(salesRowsRaw) && salesRowsRaw.length
+      ? salesRowsRaw
+      : parseCsvText(String(SAMPLE_SALES || ""));
 
   /* --- CSV upload overrides --- */
   const fileInputRef = useRef(null);
@@ -1019,16 +1019,8 @@ export default function EcoLabelPage() {
     0,
     Math.round(electricity + fuel + shipping + sectorOther)
   );
-
-  // Intensité sûre (jamais Infinity/NaN)
-  const rawIntensity = last30Revenue > 0 ? totalKg / last30Revenue : NaN;
-  const intensity =
-    Number.isFinite(rawIntensity) && rawIntensity >= 0 ? rawIntensity : null;
-  const { grade: gradeLetter, color: gradeColor } = ecoGradeFromIntensity(
-    Number.isFinite(rawIntensity) && rawIntensity >= 0
-      ? rawIntensity
-      : sectorFactor || 1
-  );
+  const intensity = last30Revenue > 0 ? totalKg / last30Revenue : Infinity;
+  const { grade } = ecoGradeFromIntensity(intensity);
 
   /* --- Séries intensité (pour spark) --- */
   const [ecoWindow, setEcoWindow] = useState(30);
@@ -1122,7 +1114,7 @@ export default function EcoLabelPage() {
       });
     }
     // Shipping
-    if ((displayOrders || 0) > 0) {
+    if ((last30Orders || 0) > 0) {
       const perOrder = Number(shipKgOrder) || 0;
       const deltaOrder = Math.max(1, Math.ceil(perOrder * 0.3)); // -30%/commande
       out.push({
@@ -1131,12 +1123,12 @@ export default function EcoLabelPage() {
         cause: `Moyenne ~${fmt(perOrder, 2)} kg/commande`,
         solution:
           "Plus de relais/route, packaging allégé, regroupement & règles anti-express/air par défaut.",
-        impactKg: deltaOrder * displayOrders,
+        impactKg: deltaOrder * last30Orders,
         perOrderDelta: deltaOrder,
       });
     }
     return out;
-  }, [electricity, fuel, shipKgOrder, displayOrders, elecFactor]);
+  }, [electricity, fuel, shipKgOrder, last30Orders, elecFactor]);
 
   /* --- RENDER --- */
   const sectorMedian = sectorFactor || 0;
@@ -1161,7 +1153,7 @@ export default function EcoLabelPage() {
     });
   }, [intensitySeries]);
 
-  // Nudge Recharts (Safari/Vercel) pour garantir le layout après montage
+  // Recharts layout nudge (Safari/Vercel)
   useEffect(() => {
     const kick = () => window.dispatchEvent(new Event("resize"));
     const a = setTimeout(kick, 60);
@@ -1203,7 +1195,7 @@ export default function EcoLabelPage() {
                   sector: { key: sector, factor: sectorFactor },
                   totals: {
                     last30Revenue,
-                    last30Orders: displayOrders,
+                    last30Orders,
                     totalKg,
                     intensity: Number.isFinite(intensity)
                       ? +intensity.toFixed(3)
@@ -1265,7 +1257,9 @@ export default function EcoLabelPage() {
             initial={{ scale: 0.97, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${gradeColor} text-2xl font-bold shadow relative overflow-hidden`}
+            className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${
+              ecoGradeFromIntensity(intensity).color
+            } text-2xl font-bold shadow relative overflow-hidden`}
           >
             <motion.div
               aria-hidden={true}
@@ -1277,7 +1271,7 @@ export default function EcoLabelPage() {
                   "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)",
               }}
             />
-            {gradeLetter}
+            {ecoGradeFromIntensity(intensity).grade}
           </motion.div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -1359,11 +1353,12 @@ export default function EcoLabelPage() {
           spark={ecoSpark}
           aiPlan={aiPlan}
           targetIntensity={
-            gradeLetter === "A" || gradeLetter === "B"
+            ecoGradeFromIntensity(intensity).grade === "A" ||
+            ecoGradeFromIntensity(intensity).grade === "B"
               ? 0.2
-              : gradeLetter === "C"
+              : ecoGradeFromIntensity(intensity).grade === "C"
               ? 0.5
-              : gradeLetter === "D"
+              : ecoGradeFromIntensity(intensity).grade === "D"
               ? 1.0
               : 1.5
           }
