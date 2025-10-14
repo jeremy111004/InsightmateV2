@@ -10,7 +10,6 @@ import {
   ecoExtractFromBank,
 } from "@/lib/eco";
 import { toDateKey } from "@/lib/date";
-// import { SAMPLE_SALES } from "@/data/samples"; // removed (unused)
 import { formatNumber } from "@/lib/format";
 
 import Button from "@/components/ui/Button";
@@ -48,15 +47,20 @@ import {
   BadgePercent,
   Upload,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 
-/* ====== STYLE “premium vert” ====== */
+/* ====== STYLE ====== */
 const ACCENT = "#10b981"; // emerald-500
 const ACCENT_DARK = "#059669"; // emerald-600
 
 /* === FACTEURS — réseau (kgCO2e/kWh) & proxy secteur === */
 const GRID_REGIONS = { EU: 0.233, FR: 0.053, ES: 0.2 };
 const SECTOR_OTHER_SHARE = 0.5;
+
+/* === Anim constants (smooth & snappy) === */
+const CHART_ANIM_MS = 520;
+const CHART_ANIM_DELAY = 90;
+const CHART_EASE = "ease-out"; // recharts easing
 
 /* --- CSV fallback (si un connecteur renvoie une string) --- */
 function parseCsvText(csvText) {
@@ -106,6 +110,67 @@ const fmt = (x, d = 0) =>
     ? x.toLocaleString(undefined, { maximumFractionDigits: d })
     : "—";
 
+/* ---------- Safe Responsive wrapper (no zero-size, no jerky remounts) ---------- */
+function useElementSize() {
+  const ref = React.useRef(null);
+  const [size, setSize] = React.useState({ w: 0, h: 0 });
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let rafId = 0;
+    const apply = (w, h) => {
+      // avoid thrashing: only update when it actually changes
+      setSize((s) => (s.w !== w || s.h !== h ? { w, h } : s));
+    };
+
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver((entries) => {
+        const cr = entries[0]?.contentRect;
+        if (!cr) return;
+        const w = Math.round(cr.width);
+        const h = Math.round(cr.height);
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => apply(w, h));
+      });
+      ro.observe(el);
+      return () => {
+        cancelAnimationFrame(rafId);
+        ro.disconnect();
+      };
+    } else {
+      // fallback: poll a few times
+      const tick = () => {
+        const r = el.getBoundingClientRect();
+        apply(Math.round(r.width), Math.round(r.height));
+      };
+      tick();
+      const id = setInterval(tick, 200);
+      return () => clearInterval(id);
+    }
+  }, []);
+
+  return [ref, size];
+}
+
+function SafeRC({ minH = 200, children }) {
+  const [wrapRef, { w, h }] = useElementSize();
+  const ready = w > 10 && h > 10;
+  return (
+    <div ref={wrapRef} className="w-full h-full" style={{ minHeight: minH }}>
+      {ready ? (
+        <ResponsiveContainer width="100%" height="100%">
+          {children}
+        </ResponsiveContainer>
+      ) : (
+        <div className="w-full h-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+      )}
+    </div>
+  );
+}
+
+/* ---------- Tiny UI pieces ---------- */
 function ConfidencePill({ value = 0 }) {
   const v = Math.max(0, Math.min(100, Math.round(value)));
   const tone =
@@ -153,9 +218,10 @@ function IAAdvisorLandscape({ actions = [] }) {
   const list = actions.slice(0, 3);
   return (
     <motion.div
-      initial={{ y: 8, opacity: 0 }}
+      initial={{ y: 10, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       className="rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+      layout
     >
       <motion.div
         aria-hidden={true}
@@ -182,10 +248,10 @@ function IAAdvisorLandscape({ actions = [] }) {
       <div className="mt-3 grid md:grid-cols-3 gap-3 auto-rows-min">
         {list.map((a, idx) => (
           <motion.div
-            initial={false}
             key={a.id}
             whileHover={{ y: -2 }}
             className="rounded-2xl border bg-white/80 dark:bg-slate-900/80 p-4 ring-1 ring-black/5 hover:ring-emerald-500 transition"
+            layout
           >
             <div className="text-[11px] uppercase tracking-wide text-emerald-700">
               Conseil {idx + 1}
@@ -485,19 +551,26 @@ function ExecutiveSummarySection({
   // Forecast lissé (30j)
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const forecastHorizon = 30;
-  const forecast = Array.from({ length: forecastHorizon }).map((_, k) => {
-    const t = ease((k + 1) / forecastHorizon);
-    const targetY = lastY * (1 - improvementRatio);
-    const y = lastY + (targetY - lastY) * t;
-    return { i: base.length + k, y };
-  });
+  const forecast = useMemo(() => {
+    const arr = [];
+    for (let k = 0; k < forecastHorizon; k++) {
+      const t = ease((k + 1) / forecastHorizon);
+      const targetY = lastY * (1 - improvementRatio);
+      const y = lastY + (targetY - lastY) * t;
+      arr.push({ i: base.length + k, y });
+    }
+    return arr;
+  }, [base.length, lastY, improvementRatio]);
 
-  // 🔒 Avoid function dataKey: materialize two explicit keys
+  // materialize two explicit keys (no function dataKey)
   const baseLen = base.length;
-  const chartData = [
-    ...base.map((d) => ({ i: d.i, baseline: d.y, forecast: null })),
-    ...forecast.map((d) => ({ i: d.i, baseline: null, forecast: d.y })),
-  ];
+  const chartData = useMemo(
+    () => [
+      ...base.map((d) => ({ i: d.i, baseline: d.y, forecast: null })),
+      ...forecast.map((d) => ({ i: d.i, baseline: null, forecast: d.y })),
+    ],
+    [base, forecast]
+  );
 
   return (
     <Section
@@ -514,14 +587,15 @@ function ExecutiveSummarySection({
         </div>
       }
     >
-      {/* ligne 1 : 3 tuiles compactes */}
+      {/* ligne 1 : 3 tuiles */}
       <div className="grid lg:grid-cols-12 gap-5 auto-rows-min items-start">
         {/* Ce mois-ci */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
+          initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
+          layout
         >
           <motion.div
             aria-hidden={true}
@@ -542,19 +616,20 @@ function ExecutiveSummarySection({
 
         {/* Intensité & jauge */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
+          initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.03 }}
+          transition={{ delay: 0.04 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 min-w-0"
+          layout
         >
           <div className="text-sm text-slate-600">Intensité actuelle</div>
           <div className="mt-1 text-2xl font-semibold">
             {hasInt ? fmt(intensity, 2) : "—"} <span className="text-base">kg/€</span>
           </div>
-          <div className="w-full h-[220px]">
+          <div className="w-full h-[220px] min-w-0">
             {isClient ? (
-              <ResponsiveContainer>
+              <SafeRC minH={220}>
                 <RadialBarChart
                   innerRadius="65%"
                   outerRadius="100%"
@@ -562,7 +637,6 @@ function ExecutiveSummarySection({
                   endAngle={0}
                   data={[{ name: "value", value: hasInt ? intensity : 0 }]}
                 >
-                  {/* ✅ Domain sur l’axe polaire */}
                   <PolarAngleAxis type="number" domain={[0, Math.max(0.01, (sectorMedian || 0) * 2)]} tick={false} />
                   <RadialBar
                     dataKey="value"
@@ -571,9 +645,13 @@ function ExecutiveSummarySection({
                     cornerRadius={24}
                     fill="#0f172a"
                     background={{ fill: "rgba(2,6,23,.06)" }}
+                    isAnimationActive={true}
+                    animationBegin={0}
+                    animationDuration={CHART_ANIM_MS}
+                    animationEasing={CHART_EASE}
                   />
                 </RadialBarChart>
-              </ResponsiveContainer>
+              </SafeRC>
             ) : (
               <div className="h-full w-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
             )}
@@ -586,11 +664,12 @@ function ExecutiveSummarySection({
 
         {/* Donut composition */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
+          initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.06 }}
+          transition={{ delay: 0.08 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
+          layout
         >
           <motion.div
             aria-hidden={true}
@@ -603,9 +682,9 @@ function ExecutiveSummarySection({
           />
           <div className="text-sm text-slate-600">Composition des émissions</div>
           <div className="mt-2 grid grid-cols-2 gap-2 relative">
-            <div className="h-[220px]">
+            <div className="h-[220px] min-w-0">
               {isClient ? (
-                <ResponsiveContainer>
+                <SafeRC minH={220}>
                   <PieChart>
                     <Pie
                       data={comp}
@@ -617,6 +696,10 @@ function ExecutiveSummarySection({
                       endAngle={450}
                       padAngle={3}
                       cornerRadius={6}
+                      isAnimationActive={true}
+                      animationBegin={0}
+                      animationDuration={CHART_ANIM_MS}
+                      animationEasing={CHART_EASE}
                     >
                       {comp.map((d) => (
                         <Cell key={d.key} fill={d.color} />
@@ -624,7 +707,7 @@ function ExecutiveSummarySection({
                     </Pie>
                     <Tooltip formatter={(v, n) => [`${fmt(v)} kg`, n]} />
                   </PieChart>
-                </ResponsiveContainer>
+                </SafeRC>
               ) : (
                 <div className="h-full w-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
               )}
@@ -650,9 +733,10 @@ function ExecutiveSummarySection({
       <div className="mt-5 grid xl:grid-cols-12 gap-5 auto-rows-min items-start">
         {/* Courbe */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
+          initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
+          layout
         >
           <motion.div
             aria-hidden={true}
@@ -667,9 +751,9 @@ function ExecutiveSummarySection({
             <div className="text-sm text-slate-600">Tendance d’intensité (90 jours) & scénario</div>
             <div className="text-[11px] text-slate-500">kg/€</div>
           </div>
-          <div className="mt-2 h-56 relative">
+          <div className="mt-2 h-56 relative min-w-0">
             {isClient ? (
-              <ResponsiveContainer>
+              <SafeRC minH={224}>
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="gBase" x1="0" y1="0" x2="0" y2="1">
@@ -701,15 +785,20 @@ function ExecutiveSummarySection({
                     />
                   )}
                   <Area
+                    name="Baseline"
                     type="monotone"
                     dataKey="baseline"
                     stroke="#0f172a"
                     fill="url(#gBase)"
                     dot={false}
                     connectNulls={false}
-                    name="Baseline"
+                    isAnimationActive={true}
+                    animationBegin={0}
+                    animationDuration={CHART_ANIM_MS}
+                    animationEasing={CHART_EASE}
                   />
                   <Area
+                    name="Forecast (avec conseils)"
                     type="monotone"
                     dataKey="forecast"
                     stroke={ACCENT_DARK}
@@ -717,16 +806,19 @@ function ExecutiveSummarySection({
                     fill="url(#gForecast)"
                     dot={false}
                     connectNulls={false}
-                    name="Forecast (avec conseils)"
+                    isAnimationActive={true}
+                    animationBegin={CHART_ANIM_DELAY}
+                    animationDuration={CHART_ANIM_MS}
+                    animationEasing={CHART_EASE}
                   />
                   <Tooltip
-                    formatter={(v, n, p) => [`${Number(v).toFixed(3)} kg/€`, n]}
+                    formatter={(v, n) => [`${Number(v).toFixed(3)} kg/€`, n]}
                     labelFormatter={(l) =>
                       l < baseLen ? `J-${baseLen - l}` : `J+${l - baseLen + 1}`
                     }
                   />
                 </AreaChart>
-              </ResponsiveContainer>
+              </SafeRC>
             ) : (
               <div className="h-full w-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
             )}
@@ -738,7 +830,7 @@ function ExecutiveSummarySection({
         </motion.div>
 
         {/* Conseiller IA paysage */}
-        <div className="xl:col-span-5">
+        <div className="xl:col-span-5 min-w-0">
           <IAAdvisorLandscape actions={aiPlan} />
         </div>
       </div>
@@ -870,7 +962,7 @@ export default function EcoLabelPage() {
     }
   };
 
-  // Final inputs
+  // Final inputs (upload > connectors > demo)
   const bankingRows = useMemo(
     () =>
       (uploadedBankRows?.length
@@ -913,14 +1005,14 @@ export default function EcoLabelPage() {
   }, [salesRowsInput]);
 
   /* --- États UI --- */
-  const [sector, setSector] = useState("ecommerce");
-  const [kwhMonth, setKwhMonth] = useState("450");
-  const [dieselL, setDieselL] = useState("60");
-  const [shipKgOrder, setShipKgOrder] = useState(ECO_FACTORS.shippingKgPerOrder);
+  const [sector] = useState("ecommerce");
+  const [kwhMonth] = useState("450");
+  const [dieselL] = useState("60");
+  const [shipKgOrder] = useState(ECO_FACTORS.shippingKgPerOrder);
   const [gridRegion, setGridRegion] = useState("EU");
 
   const elecFactor = GRID_REGIONS[gridRegion] ?? ECO_FACTORS.electricityKgPerKWh;
-  const DIESEL_PER_L = ECO_FACTORS?.dieselKgPerL ?? 2.68; // 🔒 safe fallback
+  const DIESEL_PER_L = ECO_FACTORS?.dieselKgPerL ?? 2.68; // safe fallback
 
   /* --- Banque 30j --- */
   const sinceISO30 = toDateKey(Date.now() - 30 * 864e5);
@@ -958,7 +1050,7 @@ export default function EcoLabelPage() {
   );
 
   /* --- Séries intensité (pour spark) --- */
-  const [ecoWindow, setEcoWindow] = useState(30);
+  const [ecoWindow] = useState(30);
   const salesDaily = useMemo(() => {
     const rows = (salesRowsInput || [])
       .map((r) => ({
@@ -981,7 +1073,7 @@ export default function EcoLabelPage() {
 
   const intensitySeries = useMemo(() => {
     const elecPerDay = ((Number(kwhMonth) || 0) * elecFactor) / 30;
-    const fuelPerDay = ((Number(dieselL) || 0) * DIESEL_PER_L) / 30; // 🔒 fallback applied
+    const fuelPerDay = ((Number(dieselL) || 0) * DIESEL_PER_L) / 30;
     const sectorPerEUR = sectorFactor;
     return (salesDaily || []).map((d) => {
       const shipKgs = d.orders * (Number(shipKgOrder) || 0);
@@ -1060,7 +1152,7 @@ export default function EcoLabelPage() {
 
   /* --- RENDER --- */
   const sectorMedian = sectorFactor || 0;
-  const tCO2eYear = (totalKg * 12) / 1000;
+  const totalKgYear = (totalKg * 12) / 1000;
 
   // Build daily components (last 30 days) for stacked viz
   const dailyComp30 = useMemo(() => {
@@ -1078,221 +1170,296 @@ export default function EcoLabelPage() {
     });
   }, [intensitySeries]);
 
-  // Nudge Recharts (Safari/Vercel) pour garantir le layout après montage
+  // Robust resize/orientation kicks (no spam)
   useEffect(() => {
     const kick = () => {
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("resize"));
       }
     };
-    const a = setTimeout(kick, 60);
-    const b = setTimeout(kick, 300);
+    const a = setTimeout(kick, 24);
+    const b = setTimeout(kick, 120);
+
+    window.addEventListener("orientationchange", kick, { passive: true });
+    document.addEventListener("visibilitychange", kick, { passive: true });
+    if (document?.fonts?.ready?.then) document.fonts.ready.then(kick);
+
     return () => {
       clearTimeout(a);
       clearTimeout(b);
+      window.removeEventListener("orientationchange", kick);
+      document.removeEventListener("visibilitychange", kick);
     };
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-3 md:px-4 py-4 relative min-h-[640px]">
-      <Section
-        title="Éco-Label (estimation pédagogique)"
-        icon={<Leaf className="w-5 h-5 text-emerald-600" />}
-        actions={
-          <div className="flex items-center gap-2">
-            {/* Export méthodo */}
-            <Button
-              variant="subtle"
-              size="sm"
-              onClick={() => {
-                const payload = {
-                  gridRegion,
-                  electricityFactor: elecFactor,
-                  composition: { electricity, fuel, shipping, sectorOther },
-                  measuredKg:
-                    (txCarbon?.byTag?.electricity ?? 0) +
-                    (txCarbon?.byTag?.fuel ?? 0) +
-                    (txCarbon?.byTag?.shipping ?? 0),
-                  paramKg:
-                    (txCarbon?.byTag?.electricity == null ? electricityBase : 0) +
-                    (txCarbon?.byTag?.fuel == null ? fuelBase : 0) +
-                    (txCarbon?.byTag?.shipping == null ? shippingBase : 0),
-                  proxyKg: sectorOther,
-                  confidence: displayConf,
-                  sector: { key: sector, factor: sectorFactor },
-                  totals: {
-                    last30Revenue,
-                    last30Orders: displayOrders,
-                    totalKg,
-                    intensity: Number.isFinite(intensity) ? +intensity.toFixed(3) : null,
-                  },
-                  generatedAt: new Date().toISOString(),
-                  windowDays: 30,
-                  factorsVersion: "IM-0.4",
-                };
-                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "insightmate-methodology.json";
-                a.click();
-                URL.revokeObjectURL(url);
-              }}
-              icon={<FileDown className="w-4 h-4" />}
-            >
-              Export méthodologie (.json)
-            </Button>
-
-            {/* Ajouter un CSV (bank or sales, auto) */}
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              whileHover={{ y: -1 }}
-              onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm ring-1 ring-emerald-400/40"
-              title="Importer un CSV ventes ou banque"
-            >
-              <Upload className="w-4 h-4" />
-              Ajouter un CSV
-            </motion.button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv,text/csv"
-              onChange={handleCsvUpload}
-              className="sr-only"
-              aria-hidden="true"
-              tabIndex={-1}
-            />
-          </div>
-        }
-      >
-        {/* Aide format CSV */}
-        <div className="text-[11.5px] text-slate-500 -mt-2 mb-3">
-          Format attendu — <b>Ventes</b>: <code>date, qty, price</code> (+ optionnels:
-          <code>order_id, product</code>). <b>Banque</b>: <code>date, amount, label</code>. CSV UTF-8 avec en-tête.
-        </div>
-
-        {/* Bandeau + connectivité */}
-        <div className="flex items-start gap-4 mb-4">
-          <motion.div
-            initial={{ scale: 0.97, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${gradeColor} text-2xl font-bold shadow relative overflow-hidden`}
-          >
-            <motion.div
-              aria-hidden={true}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.18 }}
-              className="pointer-events-none absolute -inset-1 blur-lg"
-              style={{ background: "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)" }}
-            />
-            {gradeLetter}
-          </motion.div>
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-2 text-sm">
-              <div className="text-lg font-semibold">Éco-Label InsightMate</div>
-              <ConfidencePill value={displayConf} />
-              <span className="inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600">
-                <ShieldQuestion className="w-3 h-3" />
-                Bande d’incertitude incluse
-              </span>
-            </div>
-
-            <div className="mt-1 text-sm text-gray-700 dark:text-gray-200">
-              Intensité estimée :{" "}
-              <b>
-                {(() => {
-                  const { value } = computeIntensity({ totalKg, last30Revenue, sectorMedian });
-                  return Number.isFinite(value) ? value.toFixed(2) : "—";
-                })()}{" "}
-                kgCO₂e/€
-              </b>
-            </div>
-
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <span
-                className={`px-2 py-0.5 rounded ${
-                  (salesRowsInput?.length || 0) > 0
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
-                    : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
-                }`}
+    <MotionConfig
+      transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.45 }}
+      reducedMotion="user"
+    >
+      <div className="max-w-7xl mx-auto w-full px-3 md:px-4 py-4 relative min-h-[640px]">
+        <Section
+          title="Éco-Label (estimation pédagogique)"
+          icon={<Leaf className="w-5 h-5 text-emerald-600" />}
+          actions={
+            <div className="flex items-center gap-2">
+              {/* Export méthodo */}
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={() => {
+                  const payload = {
+                    gridRegion,
+                    electricityFactor: elecFactor,
+                    composition: { electricity, fuel, shipping, sectorOther },
+                    measuredKg:
+                      (txCarbon?.byTag?.electricity ?? 0) +
+                      (txCarbon?.byTag?.fuel ?? 0) +
+                      (txCarbon?.byTag?.shipping ?? 0),
+                    paramKg:
+                      (txCarbon?.byTag?.electricity == null ? electricityBase : 0) +
+                      (txCarbon?.byTag?.fuel == null ? fuelBase : 0) +
+                      (txCarbon?.byTag?.shipping == null ? shippingBase : 0),
+                    proxyKg: sectorOther,
+                    confidence: displayConf,
+                    sector: { key: sector, factor: sectorFactor },
+                    totals: {
+                      last30Revenue,
+                      last30Orders: displayOrders,
+                      totalKg,
+                      intensity: Number.isFinite(intensity) ? +intensity.toFixed(3) : null,
+                    },
+                    generatedAt: new Date().toISOString(),
+                    windowDays: 30,
+                    factorsVersion: "IM-0.4",
+                  };
+                  const blob = new Blob([JSON.stringify(payload, null, 2)], {
+                    type: "application/json",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "insightmate-methodology.json";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                icon={<FileDown className="w-4 h-4" />}
               >
-                Ventes {(salesRowsInput?.length || 0) > 0 ? "connectées" : "manquantes"}
-              </span>
-              <span
-                className={`px-2 py-0.5 rounded ${
-                  (bankingRows?.length || 0) > 0
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
-                    : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
-                }`}
-              >
-                Banque {(bankingRows?.length || 0) > 0 ? "connectée" : "manquante"}
-              </span>
-            </div>
+                Export méthodologie (.json)
+              </Button>
 
-            <div className="mt-2">
-              <DataHealthBar
-                measured={
-                  (txCarbon?.byTag?.electricity ?? 0) +
-                  (txCarbon?.byTag?.fuel ?? 0) +
-                  (txCarbon?.byTag?.shipping ?? 0)
-                }
-                param={
-                  (txCarbon?.byTag?.electricity == null ? electricityBase : 0) +
-                  (txCarbon?.byTag?.fuel == null ? fuelBase : 0) +
-                  (txCarbon?.byTag?.shipping == null ? shippingBase : 0)
-                }
-                proxy={sectorOther}
+              {/* Ajouter un CSV (bank or sales, auto) */}
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                whileHover={{ y: -1 }}
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm ring-1 ring-emerald-400/40"
+                title="Importer un CSV ventes ou banque"
+              >
+                <Upload className="w-4 h-4" />
+                Ajouter un CSV
+              </motion.button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                onChange={handleCsvUpload}
+                className="sr-only"
+                aria-hidden="true"
+                tabIndex={-1}
               />
             </div>
+          }
+        >
+          {/* Aide format CSV */}
+          <div className="text-[11.5px] text-slate-500 -mt-2 mb-3">
+            Format attendu — <b>Ventes</b>: <code>date, qty, price</code> (+ optionnels:
+            <code>order_id, product</code>). <b>Banque</b>: <code>date, amount, label</code>. CSV UTF-8 avec en-tête.
           </div>
-        </div>
 
-        {/* Executive summary */}
-        <ExecutiveSummarySection
-          totalKg={totalKg}
-          intensity={intensity}
-          sectorMedian={sectorMedian}
-          electricity={electricity}
-          fuel={fuel}
-          shipping={shipping}
-          displayConf={displayConf}
-          spark={ecoSpark}
-          aiPlan={aiPlan}
-          targetIntensity={gradeLetter === "A" || gradeLetter === "B" ? 0.2 : gradeLetter === "C" ? 0.5 : gradeLetter === "D" ? 1.0 : 1.5}
-        />
+          {/* Bandeau + connectivité */}
+          <div className="flex items-start gap-4 mb-4">
+            <motion.div
+              initial={{ scale: 0.97, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.28 }}
+              className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${gradeColor} text-2xl font-bold shadow relative overflow-hidden`}
+              layout
+            >
+              <motion.div
+                aria-hidden={true}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.18 }}
+                className="pointer-events-none absolute -inset-1 blur-lg"
+                style={{
+                  background:
+                    "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)",
+                }}
+              />
+              {gradeLetter}
+            </motion.div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <div className="text-lg font-semibold">Éco-Label InsightMate</div>
+                <ConfidencePill value={displayConf} />
+                <span className="inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600">
+                  <ShieldQuestion className="w-3 h-3" />
+                  Bande d’incertitude incluse
+                </span>
+              </div>
 
-        {/* Aides + Presse */}
-        <SubsidyBox
-          totalKg={totalKg}
-          electricityDeltaKwhMonth={aiPlan.find((a) => a.id === "elec")?.kwhDelta || 0}
-          tCO2eYear={(totalKg * 12) / 1000}
-        />
-        <PressBox />
+              <div className="mt-1 text-sm text-gray-700 dark:text-gray-200">
+                Intensité estimée :{" "}
+                <b>
+                  {(() => {
+                    const { value } = computeIntensity({ totalKg, last30Revenue, sectorMedian });
+                    return Number.isFinite(value) ? value.toFixed(2) : "—";
+                  })()}{" "}
+                  kgCO₂e/€
+                </b>
+              </div>
 
-        {/* ====== Décomposition quotidienne (30j) ====== */}
-        <Section title="Décomposition quotidienne (30 jours)" icon={<Sparkles className="w-5 h-5" />} actions={<div className="text-xs text-slate-500">Ventilation ~élec/fuel/expéditions/autres par jour</div>}>
-          <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-4">
-            <ResponsiveContainer width="100%" height={280}>
-              <ComposedChart data={dailyComp30}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v, n) => [`${formatNumber(v, 0)} kg`, n]} />
-                <Legend />
-                <Area type="monotone" dataKey="Électricité" stackId="kg" fill={ACCENT_DARK} stroke={ACCENT_DARK} fillOpacity={0.35} />
-                <Area type="monotone" dataKey="Carburant" stackId="kg" fill="#ef4444" stroke="#ef4444" fillOpacity={0.25} />
-                <Area type="monotone" dataKey="Expéditions" stackId="kg" fill="#14b8a6" stroke="#14b8a6" fillOpacity={0.25} />
-                <Area type="monotone" dataKey="Autres" stackId="kg" fill="#64748b" stroke="#64748b" fillOpacity={0.2} />
-              </ComposedChart>
-            </ResponsiveContainer>
-            <div className="mt-2 text-[11px] text-slate-500">
-              Approche pédagogique : allocation journalière simple (élec & fuel répartis /30, expéditions par commandes, proxy secteur proportionnel au CA).
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                <span
+                  className={`px-2 py-0.5 rounded ${
+                    (salesRowsInput?.length || 0) > 0
+                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                      : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
+                  }`}
+                >
+                  Ventes {(salesRowsInput?.length || 0) > 0 ? "connectées" : "manquantes"}
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded ${
+                    (bankingRows?.length || 0) > 0
+                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                      : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
+                  }`}
+                >
+                  Banque {(bankingRows?.length || 0) > 0 ? "connectée" : "manquante"}
+                </span>
+              </div>
+
+              <div className="mt-2">
+                <DataHealthBar
+                  measured={
+                    (txCarbon?.byTag?.electricity ?? 0) +
+                    (txCarbon?.byTag?.fuel ?? 0) +
+                    (txCarbon?.byTag?.shipping ?? 0)
+                  }
+                  param={
+                    (txCarbon?.byTag?.electricity == null ? electricityBase : 0) +
+                    (txCarbon?.byTag?.fuel == null ? fuelBase : 0) +
+                    (txCarbon?.byTag?.shipping == null ? shippingBase : 0)
+                  }
+                  proxy={sectorOther}
+                />
+              </div>
             </div>
           </div>
+
+          {/* Executive summary */}
+          <ExecutiveSummarySection
+            totalKg={totalKg}
+            intensity={intensity}
+            sectorMedian={sectorMedian}
+            electricity={electricity}
+            fuel={fuel}
+            shipping={shipping}
+            displayConf={displayConf}
+            spark={ecoSpark}
+            aiPlan={aiPlan}
+            targetIntensity={gradeLetter === "A" || gradeLetter === "B" ? 0.2 : gradeLetter === "C" ? 0.5 : gradeLetter === "D" ? 1.0 : 1.5}
+          />
+
+          {/* Aides + Presse */}
+          <SubsidyBox
+            totalKg={totalKg}
+            electricityDeltaKwhMonth={aiPlan.find((a) => a.id === "elec")?.kwhDelta || 0}
+            tCO2eYear={totalKgYear}
+          />
+          <PressBox />
+
+          {/* ====== Décomposition quotidienne (30j) ====== */}
+          <Section
+            title="Décomposition quotidienne (30 jours)"
+            icon={<Sparkles className="w-5 h-5" />}
+            actions={<div className="text-xs text-slate-500">Ventilation ~élec/fuel/expéditions/autres par jour</div>}
+          >
+            <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-4">
+              <SafeRC minH={280}>
+                <ComposedChart data={dailyComp30}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip formatter={(v, n) => [`${formatNumber(v, 0)} kg`, n]} />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="Électricité"
+                    stackId="kg"
+                    fill={ACCENT_DARK}
+                    stroke={ACCENT_DARK}
+                    fillOpacity={0.35}
+                    isAnimationActive
+                    animationBegin={0}
+                    animationDuration={CHART_ANIM_MS}
+                    animationEasing={CHART_EASE}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="Carburant"
+                    stackId="kg"
+                    fill="#ef4444"
+                    stroke="#ef4444"
+                    fillOpacity={0.25}
+                    isAnimationActive
+                    animationBegin={60}
+                    animationDuration={CHART_ANIM_MS}
+                    animationEasing={CHART_EASE}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="Expéditions"
+                    stackId="kg"
+                    fill="#14b8a6"
+                    stroke="#14b8a6"
+                    fillOpacity={0.25}
+                    isAnimationActive
+                    animationBegin={120}
+                    animationDuration={CHART_ANIM_MS}
+                    animationEasing={CHART_EASE}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="Autres"
+                    stackId="kg"
+                    fill="#64748b"
+                    stroke="#64748b"
+                    fillOpacity={0.2}
+                    isAnimationActive
+                    animationBegin={180}
+                    animationDuration={CHART_ANIM_MS}
+                    animationEasing={CHART_EASE}
+                  />
+                </ComposedChart>
+              </SafeRC>
+              <div className="mt-2 text-[11px] text-slate-500">
+                Approche pédagogique : allocation journalière simple (élec & fuel répartis /30, expéditions par
+                commandes, proxy secteur proportionnel au CA).
+              </div>
+            </div>
+          </Section>
+
+          {/* Aperçu import */}
+          <Section title="Aperçu des fichiers importés" icon={<Upload className="w-5 h-5" />}>
+            <div className="grid md:grid-cols-2 gap-4 auto-rows-min">
+              <TablePreview rows={salesRowsInput} title="Ventes (CSV actif)" />
+              <TablePreview rows={bankingRows} title="Banque (CSV actif)" />
+            </div>
+          </Section>
         </Section>
-      </Section>
-    </div>
+      </div>
+    </MotionConfig>
   );
 }
