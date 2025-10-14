@@ -106,6 +106,43 @@ const fmt = (x, d = 0) =>
     ? x.toLocaleString(undefined, { maximumFractionDigits: d })
     : "—";
 
+/* ====== HARDEN RECHARTS ON RESIZE (mobile/grid) ====== */
+function useResizeRerender(ref) {
+  const [nonce, setNonce] = useState(0);
+  useEffect(() => {
+    if (!ref.current || typeof window === "undefined") return;
+    let ticking = false;
+    const bump = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        setNonce((n) => n + 1);
+      });
+    };
+    const ro =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(bump)
+        : null;
+    ro?.observe(ref.current);
+    window.addEventListener("orientationchange", bump);
+    window.addEventListener("visibilitychange", bump);
+    window.addEventListener("resize", bump);
+    // initial kick (Safari/Vercel)
+    const t1 = setTimeout(bump, 50);
+    const t2 = setTimeout(bump, 300);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("orientationchange", bump);
+      window.removeEventListener("visibilitychange", bump);
+      window.removeEventListener("resize", bump);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [ref]);
+  return nonce;
+}
+
 function ConfidencePill({ value = 0 }) {
   const v = Math.max(0, Math.min(100, Math.round(value)));
   const tone =
@@ -452,6 +489,7 @@ function ExecutiveSummarySection({
   spark = [],
   aiPlan = [],
   targetIntensity = null,
+  chartNonce = 0, // 🔧 re-render key
 }) {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
@@ -554,7 +592,7 @@ function ExecutiveSummarySection({
           </div>
           <div className="w-full h-[220px] min-w-0">
             {isClient ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer key={`radial-${chartNonce}`} width="100%" height="100%">
                 <RadialBarChart
                   innerRadius="65%"
                   outerRadius="100%"
@@ -605,7 +643,7 @@ function ExecutiveSummarySection({
           <div className="mt-2 grid grid-cols-2 gap-2 relative">
             <div className="h-[220px] min-w-0">
               {isClient ? (
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer key={`pie-${chartNonce}`} width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={comp}
@@ -669,7 +707,7 @@ function ExecutiveSummarySection({
           </div>
           <div className="mt-2 h-56 relative min-w-0">
             {isClient ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer key={`area-${chartNonce}`} width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="gBase" x1="0" y1="0" x2="0" y2="1">
@@ -720,7 +758,7 @@ function ExecutiveSummarySection({
                     name="Forecast (avec conseils)"
                   />
                   <Tooltip
-                    formatter={(v, n, p) => [`${Number(v).toFixed(3)} kg/€`, n]}
+                    formatter={(v, n) => [`${Number(v).toFixed(3)} kg/€`, n]}
                     labelFormatter={(l) =>
                       l < baseLen ? `J-${baseLen - l}` : `J+${l - baseLen + 1}`
                     }
@@ -785,6 +823,9 @@ function TablePreview({ rows = [], title = "Aperçu", max = 25 }) {
 
 /* ===================== PAGE ===================== */
 export default function EcoLabelPage() {
+  const rootRef = useRef(null);
+  const chartNonce = useResizeRerender(rootRef); // 🔧 force remount of charts on size changes
+
   /* --- Demo CSVs loaded by default on first visit --- */
   const DEMO_SALES_CSV = `date,order_id,product,qty,price
 2025-09-18,3001,Café filtre 500g,2,8.50
@@ -1078,23 +1119,8 @@ export default function EcoLabelPage() {
     });
   }, [intensitySeries]);
 
-  // Nudge Recharts (Safari/Vercel) pour garantir le layout après montage
-  useEffect(() => {
-    const kick = () => {
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("resize"));
-      }
-    };
-    const a = setTimeout(kick, 60);
-    const b = setTimeout(kick, 300);
-    return () => {
-      clearTimeout(a);
-      clearTimeout(b);
-    };
-  }, []);
-
   return (
-    <div className="max-w-7xl mx-auto w-full px-3 md:px-4 py-4 relative min-h-[640px]">
+    <div ref={rootRef} className="max-w-7xl mx-auto w-full px-3 md:px-4 py-4 relative min-h-[640px]">
       <Section
         title="Éco-Label (estimation pédagogique)"
         icon={<Leaf className="w-5 h-5 text-emerald-600" />}
@@ -1261,6 +1287,7 @@ export default function EcoLabelPage() {
           spark={ecoSpark}
           aiPlan={aiPlan}
           targetIntensity={gradeLetter === "A" || gradeLetter === "B" ? 0.2 : gradeLetter === "C" ? 0.5 : gradeLetter === "D" ? 1.0 : 1.5}
+          chartNonce={chartNonce}
         />
 
         {/* Aides + Presse */}
@@ -1272,9 +1299,13 @@ export default function EcoLabelPage() {
         <PressBox />
 
         {/* ====== Décomposition quotidienne (30j) ====== */}
-        <Section title="Décomposition quotidienne (30 jours)" icon={<Sparkles className="w-5 h-5" />} actions={<div className="text-xs text-slate-500">Ventilation ~élec/fuel/expéditions/autres par jour</div>}>
+        <Section
+          title="Décomposition quotidienne (30 jours)"
+          icon={<Sparkles className="w-5 h-5" />}
+          actions={<div className="text-xs text-slate-500">Ventilation ~élec/fuel/expéditions/autres par jour</div>}
+        >
           <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-4 min-w-0">
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer key={`stack-${chartNonce}`} width="100%" height={280}>
               <ComposedChart data={dailyComp30}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} />
