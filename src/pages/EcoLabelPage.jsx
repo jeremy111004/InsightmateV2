@@ -521,7 +521,7 @@ function ExecutiveSummarySection({
           initial={{ y: 8, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
         >
           <motion.div
             aria-hidden={true}
@@ -546,15 +546,15 @@ function ExecutiveSummarySection({
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.03 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 min-w-0"
         >
           <div className="text-sm text-slate-600">Intensité actuelle</div>
           <div className="mt-1 text-2xl font-semibold">
             {hasInt ? fmt(intensity, 2) : "—"} <span className="text-base">kg/€</span>
           </div>
-          <div className="w-full h-[220px]">
+          <div className="w-full h-[220px] min-w-0">
             {isClient ? (
-              <ResponsiveContainer>
+              <ResponsiveContainer width="100%" height="100%">
                 <RadialBarChart
                   innerRadius="65%"
                   outerRadius="100%"
@@ -590,7 +590,7 @@ function ExecutiveSummarySection({
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.06 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
         >
           <motion.div
             aria-hidden={true}
@@ -603,9 +603,9 @@ function ExecutiveSummarySection({
           />
           <div className="text-sm text-slate-600">Composition des émissions</div>
           <div className="mt-2 grid grid-cols-2 gap-2 relative">
-            <div className="h-[220px]">
+            <div className="h-[220px] min-w-0">
               {isClient ? (
-                <ResponsiveContainer>
+                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={comp}
@@ -652,7 +652,7 @@ function ExecutiveSummarySection({
         <motion.div
           initial={{ y: 8, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
         >
           <motion.div
             aria-hidden={true}
@@ -667,9 +667,9 @@ function ExecutiveSummarySection({
             <div className="text-sm text-slate-600">Tendance d’intensité (90 jours) & scénario</div>
             <div className="text-[11px] text-slate-500">kg/€</div>
           </div>
-          <div className="mt-2 h-56 relative">
+          <div className="mt-2 h-56 relative min-w-0">
             {isClient ? (
-              <ResponsiveContainer>
+              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="gBase" x1="0" y1="0" x2="0" y2="1">
@@ -738,7 +738,7 @@ function ExecutiveSummarySection({
         </motion.div>
 
         {/* Conseiller IA paysage */}
-        <div className="xl:col-span-5">
+        <div className="xl:col-span-5 min-w-0">
           <IAAdvisorLandscape actions={aiPlan} />
         </div>
       </div>
@@ -1273,7 +1273,7 @@ export default function EcoLabelPage() {
 
         {/* ====== Décomposition quotidienne (30j) ====== */}
         <Section title="Décomposition quotidienne (30 jours)" icon={<Sparkles className="w-5 h-5" />} actions={<div className="text-xs text-slate-500">Ventilation ~élec/fuel/expéditions/autres par jour</div>}>
-          <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-4">
+          <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-4 min-w-0">
             <ResponsiveContainer width="100%" height={280}>
               <ComposedChart data={dailyComp30}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
