@@ -445,13 +445,6 @@ export default function HomePage({ goTo = () => {} }) {
                     Regarder la vidéo (90s)
                   </a>
                   {/* Onboarding → AIDE */}
-                  <a
-                    href="/aide"
-                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-white text-slate-900 hover:bg-white/90 transition text-sm font-semibold"
-                  >
-                    Découvrir l’onboarding
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
                 </div>
               </div>
             </FadeInOnView>
