@@ -84,28 +84,21 @@ export default function HomePage({ goTo = () => {} }) {
 
   return (
     <div className="relative isolate bg-app text-white w-full">
-      {/* HERO plus ample */}
+      {/* HERO */}
       <header className="relative full-bleed hero-surface no-grid">
         <div className="hero-content relative max-w-7xl mx-auto w-full px-4 md:px-8 pt-20 pb-14 md:pt-28 md:pb-16 text-center">
           <div className="mb-5 flex flex-wrap gap-2 justify-center">
-            <Pill
-              icon={<span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />}
-            >
+            <Pill icon={<span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />}>
               IA intégrée
             </Pill>
-            <Pill
-              icon={<span className="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block" />}
-            >
+            <Pill icon={<span className="w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block" />}>
               Smart Forecast
             </Pill>
-            <Pill
-              icon={<span className="w-1.5 h-1.5 rounded-full bg-pink-400 inline-block" />}
-            >
+            <Pill icon={<span className="w-1.5 h-1.5 rounded-full bg-pink-400 inline-block" />}>
               Accès beta gratuit
             </Pill>
           </div>
 
-          {/* Titre XL */}
           <h1 className="text-[56px] md:text-[88px] font-extrabold tracking-[-0.02em] leading-[1.05]">
             Vos{" "}
             <span className="text-glow bg-gradient-to-r from-[#e8ecff] via-[#cfd7ff] to-[#90c9ff] bg-clip-text text-transparent">
@@ -133,12 +126,13 @@ export default function HomePage({ goTo = () => {} }) {
               <ArrowRight className="w-5 h-5" />
             </button>
 
+            {/* Onboarding → AIDE */}
             <a
-              href="/support"
+              href="/aide"
               className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 border border-white/15 bg-white/5 text-white hover:bg-white/10 text-base md:text-lg transition"
             >
               <CalendarClock className="w-5 h-5" />
-              Onboarding & audit 15 min
+              Aide & onboarding (15 min)
             </a>
           </div>
 
@@ -146,7 +140,7 @@ export default function HomePage({ goTo = () => {} }) {
             Accès libre (bêta ouverte) • Services optionnels selon besoin
           </div>
 
-          {/* KPI plus grands */}
+          {/* KPI */}
           <div className="mt-12 grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <FadeInOnView>
               <div
@@ -261,7 +255,7 @@ export default function HomePage({ goTo = () => {} }) {
         </div>
       </section>
 
-      {/* DEMOS RAPIDES — adapté services + nouveaux onglets */}
+      {/* PASSER À L’ACTION — MAJ pour coller aux sections */}
       <section className="relative full-bleed panel-surface py-14 md:py-20">
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
@@ -312,21 +306,23 @@ export default function HomePage({ goTo = () => {} }) {
               </div>
             </button>
 
-            {/* Raccourcis mis à jour */}
+            {/* Raccourcis alignés sur les onglets */}
             <div className="md:col-span-7 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {/* Analyse Clients */}
               <button
-                onClick={() => goTo("cash")}
+                onClick={() => goTo("clients")}
                 className="text-left rounded-3xl card-glass card-hover p-5"
               >
                 <div className="flex items-center gap-3">
-                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-emerald-500/20 ring-1 ring-white/15">💶</span>
-                  <div className="text-lg font-medium text-white">Trésorerie & Alertes</div>
+                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15">👥</span>
+                  <div className="text-lg font-medium text-white">Analyse Clients</div>
                 </div>
                 <p className="mt-2 text-sm text-white/75">
-                  Projetez le solde, détectez les risques tôt, alertes automatiques.
+                  Segments, rétention, panier, cohortes. Identifiez les leviers.
                 </p>
               </button>
 
+              {/* Pricing */}
               <button
                 onClick={() => goTo("pricing")}
                 className="text-left rounded-3xl card-glass card-hover p-5"
@@ -340,6 +336,7 @@ export default function HomePage({ goTo = () => {} }) {
                 </p>
               </button>
 
+              {/* Éco-Label */}
               <button
                 onClick={() => goTo("eco")}
                 className="text-left rounded-3xl card-glass card-hover p-5"
@@ -353,16 +350,30 @@ export default function HomePage({ goTo = () => {} }) {
                 </p>
               </button>
 
-              {/* Support & Onboarding (service) */}
+              {/* Risque */}
+              <button
+                onClick={() => goTo("risk")}
+                className="text-left rounded-3xl card-glass card-hover p-5"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-fuchsia-500/20 ring-1 ring-white/15">🛡️</span>
+                  <div className="text-lg font-medium text-white">Risque</div>
+                </div>
+                <p className="mt-2 text-sm text-white/75">
+                  Alertes, variabilité, scénarios. Gardez le cap sans surprise.
+                </p>
+              </button>
+
+              {/* Aide & Onboarding */}
               <a
-                href="/support"
+                href="/aide"
                 className="text-left rounded-3xl card-glass card-hover p-5"
               >
                 <div className="flex items-center gap-3">
                   <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15">
                     <Headphones className="w-4 h-4" />
                   </span>
-                  <div className="text-lg font-medium text-white">Support & Onboarding</div>
+                  <div className="text-lg font-medium text-white">Aide & Onboarding</div>
                 </div>
                 <p className="mt-2 text-sm text-white/75">
                   Setup clé en main, mapping données, formation. <strong>Audit 15 min offert.</strong>
@@ -370,7 +381,7 @@ export default function HomePage({ goTo = () => {} }) {
                 <div className="mt-3 chip">Service</div>
               </a>
 
-              {/* Connecteurs (non-fonctionnels) */}
+              {/* Connecteurs Auto */}
               <a
                 href="/connecteurs"
                 className="relative text-left rounded-3xl card-glass card-hover p-5"
@@ -380,7 +391,7 @@ export default function HomePage({ goTo = () => {} }) {
                   <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15">
                     <Plug className="w-4 h-4" />
                   </span>
-                  <div className="text-lg font-medium text-white">Connecteurs</div>
+                  <div className="text-lg font-medium text-white">Connecteurs Auto</div>
                 </div>
                 <p className="mt-2 text-sm text-white/75">
                   Stripe, Banque (Bridge/Powens), Shopify/Presta… <em>aperçu visuel pour l’instant</em>.
@@ -393,7 +404,7 @@ export default function HomePage({ goTo = () => {} }) {
             </div>
           </div>
 
-          {/* Bande d’aides cohérente avec services */}
+          {/* Bande d’aides */}
           <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-white/60">
             <span className="chip">Glissez-déposez votre CSV pour démarrer</span>
             <span className="chip">Onboarding en &lt; 7 jours</span>
@@ -433,8 +444,9 @@ export default function HomePage({ goTo = () => {} }) {
                     <PlayCircle className="w-4 h-4" />
                     Regarder la vidéo (90s)
                   </a>
+                  {/* Onboarding → AIDE */}
                   <a
-                    href="/support"
+                    href="/aide"
                     className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-white text-slate-900 hover:bg-white/90 transition text-sm font-semibold"
                   >
                     Découvrir l’onboarding
