@@ -117,7 +117,7 @@ export default function HomePage({ goTo = () => {} }) {
             Besoin d’aller vite ? Nos <span className="font-semibold">services d’onboarding</span> branchent vos données, configurent vos dashboards et forment l’équipe.
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-4 justify-center items-center">
+       <div className="mt-9 flex flex-wrap gap-4 justify-center items-center">
             <button
               onClick={() => goTo("sales")}
               className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 btn-blue-grad text-base md:text-lg font-semibold shadow-lg hover:shadow-xl ring-1 ring-white/10 transition"
@@ -126,14 +126,12 @@ export default function HomePage({ goTo = () => {} }) {
               <ArrowRight className="w-5 h-5" />
             </button>
 
-            {/* Onboarding → AIDE */}
-            <a
-              href="/aide"
+            <button
+              onClick={() => goTo("pro")}
               className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 border border-white/15 bg-white/5 text-white hover:bg-white/10 text-base md:text-lg transition"
             >
-              <CalendarClock className="w-5 h-5" />
-              Aide & onboarding (15 min)
-            </a>
+              Aide & onBoarding (15 min)
+            </button>
           </div>
 
           <div className="mt-4 text-sm text-white/65">
