@@ -1,3 +1,6 @@
+Tes fichiers sont à la racine de **/public**, donc il faut des chemins **sans `/videos/`**. Voilà le fichier complet corrigé (mapping racine + fix du template string + remount vidéo + sync langue) :
+
+```jsx
 // src/pages/HomePage.jsx
 import React from "react";
 import {
@@ -96,15 +99,26 @@ export default function HomePage({ goTo = () => {} }) {
     if (["fr", "en", "es"].includes(code)) setVideoLang(code);
   }, [i18n.language]);
 
+  // Chemins à la racine de /public (pas de /videos/)
   const videoSrc = React.useMemo(() => {
     const map = {
-      fr: "/videos/introfr.mp4",
-      en: "/videos/introen.mp4",
-      es: "/videos/introes.mp4",
+      fr: "/introfr.mp4",
+      en: "/introen.mp4",
+      es: "/introes.mp4",
     };
-    // fallback EN si le code n'est pas couvert
-    return map[videoLang] || map.en;
+    const base = map[videoLang] || map.en;
+    return `${base}?v=1`; // cache-bust simple
   }, [videoLang]);
+
+  const onVideoError = (e) => {
+    const v = e.currentTarget;
+    console.error("VIDEO ERROR", {
+      mediaError: v?.error,
+      networkState: v?.networkState,
+      readyState: v?.readyState,
+      currentSrc: v?.currentSrc,
+    });
+  };
 
   return (
     <div className="relative isolate bg-app text-white w-full">
@@ -545,13 +559,18 @@ export default function HomePage({ goTo = () => {} }) {
                     key={videoSrc}
                     className="absolute inset-0 h-full w-full object-cover rounded-2xl"
                     src={videoSrc}
-                    poster="/videos/intro-poster.jpg"
+                    // poster="/intro-poster.jpg" // optionnel si dispo
                     controls
+                    autoPlay
+                    muted
                     playsInline
+                    loop
                     preload="metadata"
+                    onError={onVideoError}
+                    onLoadedData={() => console.log("VIDEO LOADED", videoSrc)}
                   >
-                    {/* Fallback multi-format */}
                     <source src={videoSrc} type="video/mp4" />
+                    Votre navigateur ne peut pas lire cette vidéo.
                   </video>
                 </div>
 
