@@ -1,6 +1,6 @@
 {
   "topbar": {
-    "title": "Sales / Orders Data",
+    "title": "Sales / Orders data",
     "csvExpected": "Expected CSV:",
     "downloadSample": "Download sample",
     "uploadCsv": "Upload CSV"
@@ -19,126 +19,216 @@
   },
   "kpi": {
     "cfar": "Cash at Risk p{{alphaPct}} ({{horizon}} d)",
-    "es": "Expected loss under stress",
-    "probOverdraft": "Prob. of overdraft over period",
+    "es": "Average loss under stress",
+    "probOverdraft": "Overdraft probability over period",
     "runway": "Runway",
     "hhi": "Client concentration"
   },
   "chart": {
-    "title": "Treasury — Fan chart",
+    "title": "Cash — Fan chart",
     "subtitle": "Horizon {{horizon}} d • α={{alphaPct}} • Sim={{nSim}}",
     "cfar": "Cash at risk:",
-    "es": "Expected shortfall:"
+    "es": "Expected Shortfall:"
   },
   "legend": {
     "p95Optimistic": "p95 (optimistic)",
     "median": "Median",
     "p5Conservative": "p5 (conservative)",
     "mc": "Monte Carlo",
+    "mcOuterPlus": "MC + outer",
+    "mcInnerPlus": "MC + inner",
+    "mcOuterMinus": "MC − outer",
+    "mcInnerMinus": "MC − inner",
     "stress": "Stress",
     "optimistic": "Optimistic"
   },
   "block": {
     "stressSim": {
-      "title": "Stress & Simulation",
-      "subtitle": "Adjust and re-run calculation"
+      "title": "Stress & simulation",
+      "subtitle": "Adjust and recalc"
     },
     "advisor": {
       "title": "AI Advisor (Risk)",
-      "subtitle": "Problem → Cause → Solution (+ROI)"
+      "subtitle": "Problem → Cause → Solution (+ ROI)"
     }
   },
+  "panel": {
+    "sectionTitle": "Parameters & Stress tests",
+    "salesDelta": "Sales (Δ%)",
+    "costsDelta": "Costs (Δ%)",
+    "dsoDays": "DSO (+ days)",
+    "horizon": "Horizon (days)",
+    "alpha": "Alpha (VaR/ES)",
+    "sims": "Simulations",
+    "recalc": "Recalculate"
+  },
+  "advisor": {
+    "impact": "Estimated impact",
+    "effort": "Effort",
+    "confidence": "Confidence",
+    "ctaEmail": "Copy follow-up email",
+    "ctaEmailCopied": "Email copied!",
+    "ctaCall": "Call script",
+    "pb": "Issue",
+    "cause": "Cause",
+    "solution": "Solution",
+    "roi": "ROI",
+
+    "ok": {
+      "title": "Controlled risk profile",
+      "pbText": "No urgency — healthy profile.",
+      "causeText": "Comfortable runway, low Prob(OD), moderate concentration.",
+      "solutionText": "Set weekly alerts + backtest VaR exceptions.",
+      "roiText": "Preserve margin and managerial time.",
+      "email": {
+        "subject": "Weekly risk rituals confirmation",
+        "body": "We’ll set a weekly risk summary and track VaR exceptions to secure the trajectory."
+      },
+      "call": { "body": "Confirm a weekly ritual with thresholds and alerts." }
+    },
+
+    "runway": {
+      "title": "Tight runway (P5 {{runwayP5}} d) — Prob(OD) {{prob}}%",
+      "pbText": "Fragile cash over {{horizon}} days.",
+      "causeText": "Late collections (DSO) + compressed net margin.",
+      "solutionText": "Offer −1% discount to top 5 clients for <15d payment + reminders D+3/D+10.",
+      "roiText": "Runway +15–25 d, Prob(OD) −5 to −12 pts.",
+      "email": {
+        "subject": "Early-payment discount option",
+        "body": "We propose a 1% discount for payments within 15 days on next invoices. Ensures continuity of supply and priority handling."
+      },
+      "call": { "body": "Offer 1% early-payment discount <15d + structured reminders (D+3/D+10)." }
+    },
+
+    "cfar": {
+      "title": "Cash at Risk p{{alphaPct}} at {{horizon}}d = {{cfar}} • ES = {{es}}",
+      "pbText": "Material potential loss at the horizon.",
+      "causeText": "Flow volatility + margin pressure on non-KVI SKUs.",
+      "solutionText": "Targeted +3–4% increase on non-KVI + stable-margin “eco” bundle.",
+      "roiText": "Expected CFaR reduction 20–40% (~{{cfar20}}–{{cfar40}}).",
+      "email": {
+        "subject": "Targeted price update (service unchanged)",
+        "body": "We’ll adjust +3–4% on non-KVI references and add an “eco” bundle at stable margin. Offer and lead times remain unchanged."
+      },
+      "call": { "body": "Announce targeted +3–4% on non-KVI + eco alternative." }
+    },
+
+    "conc": {
+      "title": "High concentration — HHI {{hhi}}",
+      "pbText": "Dependence on a few key accounts.",
+      "causeText": "Revenue share concentrated (HHI > 0.2).",
+      "solutionText": "Direct-channel campaign (−5% code) targeting 50 repeat buyers.",
+      "roiText": "Direct revenue +8–15% / 60d, HHI → 0.15–0.18.",
+      "email": {
+        "subject": "Direct channel −5% (priority access)",
+        "body": "We’re launching a −5% code on the direct channel for repeat purchases. Goal: faster lead time, logistics priority, direct relationship."
+      },
+      "call": { "body": "Pitch the −5% direct-channel code to 50 repeat buyers." }
+    },
+
+    "email": {
+      "subjectPrefix": "Subject:",
+      "greeting": "Hello,",
+      "closing": "Thanks in advance — it helps us ensure continuity of service and short lead times.\n\nBest regards,"
+    },
+    "call": {
+      "pitchHeader": "Call pitch (90s):",
+      "intro": "calling to streamline payment terms and offer a simple option.",
+      "close": "I’ll send the confirmation email now — ok?"
+    }
+  },
+
   "radar": {
     "title": "Revenue Leakage Radar",
-    "subtitle": "Under-cost • Target margin • Over-discount • Shipping",
-    "tip": "Tip: Load the sample or import your CSV to visualize leaks (€)."
+    "subtitle": "Low cost • Target margin • Excess discounts • Shipping",
+    "tip": "Tip: load the sample or import your CSV to instantly visualize leaks (€)."
   },
   "clients": {
-    "title": "Client concentration",
-    "none": "No clients identified."
+    "title": "Customer concentration",
+    "none": "No customer identified."
   },
   "csv": {
     "invalidRows": "No valid rows detected.",
-    "invalid": "Invalid CSV. Check header and expected columns (see help).",
+    "invalid": "Invalid CSV. Check header and expected columns (see note).",
     "parseError": "CSV parsing error."
   },
   "leakage": {
     "header": {
       "title": "Revenue Leakage Radar",
       "subtitle": "Import a sales CSV to detect and quantify revenue/margin leaks.",
-      "fullscreenEnter": "Full screen",
-      "fullscreenExit": "Exit full screen"
+      "fullscreenEnter": "Fullscreen",
+      "fullscreenExit": "Exit fullscreen"
     },
     "controls": {
       "title": "Settings",
       "targetMargin": "Target margin (%)",
       "priceDrift": "Price drift (%)",
-      "recompute": "Recompute",
-      "importCsv": "Import sales (CSV UTF-8)",
+      "recompute": "Recalculate",
+      "importCsv": "Import sales (UTF-8 CSV)",
       "loadSample": "Load sample",
       "downloadTemplate": "Download CSV template"
     },
     "fileHelp": {
       "title": "Expected file format",
-      "csvNote": "CSV file (UTF-8), separator \",\" or \";\".",
-      "decimalsNote": "Decimals: both \".\" or \",\" accepted (ex: 12.90 or 12,90).",
-      "rowNote": "One row = one order item (SKU).",
+      "csvNote": "CSV file (UTF-8), \",\" or \";\" separator.",
+      "decimalsNote": "Decimals: \".\" or \",\" accepted (e.g., 12.90 or 12,90).",
+      "rowNote": "One row = one order line (SKU).",
       "headersTitle": "Required headers:",
       "headersList": "date,order_id,sku,name,qty,unit_price,unit_cost,discount,shipping_fee,shipping_cost",
-      "exampleRow": "Example: 2025-10-01,A-1001,SKU-A,Coffee beans 1kg,3,12.9,9.5,4.5,3.9,4.5"
+      "exampleRow": "Example: 2025-10-01,A-1001,SKU-A,Whole bean 1kg,3,12.9,9.5,4.5,3.9,4.5"
     },
     "kpi": {
-      "underCost": "Under-cost",
+      "underCost": "Below cost",
       "erosion": "Below target margin",
       "discount": "Discounts/Drift",
       "shipping": "Shipping",
-      "total": "Total leaks"
+      "total": "Total leak"
     },
     "charts": {
       "splitTitle": "Leak breakdown (€)",
-      "topLeaksTitle": "Top leaks by product (€)",
-      "timeseriesTitle": "Leaks over time (€ / day)",
+      "topLeaksTitle": "Top leaks by product (total €)",
+      "timeseriesTitle": "Leaks over time (€/day)",
       "barLeakName": "Leak (€)"
     },
     "empty": {
-      "prompt": "Import a CSV (or load the sample) to see revenue/margin leaks.",
-      "loading": "Analysing…"
+      "prompt": "Import a CSV (or load the sample) to view revenue/margin leaks.",
+      "loading": "Analyzing…"
     }
   },
   "glossary": {
-    "title": "How is it calculated?",
+    "title": "How is it computed?",
     "items": {
       "increments": {
         "label": "Cash increments",
-        "text": "Daily series of net cash ≈ margin on sales + payments + banking flows."
+        "text": "Daily net cash series ≈ sales margin + customer payments + banking flows."
       },
       "model": {
         "label": "Model",
-        "text": "AR(1) on increments (μ, φ, σ estimated) → 3k–8k simulated paths over 30–180 days."
+        "text": "AR(1) on increments (μ, φ, σ estimated) → 3,000–8,000 simulated paths over 30–180 days."
       },
       "fan": {
         "label": "Fan chart",
-        "text": "Curves represent quantiles p5, p50 (median), p95 of simulated paths."
+        "text": "Curves show p5, p50 (median) and p95 quantiles of simulated paths."
       },
       "cfar": {
         "label": "CFaR / ES",
-        "text": "Cash-flow-at-Risk and Expected Shortfall at quantile α: potential losses on ΔCash at horizon."
+        "text": "Cash-flow-at-Risk and Expected Shortfall at quantile α: potential ΔCash losses at the horizon."
       },
       "prob": {
         "label": "Prob(Overdraft)",
-        "text": "Share of trajectories that fall below €0 at least once before the horizon."
+        "text": "Share of paths going below €0 at least once before the horizon."
       },
       "runway": {
         "label": "Runway P5",
-        "text": "5th-percentile of days before €0 (if no trajectory crosses 0 → ∞)."
+        "text": "5th percentile of days until €0 (∞ if no path crosses 0)."
       },
       "hhi": {
-        "label": "Client HHI",
-        "text": "Concentration index on client sales shares (0 = diversified, >0.2 = high)."
+        "label": "HHI (clients)",
+        "text": "Concentration index from client revenue shares (0 = diversified, > 0.2 = high)."
       },
       "stress": {
         "label": "Stress tests",
-        "text": "Δ% sales (scaling), Δ% costs (margin impact), +DSO days (delay in payments)."
+        "text": "Δ% sales (scaling), Δ% costs (margin pressure), + DSO days (payment delay)."
       }
     }
   }
