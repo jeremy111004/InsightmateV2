@@ -1,0 +1,134 @@
+{
+  "import": {
+    "title": "Import sales (CSV)",
+    "currency": { "eur": "EUR (€)", "usd": "USD ($)", "gbp": "GBP (£)" },
+    "loadSample": "Load sample",
+    "downloadSample": "Download sample",
+    "upload": { "title": "Upload your CSV file", "cta": "Upload a CSV" },
+    "drop": {
+      "title": "Drag-and-drop a CSV here",
+      "hint": "Tip: drag-and-drop a CSV file here to import it."
+    },
+    "altSelect": { "label": "Or pick a file:" },
+    "requiredCols": { "label": "Required columns:" }
+  },
+  "upload": {
+    "errorParse": "Could not read the CSV."
+  },
+  "filters": {
+    "smooth": "Smoothing (days)",
+    "from": "From",
+    "to": "To"
+  },
+  "kpi": {
+    "ca30": { "label": "Revenue (30d)" },
+    "changeUp": "↗ +{{v}}%",
+    "changeDown": "↘ {{v}}%",
+    "stable": "Stable",
+    "basket": { "label": "Average basket", "note": "Across orders" },
+    "clients": { "label": "Unique customers", "note": "Last 30 days" }
+  },
+  "forecast": {
+    "sectionTitle": "History & Forecast (30d)",
+    "exportPdf": "Export PDF (1 page)",
+    "badge": { "smart": "Smart forecast" },
+    "quality": { "prefix": "Quality:", "mape": "MAPE ≈" },
+    "growthTitle": "Expected average growth vs last 14 days",
+    "uncertaintyTitle": "Average uncertainty (±)",
+    "legend": {
+      "historical": "Historical",
+      "ciLo": "95% band (low)",
+      "ciHi": "95% band (high)",
+      "scenarioPrudent": "Prudent scenario",
+      "scenarioOptimistic": "Optimistic scenario",
+      "scenarioKeyword": "scenario",
+      "bandKeyword": "95% band"
+    },
+    "chips": {
+      "historical": "Historical",
+      "central": "Central forecast",
+      "optimistic": "Optimistic scenario",
+      "prudent": "Prudent scenario"
+    },
+    "summaryTail": "over 30 days · Uncertainty ±{{unc}}%"
+  },
+  "chart": {
+    "forecastLabel": "Forecast (Smart)"
+  },
+  "top": {
+    "title": "Top products (revenue)",
+    "barName": "Revenue"
+  },
+  "advice": {
+    "sectionTitle": "Advisor",
+    "badge": "Actionable tips",
+    "basedOn": "Based on your recent data",
+    "toggle": {
+      "local": "Local tips",
+      "ai": "Personalized AI"
+    },
+    "ai": {
+      "title": "Personalized AI tips",
+      "subtitle": "from your KPIs & forecasts",
+      "loading": "Analyzing…",
+      "regenerate": "Regenerate",
+      "hint": "Enable AI then click “Regenerate”."
+    },
+    "local": {
+      "uptrend": "Uptrend: +{{change}}% over the period. Increase stock on best-sellers and test a slightly higher price (+2–3%).",
+      "downtrend": "Downtrend: {{change}}%. Run a targeted 7-day promo (10–15%) on the top 2 products.",
+      "stable": "Stable sales: launch a loyalty offer (buy 10, get 1) to boost retention.",
+      "slowDay": "Slow day: {{day}}. Run a special offer on that day (2×1 or SMS push).",
+      "topProduct": "Lead product: {{name}}. Feature it at checkout and on the homepage.",
+      "bundle": "Bundle: {{top}} + {{other}} (-10%) to grow AOV.",
+      "none": "No tips available"
+    }
+  },
+  "actions": {
+    "title": "To do this week",
+    "subtitle": "Based on your recent data (trend, slow days, top products).",
+    "clipboardTitle": "To do this week:",
+    "none": "No prioritized actions"
+  },
+  "preview": {
+    "title": "Data preview",
+    "footer": "Preview (max 30 rows)"
+  },
+  "ai": {
+    "summaryTitle": "Executive summary (local AI):",
+    "kpi": {
+      "ca30": "• 30d revenue: {{v}} {{cur}}",
+      "basket": "• Avg basket: {{v}} {{cur}}",
+      "clients": "• Customers: {{v}}"
+    },
+    "topProduct": "• Lead product: {{name}}",
+    "actions": "Actions: push best-sellers, treat the slow day with an offer, and test a short promo (-10%)."
+  },
+  "pdf": {
+    "headerTitle": "InsightMate · OnePager",
+    "headerSubtitle": "Report generated automatically — your data stays local",
+    "kpi": {
+      "ca30": "30d revenue: {{v}} {{cur}} ({{change}})",
+      "basket": "Average basket: {{v}} {{cur}}",
+      "unique": "Unique customers (30d): {{v}}"
+    },
+    "forecast": "30d forecast: {{sign}}{{growth}}% · Uncertainty ±{{unc}}%",
+    "forecastNA": "30d forecast: n/a",
+    "footer": "© 2025 InsightMate — Demo. Your data stays local.",
+    "errorExport": "PDF export failed."
+  },
+  "weekdays": {
+    "0": "Sun.",
+    "1": "Mon.",
+    "2": "Tue.",
+    "3": "Wed.",
+    "4": "Thu.",
+    "5": "Fri.",
+    "6": "Sat."
+  },
+  "common": {
+    "copy": "Copy",
+    "share": "Share",
+    "shareAlert": "“Share” feature to be connected"
+  }
+}

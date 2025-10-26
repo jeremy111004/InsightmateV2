@@ -1,0 +1,127 @@
+{
+  "page": {
+    "title": "Eco Label (educational estimate)",
+    "tagline": "30-day carbon intensity estimate, composition, improvement scenario and resources.",
+    "csvHintHtml": "Expected format — <b>Sales</b>: <code>date, qty, price</code> (optional: <code>order_id, product</code>). <b>Bank</b>: <code>date, amount, label</code>. UTF-8 CSV with header."
+  },
+  "actions": {
+    "exportMethod": "Export methodology (.json)",
+    "addCsv": "Add a CSV",
+    "addCsvTitle": "Import a sales or bank CSV"
+  },
+  "files": {
+    "methodology": "insightmate-methodology.json"
+  },
+  "panel": {
+    "brandTitle": "InsightMate Eco-Label",
+    "confidenceShort": "Confidence {{value}}%",
+    "uncertaintyBadge": "Uncertainty band included",
+    "estimatedIntensity": "Estimated intensity:",
+    "intensityUnit": "kgCO₂e/€"
+  },
+  "connect": {
+    "sales": {
+      "connected": "Sales connected",
+      "missing": "Sales missing"
+    },
+    "bank": {
+      "connected": "Bank connected",
+      "missing": "Bank missing"
+    }
+  },
+  "health": {
+    "measured": "Measured {{value}}%",
+    "param": "Parametrized {{value}}%",
+    "proxy": "Proxy {{value}}%"
+  },
+  "summary": {
+    "title": "Executive summary (30 days)",
+    "thisMonth": "This month",
+    "confidence": "Confidence: {{value}}%",
+    "currentIntensity": "Current intensity",
+    "intensityUnit": "kg/€",
+    "median": "median: {{value}} kg/€",
+    "target": "target: {{value}} kg/€",
+    "compositionTitle": "Emissions composition",
+    "comp": {
+      "electricity": "Electricity",
+      "fuel": "Fuel",
+      "shipping": "Shipping",
+      "other": "Other"
+    },
+    "legend": {
+      "baseline": "Baseline",
+      "forecast": "Forecast (with actions)"
+    },
+    "ref": {
+      "median": "Sector median",
+      "target": "Target"
+    },
+    "trendTitle": "Intensity trend (90 days) & scenario",
+    "dayMinus": "D-{{n}}",
+    "dayPlus": "D+{{n}}",
+    "assumptions": "Forecast assumptions: progressive adoption of the 3 actions over 30 days (smoothed ramp-up), max monthly impact capped at 45%. Automatically adjusted if real data is available."
+  },
+  "advisor": {
+    "title": "AI Advisor — 3 prioritized actions",
+    "subhead": "Problem → Cause → Solution",
+    "tipN": "Advice {{n}}",
+    "causeLabel": "Cause ·",
+    "solutionLabel": "Solution ·",
+    "impact": "Estimated impact: ~{{kg}} kg / 30d",
+    "empty": "No prioritized action.",
+    "disclaimer": "Order-of-magnitude estimates. Refine with energy/transport connectors and expert validation.",
+    "pb": {
+      "elec": "Electricity among top 3 sources",
+      "fuel": "High fuel usage (Scope 1)",
+      "ship": "Shipping footprint improvable"
+    },
+    "cause": {
+      "elec": "Estimated consumption ≈ {{kwh}} kWh/month; grid factor {{factor}} kg/kWh",
+      "fuel": "Consumption ≈ {{liters}} L/month of diesel",
+      "ship": "Average ~{{perOrder}} kg/order"
+    },
+    "solution": {
+      "elec": "Eco-consumption plan (-25%): setpoints & standby, sub-metering, mid-term PPA/GO, LED & HVAC control.",
+      "fuel": "Optimize routes, increase load factor, gradual switch to electrified vehicles.",
+      "ship": "More pickup/road, lighter packaging, consolidation & default anti-express/air rules."
+    }
+  },
+  "press": {
+    "title": "Selection — Press & insights"
+  },
+  "common": {
+    "open": "Open"
+  },
+  "subsidies": {
+    "title": "Eligible aids & subsidies (quick view)",
+    "lead": "Your current emissions ≈ {{kg}} kgCO₂e / 30d (~ {{tCO2}} tCO₂e/yr).",
+    "potentialPrefix": "Potential gain:",
+    "note": "Indicative estimate. Schedules and criteria vary by operation, region and call calendar. Use invoice/meter connectors for solid applications.",
+    "tag": {
+      "diagnostic": "Diagnostic subsidy",
+      "workGrant": "Works grant",
+      "capex": "CAPEX invest",
+      "euCalls": "EU calls"
+    },
+    "dynamic": {
+      "ceePotential": "Saved electricity ≈ {{kwh}} kWh/yr → simulate grant",
+      "ceeSimulate": "Amount to simulate depending on works",
+      "heatCheck": "Consider if heat/fuel is significant",
+      "euPotential": "Potential (sites > ~1 ktCO₂/yr or pioneer projects)",
+      "euOutOfScope": "Probably out of scope for small orgs"
+    }
+  },
+  "decomp": {
+    "title": "Daily breakdown (30 days)",
+    "actions": "Daily split ~electricity/fuel/shipping/other",
+    "note": "Educational approach: simple daily allocation (electricity & fuel divided by 30, shipping by orders, sector proxy proportional to revenue)."
+  },
+  "table": {
+    "titleDefault": "Preview",
+    "preview": "Preview ({{shown}} / {{total}})"
+  },
+  "csv": {
+    "readError": "Unable to read the CSV."
+  }
+}

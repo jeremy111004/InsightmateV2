@@ -1,0 +1,151 @@
+{
+  "topbar": {
+    "title": "Datos de ventas / pedidos",
+    "csvExpected": "CSV esperado:",
+    "downloadSample": "Descargar ejemplo",
+    "uploadCsv": "Cargar CSV"
+  },
+  "header": {
+    "title": "Riesgo",
+    "subtitle": "CFaR / ES, gráfico de abanico, pruebas de estrés y concentración.",
+    "modeDemo": "Modo: Demo"
+  },
+
+  "tooltip": {
+    "p95": "p95",
+    "median": "Mediana",
+    "mc": "Monte Carlo",
+    "p5": "p5",
+    "note": "Bandas = incertidumbre de caja simulada (AR(1), 3k–8k trayectorias)."
+  },
+  "kpi": {
+    "cfar": "Efectivo en Riesgo p{{alphaPct}} ({{horizon}} d)",
+    "es": "Pérdida media bajo estrés",
+    "probOverdraft": "Probabilidad de descubierto en el período",
+    "runway": "Runway",
+    "hhi": "Concentración de clientes"
+  },
+  "chart": {
+    "title": "Caja — Gráfico de abanico",
+    "subtitle": "Horizonte {{horizon}} d • α={{alphaPct}} • Sim={{nSim}}",
+    "cfar": "Efectivo en riesgo:",
+    "es": "Pérdida media bajo estrés:"
+  },
+  "legend": {
+    "p95Optimistic": "p95 (optimista)",
+    "median": "Mediana",
+    "p5Conservative": "p5 (prudente)",
+    "mc": "Monte Carlo",
+    "mcOuterPlus": "MC + externo",
+    "mcInnerPlus": "MC + interno",
+    "mcOuterMinus": "MC - externo",
+    "mcInnerMinus": "MC - interno",
+    "stress": "Estrés",
+    "optimistic": "Optimista"
+  },
+  "block": {
+    "stressSim": {
+      "title": "Estrés y simulación",
+      "subtitle": "Ajusta y vuelve a calcular"
+    },
+    "advisor": {
+      "title": "Asesor IA (Riesgo)",
+      "subtitle": "Problema → Causa → Solución (+ ROI)"
+    }
+  },
+  "radar": {
+    "title": "Revenue Leakage Radar",
+    "subtitle": "Bajo coste • Margen objetivo • Descuentos excesivos • Transporte",
+    "tip": "Consejo: carga el ejemplo o importa tu CSV para visualizar al instante las fugas (€)."
+  },
+  "clients": {
+    "title": "Concentración de clientes",
+    "none": "No hay clientes identificados."
+  },
+  "csv": {
+    "invalidRows": "No se detectaron filas válidas.",
+    "invalid": "CSV no válido. Verifica el encabezado y las columnas esperadas (ver nota).",
+    "parseError": "Error al analizar el CSV."
+  },
+
+  "leakage": {
+    "header": {
+      "title": "Revenue Leakage Radar",
+      "subtitle": "Importa un CSV de ventas para detectar y cuantificar fugas de ingresos/margen.",
+      "fullscreenEnter": "Pantalla completa",
+      "fullscreenExit": "Salir de pantalla completa"
+    },
+    "controls": {
+      "title": "Parámetros",
+      "targetMargin": "Margen objetivo (%)",
+      "priceDrift": "Deriva de precio (%)",
+      "recompute": "Recalcular",
+      "importCsv": "Importar ventas (CSV UTF-8)",
+      "loadSample": "Cargar ejemplo",
+      "downloadTemplate": "Descargar plantilla CSV"
+    },
+    "fileHelp": {
+      "title": "Formato de archivo esperado",
+      "csvNote": "Archivo CSV (UTF-8), separador \",\" o \";\".",
+      "decimalsNote": "Decimales: \".\" o \",\" aceptados (p. ej., 12.90 o 12,90).",
+      "rowNote": "Una línea = un artículo de pedido (SKU).",
+      "headersTitle": "Cabeceras requeridas:",
+      "headersList": "date,order_id,sku,name,qty,unit_price,unit_cost,discount,shipping_fee,shipping_cost",
+      "exampleRow": "Ejemplo: 2025-10-01,A-1001,SKU-A,Café grain 1kg,3,12.9,9.5,4.5,3.9,4.5"
+    },
+    "kpi": {
+      "underCost": "Bajo coste",
+      "erosion": "Bajo margen objetivo",
+      "discount": "Descuentos/Deriva",
+      "shipping": "Transporte",
+      "total": "Fuga total"
+    },
+    "charts": {
+      "splitTitle": "Desglose de fugas (€)",
+      "topLeaksTitle": "Principales fugas por producto (total €)",
+      "timeseriesTitle": "Fugas en el tiempo (€/día)",
+      "barLeakName": "Fuga (€)"
+    },
+    "empty": {
+      "prompt": "Importa un CSV (o carga el ejemplo) para ver las fugas de ingresos/margen.",
+      "loading": "Analizando…"
+    }
+  },
+  "glossary": {
+    "title": "¿Cómo se calcula?",
+    "items": {
+      "increments": {
+        "label": "Incrementos de caja",
+        "text": "Serie diaria de caja neta ≈ margen sobre ventas + cobros (payments) + flujos bancarios."
+      },
+      "model": {
+        "label": "Modelo",
+        "text": "AR(1) sobre los incrementos (μ, φ, σ estimados) → 3.000–8.000 trayectorias simuladas en 30–180 días."
+      },
+      "fan": {
+        "label": "Fan chart",
+        "text": "Las curvas muestran los cuantiles p5, p50 (mediana) y p95 de las trayectorias simuladas."
+      },
+      "cfar": {
+        "label": "CFaR / ES",
+        "text": "Cash-flow-at-Risk y Expected Shortfall al cuantil α: pérdidas potenciales en ΔCaja en el horizonte."
+      },
+      "prob": {
+        "label": "Prob(Descubierto)",
+        "text": "Proporción de trayectorias que bajan de 0 € al menos una vez antes del horizonte."
+      },
+      "runway": {
+        "label": "Runway P5",
+        "text": "Percentil 5 del número de días hasta 0 € (si ninguna trayectoria cruza 0 → ∞)."
+      },
+      "hhi": {
+        "label": "HHI (clientes)",
+        "text": "Índice de concentración calculado con las cuotas de facturación por cliente (0 = muy diversificado, > 0,2 = elevado)."
+      },
+      "stress": {
+        "label": "Pruebas de estrés",
+        "text": "Δ% ventas (escalado), Δ% costes (reduce margen), + días DSO (retrasa cobros)."
+      }
+    }
+  }
+}

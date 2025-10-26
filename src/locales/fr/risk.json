@@ -1,0 +1,133 @@
+{
+  "page": {
+    "title": "Risque clients",
+    "tagline": "Priorisez les relances, estimez les récupérations et passez à l’action.",
+    "dataSourceLabel": "Source de données :",
+    "dataSource": {
+      "csv": "CSV ({{count}} lignes)",
+      "demo": "Données de démonstration"
+    },
+    "btn": {
+      "reset": "Réinitialiser"
+    }
+  },
+
+  "kpi": {
+    "totalExposure": {
+      "title": "Exposition totale",
+      "caption": "Solde impayé actuel"
+    },
+    "recoveryPotential": {
+      "title": "Potentiel de récupération",
+      "caption": "Valeur attendue récupérable"
+    },
+    "riskyClients": {
+      "title": "Clients à risque",
+      "caption": "> 60 j ou prob. < 50 %"
+    }
+  },
+
+  "charts": {
+    "pie": { "title": "Récupérable vs exposition restante" },
+    "top5": {
+      "title": "Top 5 par récupération attendue",
+      "barName": "Récupération estimée"
+    },
+    "history": { "title": "Évolution de l’exposition (démo)" }
+  },
+
+  "priority": {
+    "title": "Priorités de relance",
+    "subtitle": "Ordonnez les actions par impact attendu.",
+    "clientsLabel": "clients",
+    "totalDueLabel": "En retard",
+    "potentialLabel": "Potentiel",
+    "searchPlaceholder": "Rechercher nom, ID ou email…",
+    "previewBtn": "Prévisualiser emails",
+    "exportBtn": "Exporter la liste",
+    "headers": {
+      "client": "Client",
+      "overdue": "Retard (j)",
+      "due": "Impayé",
+      "potential": "Récup. estimée",
+      "action": "Action"
+    },
+    "email": {
+      "missing": "email manquant",
+      "completeHint": "ajoutez un email pour contacter",
+      "defaultClient": "Client",
+      "defaultGreeting": "Bonjour",
+      "subjectWithId": "Facture en retard — {{name}} ({{id}})",
+      "body": "Bonjour {{name}},\n\nNous revenons vers vous au sujet de la facture {{id}} qui présente un retard de {{overdue}} jours. Le solde restant est de {{amount}}.\n\nPouvez-vous nous indiquer l’état du paiement ou une date estimée ? Si besoin, nous pouvons proposer un plan d’échelonnement.\n\nMerci d’avance."
+    },
+    "preview": {
+      "windowTitle": "Prévisualisation d’emails",
+      "title": "Aperçu",
+      "recipients": "Destinataires (50 premiers) :",
+      "templateLabel": "Modèle de message",
+      "subjectLabel": "Objet",
+      "subject": "Rappel — {{name}}",
+      "toLine": "{{name}} <{{email}}> — {{amount}}",
+      "allowPopups": "Autorisez les pop-ups pour voir la prévisualisation."
+    },
+    "scoreLabel": "Score",
+    "probAbbr": "Prob.",
+    "remindBtn": "Relancer par email",
+    "noMatch": "Aucun résultat pour ce filtre."
+  },
+
+  "clientsList": {
+    "title": "Liste des clients",
+    "found": "Trouvés : {{count}}",
+    "searchPlaceholder": "Rechercher nom, ID ou email…",
+    "export": "Exporter",
+    "delayLabel": "Retard : {{days}} jours",
+    "potentialPrefix": "Potentiel : "
+  },
+
+  "csv": {
+    "card": {
+      "title": "Importer un CSV",
+      "supportedColsHtml": "Colonnes supportées : <code>id</code>, <code>name</code>, <code>email</code>, <code>outstanding</code>, <code>overdue</code>, <code>probability_recovery</code> (optionnel).",
+      "minimumColsHtml": "Minimum requis : <b>outstanding</b> et <b>overdue</b> (alias courants acceptés)."
+    },
+    "status": {
+      "parsing": "Analyse du CSV…",
+      "ok": "{{count}} lignes importées.",
+      "noValidRows": "Aucune ligne valide trouvée.",
+      "error": {
+        "map": "Erreur de mapping des colonnes.",
+        "parse": "Erreur de lecture du CSV."
+      }
+    },
+    "btn": {
+      "template": "Télécharger le modèle",
+      "chooseFile": "Choisir un fichier"
+    },
+    "hint": { "dropHere": "Ou déposez votre CSV ici." },
+    "filename": { "template": "modele_clients.csv" },
+    "filenames": {
+      "clients": "clients_export.csv",
+      "priorities": "priorites_clients.csv",
+      "nextActions": "actions_suivantes.csv",
+      "weeklyForecast": "prevision_hebdo.csv"
+    }
+  },
+
+  "follow": {
+    "title": "Prévision d’encaissement (Smart Follow-Up)",
+    "exportNextActions": "Exporter actions (top 50)",
+    "exportWeekly": "Exporter prévision hebdo",
+    "kpi": {
+      "next7": "Encaissement 7 j",
+      "next7.caption": "valeur attendue (EV)",
+      "next30": "Encaissement 30 j",
+      "next30.caption": "valeur attendue (EV)",
+      "horizon": "Horizon",
+      "weeks": "sem.",
+      "horizon.caption": "agrégation hebdomadaire"
+    },
+    "chart": { "barName": "Encaissement attendu" },
+    "note": "Hypothèses déterministes : la date attendue dépend de la probabilité et du retard. Mettez à jour le CSV pour recalculer."
+  }
+}

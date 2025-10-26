@@ -1,0 +1,134 @@
+{
+  "import": {
+    "title": "Importar ventas (CSV)",
+    "currency": { "eur": "EUR (€)", "usd": "USD ($)", "gbp": "GBP (£)" },
+    "loadSample": "Cargar ejemplo",
+    "downloadSample": "Descargar ejemplo",
+    "upload": { "title": "Sube tu archivo CSV", "cta": "Subir un CSV" },
+    "drop": {
+      "title": "Arrastra y suelta un CSV aquí",
+      "hint": "Truco: arrastra y suelta un CSV aquí para importarlo."
+    },
+    "altSelect": { "label": "O selecciona un archivo:" },
+    "requiredCols": { "label": "Columnas obligatorias:" }
+  },
+  "upload": {
+    "errorParse": "No se pudo leer el CSV."
+  },
+  "filters": {
+    "smooth": "Suavizado (días)",
+    "from": "Desde",
+    "to": "Hasta"
+  },
+  "kpi": {
+    "ca30": { "label": "Ingresos (30d)" },
+    "changeUp": "↗ +{{v}}%",
+    "changeDown": "↘ {{v}}%",
+    "stable": "Estable",
+    "basket": { "label": "Ticket medio", "note": "En los pedidos" },
+    "clients": { "label": "Clientes únicos", "note": "Últimos 30 días" }
+  },
+  "forecast": {
+    "sectionTitle": "Histórico y previsión (30d)",
+    "exportPdf": "Exportar PDF (1 página)",
+    "badge": { "smart": "Pronóstico inteligente" },
+    "quality": { "prefix": "Calidad:", "mape": "MAPE ≈" },
+    "growthTitle": "Crecimiento medio previsto vs últimos 14 días",
+    "uncertaintyTitle": "Incertidumbre media (±)",
+    "legend": {
+      "historical": "Histórico",
+      "ciLo": "Banda 95% (baja)",
+      "ciHi": "Banda 95% (alta)",
+      "scenarioPrudent": "Escenario prudente",
+      "scenarioOptimistic": "Escenario optimista",
+      "scenarioKeyword": "Escenario",
+      "bandKeyword": "Banda 95%"
+    },
+    "chips": {
+      "historical": "Histórico",
+      "central": "Previsión central",
+      "optimistic": "Escenario optimista",
+      "prudent": "Escenario prudente"
+    },
+    "summaryTail": "en 30 días · Incertidumbre ±{{unc}}%"
+  },
+  "chart": {
+    "forecastLabel": "Previsión (Smart)"
+  },
+  "top": {
+    "title": "Top productos (ingresos)",
+    "barName": "Ingresos"
+  },
+  "advice": {
+    "sectionTitle": "Asesor",
+    "badge": "Consejos accionables",
+    "basedOn": "Basado en tus datos recientes",
+    "toggle": {
+      "local": "Consejos locales",
+      "ai": "IA personalizada"
+    },
+    "ai": {
+      "title": "Consejos de IA personalizados",
+      "subtitle": "a partir de tus KPI y previsiones",
+      "loading": "Analizando…",
+      "regenerate": "Regenerar",
+      "hint": "Activa la IA y pulsa «Regenerar»."
+    },
+    "local": {
+      "uptrend": "Tendencia alcista: +{{change}}% en el período. Aumenta stock en best-sellers y prueba un precio algo mayor (+2–3%).",
+      "downtrend": "Tendencia bajista: {{change}}%. Lanza una promo de 7 días (10–15%) en los 2 productos principales.",
+      "stable": "Ventas estables: lanza una oferta de fidelidad (10 compras = 1 gratis) para impulsar la retención.",
+      "slowDay": "Día flojo: {{day}}. Ofrece una promo especial ese día (2×1 o SMS).",
+      "topProduct": "Producto líder: {{name}}. Destácalo en caja y en la portada.",
+      "bundle": "Bundle: {{top}} + {{other}} (-10%) para aumentar el ticket medio.",
+      "none": "No hay consejos disponibles"
+    }
+  },
+  "actions": {
+    "title": "Para hacer esta semana",
+    "subtitle": "Basado en tus datos recientes (tendencia, días flojos, top productos).",
+    "clipboardTitle": "Para hacer esta semana:",
+    "none": "Sin acciones prioritarias",
+    "preview": {
+      "title": "Previsualización de datos",
+      "footer": "Vista previa (máx. 30 filas)"
+    },
+    "ai": {
+      "summaryTitle": "Resumen ejecutivo (IA local):",
+      "kpi": {
+        "ca30": "• Ingresos 30d: {{v}} {{cur}}",
+        "basket": "• Ticket medio: {{v}} {{cur}}",
+        "clients": "• Clientes: {{v}}"
+      },
+      "topProduct": "• Producto líder: {{name}}",
+      "actions": "Acciones: impulsa best-sellers, cubre el día flojo con una oferta y prueba una promo corta (-10%)."
+    },
+    "pdf": {
+      "headerTitle": "InsightMate · OnePager",
+      "headerSubtitle": "Informe generado automáticamente — tus datos permanecen locales",
+      "kpi": {
+        "ca30": "Ingresos 30d: {{v}} {{cur}} ({{change}})",
+        "basket": "Ticket medio: {{v}} {{cur}}",
+        "unique": "Clientes únicos (30d): {{v}}"
+      },
+      "forecast": "Previsión 30d: {{sign}}{{growth}}% · Incertidumbre ±{{unc}}%",
+      "forecastNA": "Previsión 30d: n/d",
+      "footer": "© 2025 InsightMate — Demo. Tus datos permanecen locales.",
+      "errorExport": "No se pudo exportar el PDF."
+    },
+    "weekdays": {
+      "0": "dom.",
+      "1": "lun.",
+      "2": "mar.",
+      "3": "mié.",
+      "4": "jue.",
+      "5": "vie.",
+      "6": "sáb."
+    },
+    "common": {
+      "copy": "Copiar",
+      "share": "Compartir",
+      "shareAlert": "La función «Compartir» se conectará"
+    }
+  }
+}

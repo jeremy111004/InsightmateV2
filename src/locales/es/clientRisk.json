@@ -1,0 +1,139 @@
+{
+  "page": {
+    "title": "Riesgo de Clientes",
+    "tagline": "Prioridades de cobro, previsión de entradas y exportaciones listas para usar.",
+    "dataSourceLabel": "Fuente:",
+    "dataSource": {
+      "csv": "{{count}} filas CSV",
+      "demo": "Demo integrada"
+    },
+    "btn": {
+      "reset": "Reiniciar"
+    }
+  },
+  "kpi": {
+    "totalExposure": {
+      "title": "Exposición total",
+      "caption": "Suma de cuentas por cobrar"
+    },
+    "recoveryPotential": {
+      "title": "Recuperable (Esperado)",
+      "caption": "Estimación ponderada por probabilidad"
+    },
+    "riskyClients": {
+      "title": "Clientes de riesgo",
+      "caption": "Mora > 60d o probabilidad < 50%"
+    }
+  },
+  "charts": {
+    "pie": {
+      "title": "Exposición: recuperable vs restante",
+      "recoverable": "Recuperable",
+      "remainingExposure": "Exposición restante"
+    },
+    "top5": {
+      "title": "Top 5 — Importes recuperables",
+      "barName": "Recuperable estimado"
+    },
+    "history": {
+      "title": "Historial de exposición (demo)"
+    }
+  },
+  "priority": {
+    "title": "Prioridad de cobro",
+    "subtitle": "Ordenado por importe debido, probabilidad y días en mora",
+    "clientsLabel": "Clientes:",
+    "totalDueLabel": "Total debido:",
+    "potentialLabel": "Potencial recuperable:",
+    "previewBtn": "Previsualizar emails",
+    "exportBtn": "Exportar prioridades (CSV)",
+    "searchPlaceholder": "Buscar (nombre, ID, email)",
+    "headers": {
+      "client": "Cliente",
+      "overdue": "Mora (d)",
+      "due": "Debido (€)",
+      "potential": "Recuperable (€)",
+      "action": "Acción"
+    },
+    "scoreLabel": "Puntuación",
+    "probAbbr": "Prob.",
+    "remindBtn": "Recordar",
+    "noMatch": "Sin resultados.",
+    "email": {
+      "missing": "Falta el email",
+      "completeHint": "Complete los datos de contacto para cobrar",
+      "defaultClient": "Cliente",
+      "defaultGreeting": "Hola",
+      "subjectWithId": "Recordatorio de factura — {{name}} ({{id}})",
+      "body": "Hola {{name}},\n\nLe escribimos por la factura {{id}} por {{amount}}, con {{overdue}} días de retraso. ¿Podría indicarnos una fecha de pago o informarnos si existe algún problema?\n\nGracias."
+    },
+    "preview": {
+      "toLine": "{{email}} — {{name}} — {{amount}}",
+      "subject": "Recordatorio de factura — {{name}}",
+      "allowPopups": "Permita las ventanas emergentes para mostrar la vista previa.",
+      "windowTitle": "Vista previa de emails de recordatorio",
+      "title": "Vista previa de destinatarios (top 50)",
+      "recipients": "Líneas de destinatarios (email — nombre — recuperable estimado)",
+      "templateLabel": "Plantilla de email",
+      "subjectLabel": "Asunto"
+    }
+  },
+  "csv": {
+    "card": {
+      "title": "Subir un CSV (clientes en mora)",
+      "supportedColsHtml": "Columnas admitidas: <code>id</code>, <code>name</code>, <code>email</code>, <code>outstanding</code>, <code>overdue</code>, <code>probability_recovery</code>.",
+      "minimumColsHtml": "Mínimo requerido: <b>id</b>, <b>name</b>, <b>outstanding</b> (EUR). <i>probability_recovery</i> es opcional."
+    },
+    "btn": {
+      "template": "Descargar plantilla",
+      "chooseFile": "Elegir archivo"
+    },
+    "hint": {
+      "dropHere": "… o arrastre y suelte un CSV aquí"
+    },
+    "status": {
+      "parsing": "Analizando archivo…",
+      "noValidRows": "No se encontraron filas válidas.",
+      "ok": "{{count}} filas cargadas.",
+      "error": {
+        "map": "Error al mapear las columnas.",
+        "parse": "Error al leer el archivo."
+      }
+    },
+    "filename": {
+      "template": "plantilla_clientes.csv"
+    },
+    "filenames": {
+      "priorities": "prioridades_cobro.csv",
+      "nextActions": "siguientes_acciones.csv",
+      "clients": "clientes.csv",
+      "weeklyForecast": "prevision_semanal.csv"
+    }
+  },
+  "follow": {
+    "title": "Previsión de cobros (Smart Follow-Up)",
+    "exportNextActions": "Exportar acciones (top 50)",
+    "exportWeekly": "Exportar previsión semanal",
+    "kpi": {
+      "next7": "Cobros 7d",
+      "next7.caption": "esperado (EV)",
+      "next30": "Cobros 30d",
+      "next30.caption": "esperado (EV)",
+      "horizon": "Horizonte",
+      "horizon.caption": "agregación semanal",
+      "weeks": "sem."
+    },
+    "chart": {
+      "barName": "Cobro esperado"
+    },
+    "note": "Supuestos deterministas y sencillos: fecha esperada = f(probabilidad, mora). Actualice su CSV para refrescar la previsión."
+  },
+  "clientsList": {
+    "title": "Lista de clientes",
+    "found": "{{count}} encontrados",
+    "export": "Exportar (CSV)",
+    "searchPlaceholder": "Filtrar la lista…",
+    "delayLabel": "{{days}} días en mora",
+    "potentialPrefix": "Potencial: "
+  }
+}

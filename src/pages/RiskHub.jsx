@@ -22,6 +22,7 @@ import {
   Download,
 } from "lucide-react";
 import Papa from "papaparse";
+import { useTranslation } from "react-i18next";
 
 import useCashRiskEngine from "../hooks/usecashriskengine.jsx";
 
@@ -332,31 +333,34 @@ const radarSampleRows = [
 ];
 
 function ChartTooltip({ active, payload, label }) {
+  const { t } = useTranslation("risk");
   if (!active || !payload?.length) return null;
   const map = Object.fromEntries(payload.map((p) => [p.dataKey, p.value]));
   return (
     <div className="rounded-xl bg-white dark:bg-gray-900 ring-1 ring-gray-200 dark:ring-gray-800 p-3 text-sm">
       <div className="font-medium mb-1">{label}</div>
       <div>
-        p95: <span className="font-semibold">{euro(map.p95)}</span>
+        {t("tooltip.p95")}:{" "}
+        <span className="font-semibold">{euro(map.p95)}</span>
       </div>
       <div>
-        Médiane: <span className="font-semibold">{euro(map.p50)}</span>
+        {t("tooltip.median")}:{" "}
+        <span className="font-semibold">{euro(map.p50)}</span>
       </div>
       <div>
-        Monte Carlo: <span className="font-semibold">{euro(map.mc)}</span>
+        {t("tooltip.mc")}: <span className="font-semibold">{euro(map.mc)}</span>
       </div>
       <div>
-        p5: <span className="font-semibold">{euro(map.p5)}</span>
+        {t("tooltip.p5")}: <span className="font-semibold">{euro(map.p5)}</span>
       </div>
-      <div className="mt-1 text-xs text-gray-500">
-        Bandes = incertitude de cash simulée (AR(1), 3k–8k chemins)
-      </div>
+      <div className="mt-1 text-xs text-gray-500">{t("tooltip.note")}</div>
     </div>
   );
 }
 
 export default function RiskHub() {
+  const { t } = useTranslation("risk");
+
   // ---- CSV Upload state (keeps logic intact; we just feed realRows to the engine) ----
   const fileInputRef = React.useRef(null);
   const [realRows, setRealRows] = React.useState(
@@ -405,20 +409,18 @@ export default function RiskHub() {
           const rows = (res.data || [])
             .map(normalizeRow)
             .filter((r) => r.date && !Number.isNaN(new Date(r.date).getTime()));
-          if (!rows.length) throw new Error("Aucune ligne valide détectée.");
+          if (!rows.length) throw new Error(t("csv.invalidRows"));
           setRealRows(rows);
           if (typeof window !== "undefined") window.__REAL_SALES__ = rows;
           recompute();
         } catch (err) {
           console.error(err);
-          alert(
-            "CSV invalide. Vérifie l'entête et les colonnes attendues (voir notice)."
-          );
+          alert(t("csv.invalid"));
         }
       },
       error: (err) => {
         console.error(err);
-        alert("Erreur de parsing CSV.");
+        alert(t("csv.parseError"));
       },
     });
   };
@@ -525,9 +527,9 @@ export default function RiskHub() {
         className="rounded-2xl border bg-white/70 dark:bg-white/5 backdrop-blur px-4 py-3 flex flex-wrap items-center justify-between gap-3"
       >
         <div className="min-w-[240px]">
-          <div className="font-medium">Données ventes / commandes</div>
+          <div className="font-medium">{t("topbar.title")}</div>
           <div className="text-xs text-gray-500">
-            CSV attendu :{" "}
+            {t("topbar.csvExpected")}{" "}
             <span className="font-mono">
               date, order_id, sku, name, qty, unit_price, unit_cost, discount,
               shipping_fee, shipping_cost
@@ -540,7 +542,7 @@ export default function RiskHub() {
             className="px-3 py-2 rounded-xl border hover:shadow-sm active:scale-[0.99] transition flex items-center gap-2"
           >
             <Download size={16} />
-            Télécharger l’exemple
+            {t("topbar.downloadSample")}
           </button>
           <input
             ref={fileInputRef}
@@ -554,7 +556,7 @@ export default function RiskHub() {
             className="px-3 py-2 rounded-xl bg-black text-white dark:bg-white dark:text-black hover:opacity-90 active:scale-[0.99] transition flex items-center gap-2"
           >
             <UploadCloud size={16} />
-            Charger un CSV
+            {t("topbar.uploadCsv")}
           </button>
         </div>
       </motion.div>
@@ -562,15 +564,13 @@ export default function RiskHub() {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Risque</h1>
-          <p className="text-gray-500">
-            CFaR / ES, fan-chart, stress tests et concentration.
-          </p>
+          <h1 className="text-2xl font-bold">{t("header.title")}</h1>
+          <p className="text-gray-500">{t("header.subtitle")}</p>
         </div>
         <div className="flex items-center gap-3">
           {metrics.isDemo && (
             <span className="px-3 py-1 rounded-xl text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
-              Mode: Démo
+              {t("header.modeDemo")}
             </span>
           )}
           <RiskRibbon
@@ -589,41 +589,44 @@ export default function RiskHub() {
         className="grid grid-cols-2 md:grid-cols-5 gap-3"
       >
         <Stat
-          label={`Quantité de Cash à Risque${Math.round(
-            (params.alpha || 0.95) * 100
-          )} (${params.horizon}j)`}
+          label={t("kpi.cfar", {
+            alphaPct: Math.round((params.alpha || 0.95) * 100),
+            horizon: params.horizon,
+          })}
           value={euro(metrics.cfar)}
         />
-        <Stat label="Perte moyenne en cas de stress" value={euro(metrics.es)} />
+        <Stat label={t("kpi.es")} value={euro(metrics.es)} />
         <Stat
-          label="Probabilité de découvert sur la periode"
+          label={t("kpi.probOverdraft")}
           value={`${Math.round(metrics.probOverdraft * 100)}%`}
         />
         <Stat
-          label="Runway"
+          label={t("kpi.runway")}
           value={
             isFinite(metrics.runwayP5)
               ? `${Math.round(metrics.runwayP5)} j`
               : "∞"
           }
         />
-        <Stat label="Concentration Client" value={hhiLabel} />
+        <Stat label={t("kpi.hhi")} value={hhiLabel} />
       </motion.div>
 
       {/* MAIN CHART */}
       <RiskCard
-        title="Trésorerie — Fan chart"
-        subtitle={`Horizon ${params.horizon} j • α=${Math.round(
-          (params.alpha || 0.95) * 100
-        )} • Sim=${params.nSim.toLocaleString()}`}
+        title={t("chart.title")}
+        subtitle={t("chart.subtitle", {
+          horizon: params.horizon,
+          alphaPct: Math.round((params.alpha || 0.95) * 100),
+          nSim: params.nSim.toLocaleString(),
+        })}
         right={
           <div className="text-right text-sm">
             <div>
-              Cash à risque:{" "}
+              {t("chart.cfar")}{" "}
               <span className="font-semibold">{euro(metrics.cfar)}</span>
             </div>
             <div>
-              Perte moyenne en cas de Stress:{" "}
+              {t("chart.es")}{" "}
               <span className="font-semibold">{euro(metrics.es)}</span>
             </div>
           </div>
@@ -691,7 +694,7 @@ export default function RiskHub() {
 
               {/* Fan areas */}
               <Area
-                name="p95 (optimiste)"
+                name={t("legend.p95Optimistic")}
                 type="monotone"
                 dataKey="p95"
                 stroke="var(--col-p95)"
@@ -701,7 +704,7 @@ export default function RiskHub() {
                 animationDuration={900}
               />
               <Area
-                name="Médiane"
+                name={t("legend.median")}
                 type="monotone"
                 dataKey="p50"
                 stroke="var(--col-p50)"
@@ -711,7 +714,7 @@ export default function RiskHub() {
                 animationDuration={900}
               />
               <Area
-                name="p5 (prudent)"
+                name={t("legend.p5Conservative")}
                 type="monotone"
                 dataKey="p5"
                 stroke="var(--col-p5)"
@@ -723,7 +726,7 @@ export default function RiskHub() {
 
               {/* Monte Carlo central line */}
               <Line
-                name="Monte Carlo"
+                name={t("legend.mc")}
                 type="monotone"
                 dataKey="mc"
                 stroke="var(--col-mc)"
@@ -736,7 +739,7 @@ export default function RiskHub() {
 
               {/* EVASIVE LINES (spaghetti feel) */}
               <Line
-                name="MC + outer"
+                name={t("legend.mcOuterPlus")}
                 type="monotone"
                 dataKey="mcUp1"
                 stroke="var(--col-sp1)"
@@ -749,7 +752,7 @@ export default function RiskHub() {
                 animationDuration={900}
               />
               <Line
-                name="MC + inner"
+                name={t("legend.mcInnerPlus")}
                 type="monotone"
                 dataKey="mcUp2"
                 stroke="var(--col-sp2)"
@@ -762,7 +765,7 @@ export default function RiskHub() {
                 animationDuration={900}
               />
               <Line
-                name="MC - outer"
+                name={t("legend.mcOuterMinus")}
                 type="monotone"
                 dataKey="mcDn1"
                 stroke="var(--col-sp1)"
@@ -775,7 +778,7 @@ export default function RiskHub() {
                 animationDuration={900}
               />
               <Line
-                name="MC - inner"
+                name={t("legend.mcInnerMinus")}
                 type="monotone"
                 dataKey="mcDn2"
                 stroke="var(--col-sp2)"
@@ -790,7 +793,7 @@ export default function RiskHub() {
 
               {/* Pedagogic guides */}
               <Area
-                name="Stress"
+                name={t("legend.stress")}
                 type="monotone"
                 dataKey="stress"
                 stroke="#ef4444"
@@ -799,7 +802,7 @@ export default function RiskHub() {
                 isAnimationActive
               />
               <Area
-                name="Optimiste"
+                name={t("legend.optimistic")}
                 type="monotone"
                 dataKey="opti"
                 stroke="#22c55e"
@@ -817,8 +820,8 @@ export default function RiskHub() {
         {/* Left: Stress & Simulation (wide) */}
         <div className="col-span-12 lg:col-span-7">
           <RiskCard
-            title="Stress & Simulation"
-            subtitle="Ajuste et relance le calcul"
+            title={t("block.stressSim.title")}
+            subtitle={t("block.stressSim.subtitle")}
             tone="brand"
             icon={<Sparkles size={18} />}
           >
@@ -836,8 +839,8 @@ export default function RiskHub() {
         <div className="col-span-12 lg:col-span-5">
           <div className="lg:sticky lg:top-20">
             <RiskCard
-              title="Conseiller IA (Risk)"
-              subtitle="PB → Cause → Solution (+ ROI)"
+              title={t("block.advisor.title")}
+              subtitle={t("block.advisor.subtitle")}
               tone="mint"
               icon={<Lightbulb size={18} />}
             >
@@ -853,9 +856,9 @@ export default function RiskHub() {
               <div className="flex items-center gap-2">
                 <PieChart size={18} />
                 <div>
-                  <div className="font-medium">Revenue Leakage Radar</div>
+                  <div className="font-medium">{t("radar.title")}</div>
                   <div className="text-xs text-gray-500">
-                    Sous-coût • Marge cible • Sur-remises • Transport
+                    {t("radar.subtitle")}
                   </div>
                 </div>
               </div>
@@ -864,8 +867,7 @@ export default function RiskHub() {
             <div className="p-4">
               <LeakageRadarEmbed initialRows={radarSampleRows} />
               <div className="mt-3 text-[11px] text-gray-500">
-                Tip : charge l’exemple ou importe ton CSV pour visualiser
-                immédiatement les fuites (€).
+                {t("radar.tip")}
               </div>
             </div>
           </div>
@@ -874,7 +876,7 @@ export default function RiskHub() {
         {/* Bottom full-width: Concentration */}
         <div className="col-span-12">
           <RiskCard
-            title="Concentration clients"
+            title={t("clients.title")}
             subtitle={`HHI ${hhiLabel}`}
             icon={<Users size={18} />}
           >
@@ -904,9 +906,7 @@ export default function RiskHub() {
                   </li>
                 ))
               ) : (
-                <li className="text-sm text-gray-500">
-                  Pas de clients identifiés.
-                </li>
+                <li className="text-sm text-gray-500">{t("clients.none")}</li>
               )}
             </ul>
           </RiskCard>

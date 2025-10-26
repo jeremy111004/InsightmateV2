@@ -1,242 +1,204 @@
-// src/pages/ConnectorsPage.jsx
-import React, { useState, useEffect } from "react";
-import ConnectFlow from "@/components/connectors/ConnectFlow";
-import Section from "@/components/ui/Section";
-import Card from "@/components/ui/Card";
-import Button from "@/components/ui/Button";
-import AIPill from "@/components/AIPill";
-
+// src/pages/Connecteurs.jsx
+import React from "react";
+import { motion } from "framer-motion";
 import {
-  CONNECTOR_CATALOG,
-  getConnectorsState,
-  setConnectorsState,
-  getConnectorLog,
-  pushConnectorLog,
-} from "@/lib/connectorsStore";
+  Plug,
+  Clock,
+  CreditCard,
+  Store,
+  ShoppingCart,
+  Boxes,
+  FileSpreadsheet,
+  UploadCloud,
+  Banknote,
+  Wallet,
+  Building2,
+  Calculator,
+} from "lucide-react";
 
-import { PlugZap, Info } from "lucide-react";
+const CONNECTORS = [
+  {
+    key: "stripe",
+    name: "Stripe",
+    Icon: CreditCard,
+    desc: "Paiements en ligne",
+  },
+  {
+    key: "bridge",
+    name: "Bridge / Powens",
+    Icon: Banknote,
+    desc: "Banque FR (flux bancaires)",
+  },
+  { key: "shopify", name: "Shopify", Icon: Store, desc: "Boutique en ligne" },
+  {
+    key: "prestashop",
+    name: "PrestaShop",
+    Icon: ShoppingCart,
+    desc: "E-commerce",
+  },
+  {
+    key: "woocommerce",
+    name: "WooCommerce",
+    Icon: Boxes,
+    desc: "E-commerce (WordPress)",
+  },
+  {
+    key: "pennylane",
+    name: "Pennylane",
+    Icon: Building2,
+    desc: "Comptabilité",
+  },
+  { key: "sage", name: "Sage", Icon: Building2, desc: "Comptabilité" },
+  { key: "sumup", name: "SumUp", Icon: Calculator, desc: "Point de vente" },
+  {
+    key: "sheets",
+    name: "Google Sheets",
+    Icon: FileSpreadsheet,
+    desc: "Source de données",
+  },
+  { key: "csv", name: "CSV", Icon: UploadCloud, desc: "Import manuel" },
+  { key: "paypal", name: "PayPal", Icon: Wallet, desc: "Paiements" },
+];
 
-// Libellés jolis pour le journal
-const DATASETS = {
-  sales: "ventes",
-  payments: "encaissements",
-  banking: "banque",
-};
-
-// Carte d’un connecteur
-function ConnectorTile({ c, state = {}, onConnect, onDisconnect, onPreview }) {
-  const connected = state?.status === "connected";
-  const note = state?.notes || "";
-
+export default function Connecteurs() {
   return (
-    <Card className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="shrink-0">{c.icon}</span>
-          <div className="font-medium">{c.name}</div>
+    <div className="min-h-screen w-full bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900 text-slate-100">
+      {/* Bandeau "dispo bientôt" */}
+      <div className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/70 backdrop-blur">
+        <div className="mx-auto max-w-6xl px-4 py-3">
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-r from-indigo-600/20 via-fuchsia-600/20 to-cyan-600/20 px-4 py-3">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_200px_at_20%_-20%,rgba(99,102,241,0.25),transparent)]" />
+            <div className="flex items-center gap-3">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+                <Clock className="h-5 w-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold tracking-wide text-white/90">
+                  DISPO BIENTÔT
+                </span>
+                <span className="text-xs text-white/70">
+                  Les connecteurs arrivent. Préparez vos accès — tout sera
+                  plug-and-play.
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-        <span
-          className={
-            "text-xs px-2 py-0.5 rounded-full " +
-            (connected
-              ? "bg-emerald-100 text-emerald-700"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300")
-          }
+      </div>
+
+      {/* En-tête */}
+      <header className="mx-auto max-w-6xl px-4 pt-10">
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="text-3xl font-bold tracking-tight"
         >
-          {connected ? "Connecté" : "Non connecté"}
-        </span>
-      </div>
+          Connecteurs
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }}
+          className="mt-2 max-w-2xl text-sm text-slate-300"
+        >
+          Centralisez vos ventes, paiements et banques. Pour l’instant, cette
+          page est un aperçu visuel : les tuiles sont volontairement{" "}
+          <em>désactivées</em>.
+        </motion.p>
 
-      <div className="text-sm text-gray-500 dark:text-gray-400">{c.desc}</div>
-      {note && (
-        <div className="text-xs text-gray-500 dark:text-gray-400">{note}</div>
-      )}
+        <div className="mt-6 flex items-center gap-2 text-xs text-white/60">
+          <Plug className="h-4 w-4" />
+          <span>Prototype UI — non fonctionnel</span>
+        </div>
+      </header>
 
-      <div className="mt-1 flex flex-wrap gap-2">
-        <Button onClick={() => onConnect(c.id)}>
-          {connected ? "Resynchroniser" : "Connecter"}
-        </Button>
-        {(c.id === "csv" || c.id === "sheets") && (
-          <Button variant="subtle" onClick={() => onPreview(c.id)}>
-            Aperçu / Import
-          </Button>
-        )}
-        {connected && (
-          <Button variant="ghost" onClick={() => onDisconnect(c.id)}>
-            Déconnecter
-          </Button>
-        )}
-      </div>
-    </Card>
-  );
-}
+      {/* Grille de connecteurs */}
+      <main className="mx-auto max-w-6xl px-4 pb-16 pt-8">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {CONNECTORS.map(({ key, name, Icon, desc }, i) => (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.02 * i, ease: "easeOut" }}
+              className="relative"
+            >
+              {/* Carte disabled */}
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                title="Bientôt disponible"
+                className="group block w-full cursor-not-allowed overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 text-left backdrop-blur-sm transition-transform"
+              >
+                {/* Halo animé */}
+                <div className="pointer-events-none absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute inset-0 rounded-2xl blur-2xl bg-gradient-to-tr from-indigo-500/10 via-fuchsia-500/10 to-cyan-400/10" />
+                </div>
 
-export default function ConnectorsPage() {
-  const [state, setState] = useState(getConnectorsState());
-  const [log, setLog] = useState(getConnectorLog());
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/10">
+                    <Icon className="h-5 w-5 text-white/90" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="truncate text-sm font-semibold">{name}</h3>
+                      <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/70">
+                        Bientôt
+                      </span>
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-xs text-white/70">
+                      {desc}
+                    </p>
+                  </div>
+                </div>
 
-  // === Flow modal (ConnectFlow) ===
-  const [flowOpen, setFlowOpen] = useState(false);
-  const [flowConnector, setFlowConnector] = useState(null);
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-  useEffect(() => {
-    const onChange = () => {
-      setState(getConnectorsState());
-      setLog(getConnectorLog());
-    };
-    // Écoute les changements émis par setConnectorsState/pushConnectorLog
-    window.addEventListener("im:connectors", onChange);
-    return () => window.removeEventListener("im:connectors", onChange);
-  }, []);
+                <div className="mt-3 flex items-center justify-between text-xs text-white/60">
+                  <span className="inline-flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    En file d’attente
+                  </span>
+                  <span className="opacity-70">Non cliquable</span>
+                </div>
 
-  const openFlow = (id) => {
-    const c = CONNECTOR_CATALOG.find((x) => x.id === id);
-    setFlowConnector(c || null);
-    setFlowOpen(true);
-  };
-  const closeFlow = () => {
-    setFlowOpen(false);
-    setFlowConnector(null);
-  };
-
-  const onConnect = (id) => openFlow(id);
-
-  const onDisconnect = (id) => {
-    const prev = getConnectorsState();
-    const next = { ...(prev || {}) };
-    next[id] = { ...(next[id] || {}), status: "disconnected", mode: null };
-    setConnectorsState(next);
-    pushConnectorLog({ level: "warn", msg: `Connecteur ${id} déconnecté.` });
-    setState(next);
-    setLog(getConnectorLog());
-  };
-
-  const onPreview = (id) => openFlow(id);
-
-  // Callback quand le flow se termine (connexion OU import validé)
-  // { mode, rows, dataset, count } viennent de <ConnectFlow onDone={...} />
-  const onFlowDone = ({ mode, rows, dataset, count }) => {
-    const id = flowConnector?.id;
-    if (!id) return;
-
-    const prev = getConnectorsState();
-    const next = { ...(prev || {}) };
-    next[id] = {
-      ...(next[id] || {}),
-      status: "connected",
-      mode: mode || next[id]?.mode || "oauth",
-      lastSync: new Date().toISOString(),
-      notes: dataset
-        ? `Synchro ${DATASETS[dataset] || dataset}: ${count} lignes`
-        : next[id]?.notes || "",
-    };
-    setConnectorsState(next);
-
-    if (dataset) {
-      pushConnectorLog({
-        level: "info",
-        msg: `Import ${flowConnector?.name} · ${
-          DATASETS[dataset] || dataset
-        } — ${count} lignes.`,
-      });
-    } else {
-      pushConnectorLog({
-        level: "info",
-        msg: `Connecteur ${flowConnector?.name} connecté (mode ${mode}).`,
-      });
-    }
-
-    setState(next);
-    setLog(getConnectorLog());
-    closeFlow();
-  };
-
-  const groups = [
-    { title: "Banque & Paiements", ids: ["bank_fr", "stripe"] },
-    {
-      title: "Ventes / E-commerce",
-      ids: ["shopify", "prestashop", "woocommerce"],
-    },
-    { title: "Comptabilité / Facturation", ids: ["pennylane", "sage"] },
-    { title: "Imports rapides", ids: ["sheets", "csv"] },
-  ];
-
-  return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6">
-      <Section
-        title="Connecteurs"
-        icon={<PlugZap className="w-6 h-6 text-indigo-600" />}
-        actions={<AIPill label="Onboarding 30s" />}
-      >
-        <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-          Branchez vos outils en 2 clics. Lecture seule d’abord; écriture
-          activable plus tard.
+                {/* Ruban "Dispo bientôt" */}
+                <div className="pointer-events-none absolute -right-10 top-3 rotate-12">
+                  <div className="rounded bg-gradient-to-r from-fuchsia-600 to-indigo-600 px-3 py-1 text-[10px] font-semibold tracking-wider text-white shadow">
+                    DISPO BIENTÔT
+                  </div>
+                </div>
+              </button>
+            </motion.div>
+          ))}
         </div>
 
-        {groups.map((g) => (
-          <div key={g.title} className="mb-6">
-            <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
-              {g.title}
+        {/* Bloc d'info bas de page */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+          className="mt-10 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5"
+        >
+          <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+            <div>
+              <h4 className="text-sm font-semibold">Feuille de route</h4>
+              <p className="mt-1 text-xs text-white/70">
+                Priorité : <strong>Stripe</strong> +{" "}
+                <strong>Bridge/Powens</strong> →{" "}
+                <strong>Shopify/Presta/Woo</strong> →{" "}
+                <strong>Pennylane/Sage</strong>.
+              </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {g.ids.map((id) => {
-                const c = CONNECTOR_CATALOG.find((x) => x.id === id);
-                return (
-                  <ConnectorTile
-                    key={id}
-                    c={c}
-                    state={state?.[id]}
-                    onConnect={onConnect}
-                    onDisconnect={onDisconnect}
-                    onPreview={onPreview}
-                  />
-                );
-              })}
+            <div className="text-xs text-white/60">
+              Interface figée pour l’instant — activation prévue dans une
+              prochaine release.
             </div>
           </div>
-        ))}
-      </Section>
-
-      <Section
-        title="Journal de synchronisation"
-        icon={<Info className="w-5 h-5 text-indigo-600" />}
-      >
-        {log.length === 0 ? (
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Aucun événement pour le moment.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {log
-              .slice(-50)
-              .reverse()
-              .map((e, i) => (
-                <div key={i} className="text-sm">
-                  <span className="text-gray-400">
-                    {new Date(e.at || e.ts || Date.now()).toLocaleString()} —{" "}
-                  </span>
-                  <span
-                    className={
-                      e.level === "warn"
-                        ? "text-amber-700 dark:text-amber-400"
-                        : "text-gray-800 dark:text-gray-100"
-                    }
-                  >
-                    {e.msg}
-                  </span>
-                </div>
-              ))}
-          </div>
-        )}
-      </Section>
-
-      {/* === Modal de connexion / import === */}
-      <ConnectFlow
-        open={flowOpen}
-        connector={flowConnector}
-        onClose={closeFlow}
-        onDone={onFlowDone}
-      />
+        </motion.div>
+      </main>
     </div>
   );
 }

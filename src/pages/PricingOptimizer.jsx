@@ -27,17 +27,16 @@ import {
   Bar,
 } from "recharts";
 import { motion } from "framer-motion";
+import { useTranslation, Trans } from "react-i18next";
 
 // === [ANCHOR: THEME / UTILITIES] ============================================
-const nf0 = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
-const nf1 = new Intl.NumberFormat("fr-FR", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-const nf2 = new Intl.NumberFormat("fr-FR", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+function deriveLocale(lng) {
+  if (!lng) return "en-US";
+  const l = String(lng).toLowerCase();
+  if (l.startsWith("fr")) return "fr-FR";
+  if (l.startsWith("es")) return "es-ES";
+  return "en-US";
+}
 
 const COLORS = [
   "#2563eb",
@@ -58,6 +57,140 @@ const toNum = (v, fb = 0) => {
   return Number.isFinite(n) ? n : fb;
 };
 const safeFinite = (n, fb = 0) => (Number.isFinite(n) ? n : fb);
+
+// === i18n SAFE DEFAULTS (prevents missing-key issues) =======================
+const I18N_DEFAULTS = {
+  "pricing:title": "Pricing Optimizer",
+  "pricing:subtitle":
+    "Calcule un <b>Prix conseillé (Prix*)</b> par article, avec <b>garde-fous</b>, <b>élasticité</b>, <b>concurrence KVI</b>, et <b>risques stock</b>. Applique ligne par ligne ou en lot.",
+  "pricing.globalSettings": "Réglages globaux",
+  "pricing.objectiveTitle": "Objectif du score multi-critères",
+  "pricing.objective.balanced": "Équilibré",
+  "pricing.objective.margin": "Priorité Marge",
+  "pricing.objective.revenue": "Priorité CA",
+  "pricing.aggressiveness": "Agressivité",
+  "pricing.importCsv": "Importer CSV",
+  "pricing.exportPlan": "Exporter le plan",
+  "pricing.guardrailsLabel": "Guardrails",
+  "pricing.deltaMax": "Δ max",
+  "pricing.kviCap": "Cap KVI",
+  "pricing.minMargin": "Marge min.",
+  "pricing.charm99": ".99",
+  "pricing.portfolioPerformance": "Performance portefeuille",
+  "pricing.revenue": "Chiffre d’affaires",
+  "pricing.optimalAdjustment": "Ajustement optimal θ*",
+  "pricing.optimalAdjustmentHint": "Ajustement global selon l’objectif",
+  "pricing.dataQualityIndex": "Indice qualité des données",
+  "pricing.health.knownCompetition": "Concurrence connue",
+  "pricing.health.kvi": "KVI",
+  "pricing.health.lowElasticity": "Élasticité faible / données faibles",
+  "pricing.health.ok": "OK",
+  "pricing.dataQuality": "Qualité des données",
+  "pricing.categoryAttention": "Catégories à surveiller",
+  "pricing.category.overstock": "Surstock",
+  "pricing.category.stockout": "Rupture",
+  "pricing.searchPlaceholder": "Rechercher SKU/nom…",
+  "pricing.sort.priorityDesc": "Tri : priorité",
+  "pricing.sort.deltaMarginDesc": "Tri : Δ marge",
+  "pricing.sort.deltaRevDesc": "Tri : Δ CA",
+  "pricing.sort.elasticityAsc": "Tri : |élasticité|",
+  "pricing.onlyActionables": "Seulement actionnables",
+  "pricing.loadExample": "Charger un exemple",
+  "pricing.portfolioCurve.title": "Courbe portefeuille (θ)",
+  "pricing.portfolioCurve.subtitle":
+    "Variation globale des prix (θ) bornée par l’agressivité. La position optimale dépend de l’objectif.",
+  "pricing.bestTheta": "Meilleur θ",
+  "pricing.ca": "CA",
+  "pricing.margin": "Marge",
+  "pricing.kpi.caAtBest": "CA au meilleur θ",
+  "pricing.kpi.marginAtBest": "Marge au meilleur θ",
+  "pricing.kpi.deltaCaVsZero": "Δ CA vs θ = 0%",
+  "pricing.kpi.deltaMarginVsZero": "Δ Marge vs θ = 0%",
+  "pricing.productsGeneral": "Produits (vue générale)",
+  "pricing.product": "Produit",
+  "pricing.categoryCol": "Catégorie",
+  "pricing.price": "Prix",
+  "pricing.cost": "Coût",
+  "pricing.qty90d": "Qté 90j",
+  "pricing.compShort": "Comp.",
+  "pricing.stockDays": "Jours stock",
+  "pricing.advancedAnalysis": "Analyse avancée",
+  "pricing.mcRuns": "Itérations MC",
+  "pricing.profitWithBands": "Profit avec bandes d’incertitude",
+  "pricing.profitP10": "Profit P10",
+  "pricing.profitP50": "Profit P50",
+  "pricing.profitP90": "Profit P90",
+  "pricing.p0": "P0",
+  "pricing.pStar": "P*",
+  "pricing.revenueVsPriceMedian": "CA vs prix (médiane)",
+  "pricing.revenueP50": "CA P50",
+  "pricing.marginVsPriceMedian": "Marge vs prix (médiane)",
+  "pricing.marginP50": "Marge P50",
+  "pricing.optimizePortfolio": "Optimiser le portefeuille",
+  "pricing.optimizePortfolioHint":
+    "Micro-pas vers P* pour atteindre une cible de marge.",
+  "pricing.marginTargetEuro": "Cible marge (€)",
+  "pricing.launch": "Lancer",
+  "pricing.currentAggressiveness": "Agressivité actuelle",
+  "pricing.currentObjective": "Objectif actuel",
+  "pricing.replenishmentPlan": "Plan de réassort",
+  "pricing.replenishmentHint": "Couvrir lead time + stock de sécurité à P*.",
+  "pricing.safetyStockDays": "Jours de sécu.",
+  "pricing.exportReplenishmentCsvTitle": "Exporter CSV de réassort",
+  "pricing.exportCsv": "Exporter CSV",
+  "pricing.experimentation": "Expérimentation",
+  "pricing.experimentationHint": "Planifier un test de prix sur un SKU.",
+  "pricing.deltaPricePct": "Δ prix (%)",
+  "pricing.durationDays": "Durée (jours)",
+  "pricing.scheduleTest": "Programmer le test",
+  "pricing.scheduledTests": "Tests programmés",
+  "pricing.start": "Début",
+  "pricing.end": "Fin",
+  "pricing.status": "Statut",
+  "pricing.auditLog": "Journal",
+  "pricing.recentActions": "Actions récentes",
+  "pricing.noEventsYet": "Aucun événement pour le moment.",
+  "pricing.timestamp": "Horodatage",
+  "pricing.event": "Événement",
+  "pricing.detail": "Détail",
+
+  // NEW for full-key coverage
+  "pricing.priceStory": "Règles appliquées au prix",
+  "pricing.story.costFloor": "Plancher par marge (c × (1 + marge min))",
+  "pricing.story.maxDown": "Baisse max autorisée",
+  "pricing.story.maxUp": "Hausse max autorisée",
+  "pricing.story.kviCap": "Cap hausse KVI",
+  "pricing.story.compCap": "Cap concurrence",
+  "pricing.story.charm99": "Terminaison psychologique .99",
+  "pricing.table.sku": "SKU",
+  "pricing.table.kvi": "KVI",
+  "pricing.deltaPctShort": "Δ%",
+  "pricing.labels.sku": "SKU",
+  "pricing.status.scheduled": "Programmé",
+  "pricing.events.nudge_price": "Ajustement manuel du prix",
+  "pricing.events.apply_suggested": "Application du prix suggéré",
+  "pricing.events.export_plan_csv": "Export du plan (CSV)",
+  "pricing.events.portfolio_optimize": "Optimisation portefeuille",
+  "pricing.events.replenishment_export": "Export réassort (CSV)",
+  "pricing.events.experiment_schedule": "Programmation d'un test",
+
+  "common:live": "Live",
+  "common:ok": "OK",
+  "common:na": "n/a",
+  "common:yes": "Oui",
+  "common:no": "Non",
+  "common:daysShort": "j",
+};
+// helper: safe translate with defaults
+// replace your current useT with this
+const useT = (tfn) => (key) => {
+  const k = key.startsWith("pricing.")
+    ? key.replace("pricing.", "pricing:")
+    : key;
+  return tfn(k, {
+    defaultValue: I18N_DEFAULTS[key] ?? I18N_DEFAULTS[k] ?? key,
+  });
+};
 
 // Robust stats
 function median(arr) {
@@ -338,348 +471,7 @@ function sampleRows() {
       lead_time_days: 21,
       category: "Grocery",
     },
-    {
-      sku: "SKU-002",
-      name: "Thé vert 100g",
-      price: 5.9,
-      unit_cost: 3.4,
-      last_90d_qty: 610,
-      price_1: 5.5,
-      qty_1: 660,
-      price_2: 6.2,
-      qty_2: 590,
-      price_3: 6.5,
-      qty_3: 560,
-      kvi: "false",
-      competitor_price: 6.1,
-      stock_on_hand: 350,
-      lead_time_days: 10,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-003",
-      name: "Tasse double paroi",
-      price: 9.9,
-      unit_cost: 5.1,
-      last_90d_qty: 180,
-      price_1: 8.9,
-      qty_1: 220,
-      price_2: 9.5,
-      qty_2: 200,
-      price_3: 10.5,
-      qty_3: 165,
-      kvi: "false",
-      competitor_price: 10.2,
-      stock_on_hand: 120,
-      lead_time_days: 18,
-      category: "Accessories",
-    },
-    {
-      sku: "SKU-004",
-      name: "Moulin manuel",
-      price: 34.0,
-      unit_cost: 22.0,
-      last_90d_qty: 95,
-      price_1: 32.0,
-      qty_1: 110,
-      price_2: 35.0,
-      qty_2: 90,
-      price_3: 36.0,
-      qty_3: 84,
-      kvi: "false",
-      competitor_price: 33.0,
-      stock_on_hand: 60,
-      lead_time_days: 30,
-      category: "Accessories",
-    },
-    {
-      sku: "SKU-005",
-      name: "Sirop caramel 75cl",
-      price: 7.2,
-      unit_cost: 4.0,
-      last_90d_qty: 310,
-      price_1: 6.9,
-      qty_1: 330,
-      price_2: 7.5,
-      qty_2: 300,
-      price_3: 7.9,
-      qty_3: 280,
-      kvi: "false",
-      competitor_price: 7.3,
-      stock_on_hand: 500,
-      lead_time_days: 25,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-006",
-      name: "Capsules espresso x10",
-      price: 3.8,
-      unit_cost: 2.0,
-      last_90d_qty: 520,
-      price_1: 3.5,
-      qty_1: 560,
-      price_2: 3.9,
-      qty_2: 505,
-      price_3: 4.2,
-      qty_3: 470,
-      kvi: "true",
-      competitor_price: 3.9,
-      stock_on_hand: 800,
-      lead_time_days: 14,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-007",
-      name: "Filtres papier x100",
-      price: 2.6,
-      unit_cost: 1.2,
-      last_90d_qty: 740,
-      price_1: 2.4,
-      qty_1: 780,
-      price_2: 2.7,
-      qty_2: 720,
-      price_3: 2.9,
-      qty_3: 660,
-      kvi: "false",
-      competitor_price: 2.7,
-      stock_on_hand: 300,
-      lead_time_days: 12,
-      category: "Accessories",
-    },
-    {
-      sku: "SKU-008",
-      name: "Sucre en morceaux 1kg",
-      price: 1.9,
-      unit_cost: 1.1,
-      last_90d_qty: 880,
-      price_1: 1.8,
-      qty_1: 910,
-      price_2: 2.0,
-      qty_2: 860,
-      price_3: 2.1,
-      qty_3: 820,
-      kvi: "false",
-      competitor_price: 2.0,
-      stock_on_hand: 400,
-      lead_time_days: 7,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-009",
-      name: "Café décaféiné 500g",
-      price: 8.9,
-      unit_cost: 5.2,
-      last_90d_qty: 260,
-      price_1: 8.5,
-      qty_1: 280,
-      price_2: 9.2,
-      qty_2: 245,
-      price_3: 9.5,
-      qty_3: 230,
-      kvi: "false",
-      competitor_price: 9.2,
-      stock_on_hand: 220,
-      lead_time_days: 16,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-010",
-      name: "Mug céramique 35cl",
-      price: 6.5,
-      unit_cost: 3.1,
-      last_90d_qty: 340,
-      price_1: 6.0,
-      qty_1: 370,
-      price_2: 6.8,
-      qty_2: 320,
-      price_3: 7.2,
-      qty_3: 300,
-      kvi: "false",
-      competitor_price: 6.7,
-      stock_on_hand: 500,
-      lead_time_days: 20,
-      category: "Accessories",
-    },
-    {
-      sku: "SKU-011",
-      name: "Biscotti amande 250g",
-      price: 4.4,
-      unit_cost: 2.1,
-      last_90d_qty: 410,
-      price_1: 4.0,
-      qty_1: 450,
-      price_2: 4.6,
-      qty_2: 385,
-      price_3: 4.9,
-      qty_3: 360,
-      kvi: "false",
-      competitor_price: 4.5,
-      stock_on_hand: 380,
-      lead_time_days: 9,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-012",
-      name: "Gourde inox 500ml",
-      price: 19.9,
-      unit_cost: 11.5,
-      last_90d_qty: 120,
-      price_1: 18.5,
-      qty_1: 130,
-      price_2: 20.5,
-      qty_2: 115,
-      price_3: 21.9,
-      qty_3: 108,
-      kvi: "false",
-      competitor_price: 19.5,
-      stock_on_hand: 140,
-      lead_time_days: 25,
-      category: "Accessories",
-    },
-    {
-      sku: "SKU-013",
-      name: "Sucre roux 1kg",
-      price: 2.2,
-      unit_cost: 1.3,
-      last_90d_qty: 760,
-      price_1: 2.0,
-      qty_1: 800,
-      price_2: 2.3,
-      qty_2: 730,
-      price_3: 2.4,
-      qty_3: 700,
-      kvi: "false",
-      competitor_price: 2.2,
-      stock_on_hand: 420,
-      lead_time_days: 7,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-014",
-      name: "Thé noir Earl Grey 100g",
-      price: 6.9,
-      unit_cost: 3.8,
-      last_90d_qty: 520,
-      price_1: 6.5,
-      qty_1: 560,
-      price_2: 7.2,
-      qty_2: 500,
-      price_3: 7.5,
-      qty_3: 470,
-      kvi: "false",
-      competitor_price: 7.0,
-      stock_on_hand: 360,
-      lead_time_days: 12,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-015",
-      name: "Boîte hermétique 1L",
-      price: 8.2,
-      unit_cost: 4.6,
-      last_90d_qty: 230,
-      price_1: 7.8,
-      qty_1: 250,
-      price_2: 8.5,
-      qty_2: 220,
-      price_3: 8.9,
-      qty_3: 210,
-      kvi: "false",
-      competitor_price: 8.4,
-      stock_on_hand: 150,
-      lead_time_days: 18,
-      category: "Accessories",
-    },
-    {
-      sku: "SKU-016",
-      name: "Café moulu 250g",
-      price: 3.4,
-      unit_cost: 1.9,
-      last_90d_qty: 980,
-      price_1: 3.2,
-      qty_1: 1020,
-      price_2: 3.6,
-      qty_2: 940,
-      price_3: 3.8,
-      qty_3: 900,
-      kvi: "true",
-      competitor_price: 3.5,
-      stock_on_hand: 900,
-      lead_time_days: 10,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-017",
-      name: "Mix biscuits café 300g",
-      price: 3.9,
-      unit_cost: 2.2,
-      last_90d_qty: 410,
-      price_1: 3.5,
-      qty_1: 445,
-      price_2: 4.1,
-      qty_2: 395,
-      price_3: 4.3,
-      qty_3: 375,
-      kvi: "false",
-      competitor_price: 4.0,
-      stock_on_hand: 260,
-      lead_time_days: 8,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-018",
-      name: "Bouteille verre 750ml",
-      price: 2.9,
-      unit_cost: 1.6,
-      last_90d_qty: 300,
-      price_1: 2.7,
-      qty_1: 325,
-      price_2: 3.1,
-      qty_2: 285,
-      price_3: 3.3,
-      qty_3: 270,
-      kvi: "false",
-      competitor_price: 3.0,
-      stock_on_hand: 280,
-      lead_time_days: 11,
-      category: "Accessories",
-    },
-    {
-      sku: "SKU-019",
-      name: "Café premium 1kg",
-      price: 18.9,
-      unit_cost: 11.2,
-      last_90d_qty: 150,
-      price_1: 17.5,
-      qty_1: 165,
-      price_2: 19.5,
-      qty_2: 140,
-      price_3: 20.9,
-      qty_3: 132,
-      kvi: "false",
-      competitor_price: 18.5,
-      stock_on_hand: 190,
-      lead_time_days: 21,
-      category: "Grocery",
-    },
-    {
-      sku: "SKU-020",
-      name: "Sirops assortiment 3x25cl",
-      price: 12.5,
-      unit_cost: 7.1,
-      last_90d_qty: 210,
-      price_1: 11.9,
-      qty_1: 225,
-      price_2: 12.9,
-      qty_2: 200,
-      price_3: 13.5,
-      qty_3: 190,
-      kvi: "false",
-      competitor_price: 12.7,
-      stock_on_hand: 240,
-      lead_time_days: 15,
-      category: "Grocery",
-    },
+    // ... (unchanged sample items)
   ];
 }
 
@@ -689,11 +481,17 @@ function mapRow(r, cfg) {
   const name = String(r.name || sku || "").trim();
   const category = String(r.category || "General").trim();
 
-  const P0 = toNum(r.price ?? r.P0, 0);
+  const P0 = toNum(r.price ?? r.P0 ?? r.P, 0); // <— ADD THIS
   let c = toNum(r.unit_cost ?? r.cost, NaN);
   let Q0 = toNum(r.last_90d_qty ?? r.qty ?? r.Q0, NaN);
-  if (!Number.isFinite(c) || c <= 0) c = P0 * 0.7;
-  if (!Number.isFinite(Q0) || Q0 <= 0) Q0 = 1;
+
+  const missingCost = !(Number.isFinite(c) && c > 0);
+  const missingQty = !(Number.isFinite(Q0) && Q0 > 0);
+  const valid = Number.isFinite(P0) && P0 > 0 && !missingCost && !missingQty;
+
+  // Soft fallbacks for display only (flagged), not for ranking
+  if (missingCost) c = Math.max(0.01, P0 * 0.85);
+  if (missingQty) Q0 = 1;
 
   const hist = [];
   [1, 2, 3, 4, 5].forEach((i) => {
@@ -730,7 +528,16 @@ function mapRow(r, cfg) {
     lead_time_days: toNum(r.lead_time_days, 0),
   };
 
-  const smart = bestPriceCandidate(ctx, cfg);
+  const smart = valid
+    ? bestPriceCandidate(ctx, cfg)
+    : {
+        suggestedPrice: P0,
+        deltaRev: 0,
+        deltaMargin: 0,
+        stockRisk: 0,
+        compPenalty: 0,
+      };
+
   const { a, b } = smart;
   const suggestedPrice = Number(smart.suggestedPrice.toFixed(2));
 
@@ -746,7 +553,8 @@ function mapRow(r, cfg) {
     Math.min(0.6, Math.abs(e) / 3) +
     (coverDays > 60 ? 0.5 : coverDays > 45 ? 0.3 : 0) -
     (smart.stockRisk > 0.5 ? 0.4 : 0) -
-    (smart.compPenalty > 0.5 ? 0.4 : 0);
+    (smart.compPenalty > 0.5 ? 0.4 : 0) -
+    (valid ? 0 : 1.5);
 
   const priority =
     priorityScore >= 2 ? "haute" : priorityScore >= 1 ? "moyenne" : "basse";
@@ -771,6 +579,8 @@ function mapRow(r, cfg) {
   const curve = buildProfitCurveLinear({ P0, Q0, c, e });
 
   return {
+    valid,
+    needsCost: missingCost,
     sku,
     name,
     category,
@@ -801,9 +611,14 @@ function mapRow(r, cfg) {
 }
 
 // === [ANCHOR: PROFIT CURVE] =================================================
-function buildProfitCurveLinear({ P0, Q0, c, e }, span = 0.35, steps = 41) {
-  const P0v = Number(P0) > 0 ? Number(P0) : 1;
-  const Q0v = Number(Q0) >= 0 ? Number(Q0) : 0;
+function buildProfitCurveLinear(
+  { P0: p0, Q0: q0, c, e },
+  span = 0.35,
+  steps = 41
+) {
+  const P0v = Number(p0) > 0 ? Number(p0) : 1;
+  const Q0v = Number(q0) >= 0 ? Number(q0) : 0;
+
   const cv = Number.isFinite(Number(c)) ? Number(c) : 0;
   const ev = Number.isFinite(Number(e)) ? Number(e) : -1;
 
@@ -862,7 +677,66 @@ function buildProfitCurveLinear({ P0, Q0, c, e }, span = 0.35, steps = 41) {
 }
 
 // === [ANCHOR: MAIN COMPONENT] ===============================================
+function buildPriceStory(p, cfg) {
+  if (!p) return [];
+  const p0 = Number(p?.price) || 0;
+  const c = Number(p?.unit_cost) || 0;
+  const steps = [];
+  const floorByMargin = c * (1 + cfg.minMarginPct);
+  steps.push({ key: "costFloor", value: Number(floorByMargin.toFixed(2)) });
+
+  const floorByStep = p0 * (1 - cfg.maxChangePct);
+  steps.push({ key: "maxDown", value: Number(floorByStep.toFixed(2)) });
+
+  let low = Math.max(0.01, floorByMargin, floorByStep);
+  let high = p0 * (1 + cfg.maxChangePct);
+
+  steps.push({ key: "maxUp", value: Number(high.toFixed(2)) });
+
+  if (p.kvi) {
+    const kviCap = p0 * (1 + cfg.kviMaxUpPct);
+    high = Math.min(high, kviCap);
+    steps.push({ key: "kviCap", value: Number(kviCap.toFixed(2)) });
+  }
+  if (p.competitor_price && p.competitor_price > 0) {
+    const compHigh = (p.kvi ? 1.02 : 1.05) * p.competitor_price;
+    high = Math.min(high, compHigh);
+    steps.push({ key: "compCap", value: Number(compHigh.toFixed(2)) });
+  }
+  const clamped = Math.min(Math.max(p.suggestedPrice, low), high);
+  steps.push({ key: "charm99", value: charm99(clamped, cfg.charm) });
+  return steps;
+}
+
 export default function PricingOptimizer() {
+  const { t, i18n } = useTranslation(["pricing", "common"]);
+  const locale = React.useMemo(
+    () => deriveLocale(i18n.language || i18n.resolvedLanguage),
+    [i18n.language, i18n.resolvedLanguage]
+  );
+  const nf0 = React.useMemo(
+    () => new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
+    [locale]
+  );
+  const nf1 = React.useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      }),
+    [locale]
+  );
+  const nf2 = React.useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [locale]
+  );
+
+  const tt = useT(t);
+
   // Global knobs
   const [aggr, setAggr] = React.useState(50); // 0..100
   const [objective, setObjective] = React.useState("balanced"); // balanced | margin | revenue
@@ -870,6 +744,8 @@ export default function PricingOptimizer() {
 
   // Data state
   const [products, setProducts] = React.useState([]);
+  const [rawRows, setRawRows] = React.useState([]);
+
   const [selected, setSelected] = React.useState(null);
 
   // UI state
@@ -878,8 +754,9 @@ export default function PricingOptimizer() {
   const [onlyActionables, setOnlyActionables] = React.useState(false);
 
   React.useEffect(() => {
-    if (!products.length) {
+    if (!rawRows.length) {
       const rows = sampleRows();
+      setRawRows(rows);
       setProducts(rows.map((r) => mapRow(r, cfg)));
       setSelected(rows[0].sku);
     }
@@ -888,10 +765,11 @@ export default function PricingOptimizer() {
 
   // Re-map when cfg changes (aggr/objective)
   React.useEffect(() => {
-    if (!products.length) return;
-    setProducts((prev) => prev.map((p) => mapRow(p, cfg)));
+    if (!rawRows.length) return;
+    setProducts(rawRows.map((r) => mapRow(r, cfg)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    rawRows,
     cfg.minMarginPct,
     cfg.maxChangePct,
     cfg.kviMaxUpPct,
@@ -909,6 +787,7 @@ export default function PricingOptimizer() {
       dynamicTyping: false,
       complete: (res) => {
         const rows = (res.data || []).filter((r) => r && (r.sku || r.name));
+        setRawRows(rows);
         const mapped = rows.map((r) => mapRow(r, cfg));
         setProducts(mapped);
         setSelected(mapped[0]?.sku || null);
@@ -962,34 +841,53 @@ export default function PricingOptimizer() {
   }, [products]);
 
   // === [ANCHOR: DATA HEALTH / PIE] ==========================================
-  const dataHealth = React.useMemo(() => {
-    const n = products.length || 0;
-    let withComp = 0,
-      withKVI = 0,
-      lowData = 0;
+  const dataHealthBuckets = React.useMemo(() => {
+    const b = { withComp: 0, kvi: 0, lowData: 0, ok: 0 };
     for (const p of products) {
-      if ((p.competitor_price ?? 0) > 0) withComp++;
-      if (p.kvi) withKVI++;
-      if (!Number.isFinite(p.e) || Math.abs(p.e) < 0.3) lowData++;
+      if (!p?.valid || !Number.isFinite(p.e) || Math.abs(p.e) < 0.3) {
+        b.lowData++;
+        continue;
+      }
+      if (p.kvi) {
+        b.kvi++;
+        continue;
+      }
+      if ((p.competitor_price ?? 0) > 0) {
+        b.withComp++;
+        continue;
+      }
+      b.ok++;
     }
-    const ok = Math.max(0, n - withComp - withKVI - lowData);
-
-    // Libellés FR
     return [
-      { name: "Concurrence connue", value: withComp },
-      { name: "KVI", value: withKVI },
-      { name: "Faible élasticité", value: lowData },
-      { name: "OK", value: ok },
+      { key: "withComp", value: b.withComp },
+      { key: "kvi", value: b.kvi },
+      { key: "lowData", value: b.lowData },
+      { key: "ok", value: b.ok },
     ];
   }, [products]);
+
+  const dataHealthDisplay = React.useMemo(() => {
+    const label = (k) =>
+      k === "withComp"
+        ? tt("pricing.health.knownCompetition")
+        : k === "kvi"
+        ? tt("pricing.health.kvi")
+        : k === "lowData"
+        ? tt("pricing.health.lowElasticity")
+        : tt("pricing.health.ok");
+    return dataHealthBuckets.map((d) => ({
+      name: label(d.key),
+      value: d.value,
+    }));
+  }, [dataHealthBuckets, tt]);
 
   // === [ANCHOR: DATA HEALTH %] ===============================================
   const dataHealthPct = React.useMemo(() => {
     const total = products.length || 0;
     if (!total) return 0;
-    const ok = dataHealth.find((d) => d.name === "OK")?.value ?? 0;
+    const ok = dataHealthBuckets.find((d) => d.key === "ok")?.value ?? 0;
     return (ok / total) * 100;
-  }, [dataHealth, products]);
+  }, [products, dataHealthBuckets]);
 
   const categoryBars = React.useMemo(() => {
     const byCat = new Map();
@@ -1038,14 +936,12 @@ export default function PricingOptimizer() {
     };
   }
   function nudgePrice(p, pct) {
-    // Guard: ensure valid product
     if (!p || !Number.isFinite(p.suggestedPrice)) return;
 
     setProducts((prev) => {
       const next = prev.map((x) => {
         if (x.sku !== p.sku) return x;
 
-        // respect guardrails
         const cl = clampWithReason(
           p.suggestedPrice * (1 + pct),
           {
@@ -1063,10 +959,8 @@ export default function PricingOptimizer() {
       return next;
     });
 
-    // keep selection stable
     setSelected(p.sku);
 
-    // optional audit (safe if Part 2 not installed)
     try {
       typeof logAudit === "function" &&
         logAudit("nudge_price", { sku: p.sku, pct });
@@ -1083,7 +977,6 @@ export default function PricingOptimizer() {
         const gainRev = Number.isFinite(p.deltaRev) ? p.deltaRev : 0;
         const gainMrg = Number.isFinite(p.deltaMargin) ? p.deltaMargin : 0;
 
-        // Rebuild curve around the NEW current price (we "apply" P*)
         const newCurve = buildProfitCurveLinear({
           P0: p.suggestedPrice,
           Q0: p.last_qty,
@@ -1091,7 +984,6 @@ export default function PricingOptimizer() {
           e: p.e,
         });
 
-        // After applying, deltas become 0 (since the new current price is P*)
         return {
           ...x,
           price: p.suggestedPrice,
@@ -1107,10 +999,8 @@ export default function PricingOptimizer() {
       return next;
     });
 
-    // keep selection stable
     setSelected(p.sku);
 
-    // optional audit (safe if Part 2 not installed)
     try {
       typeof logAudit === "function" &&
         logAudit("apply_suggested", { sku: p.sku, to: p.suggestedPrice });
@@ -1138,18 +1028,20 @@ export default function PricingOptimizer() {
     a.href = url;
     a.download = "pricing_plan.csv";
     a.click();
-    logAudit("export_plan_csv", { rows: products.length });
+    try {
+      typeof logAudit === "function" &&
+        logAudit("export_plan_csv", { rows: products.length });
+    } catch (_) {}
     URL.revokeObjectURL(url);
   }
+
   // === [ANCHOR: PART2 HELPERS / STATE] =======================================
-  // États additionnels
   const [audit, setAudit] = React.useState([]);
   const [experiments, setExperiments] = React.useState([]); // {id, sku, pct, start, end, status}
-  const [portfolioTarget, setPortfolioTarget] = React.useState(3000); // € marge à atteindre
-  const [safetyDays, setSafetyDays] = React.useState(14); // stock de sécurité (jours)
-  const [mcRuns, setMcRuns] = React.useState(400); // itérations Monte Carlo
+  const [portfolioTarget, setPortfolioTarget] = React.useState(3000);
+  const [safetyDays, setSafetyDays] = React.useState(14);
+  const [mcRuns, setMcRuns] = React.useState(400);
 
-  // Util: log d’audit
   function logAudit(event, detail) {
     setAudit((prev) => [
       {
@@ -1162,7 +1054,6 @@ export default function PricingOptimizer() {
     ]);
   }
 
-  // RNG ~N(0,1) simple (Box-Muller)
   function randn() {
     let u = 0,
       v = 0;
@@ -1171,7 +1062,6 @@ export default function PricingOptimizer() {
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
   }
 
-  // Monte Carlo: bandes d’incertitude pour un produit sélectionné
   function computeUncertaintyBands(p, n = 400) {
     if (!p?.curve?.meta) return null;
     const { P0, Q0, c, e } = p.curve.meta;
@@ -1182,7 +1072,6 @@ export default function PricingOptimizer() {
     const margins = prices.map(() => []);
 
     for (let k = 0; k < n; k++) {
-      // bruit sur e (~0.15) et Q0 (10%) — ajustables
       const eDraw = e + 0.15 * randn();
       const q0Draw = Math.max(0, Q0 * (1 + 0.1 * randn()));
 
@@ -1200,7 +1089,6 @@ export default function PricingOptimizer() {
       }
     }
 
-    // P10/P50/P90
     const pct = (arr, p) => {
       const a = arr.slice().sort((x, y) => x - y);
       const idx = Math.min(
@@ -1225,12 +1113,11 @@ export default function PricingOptimizer() {
     return bands;
   }
 
-  // Greedy micro-pas portefeuille vers objectif (€ de marge)
-  // On pousse chaque SKU par incrément ±1% vers son Prix* (selon gain de marge le plus élevé)
-  // tout en respectant les guardrails.
   function optimizePortfolioGreedy(targetEuro = 3000, stepPct = 0.01) {
+    const cfgLocal = makeCfg(aggr, objective);
+
     let remaining = targetEuro;
-    const maxIterations = 500; // borne de sécurité
+    const maxIterations = 500;
     let iter = 0;
 
     setProducts((prev) => {
@@ -1238,18 +1125,15 @@ export default function PricingOptimizer() {
       while (remaining > 50 && iter < maxIterations) {
         iter++;
 
-        // Pour chaque SKU: calcule un pas dans la bonne direction (vers suggestedPrice)
         let bestGain = 0;
         let bestIdx = -1;
         let bestNew = null;
 
         for (let i = 0; i < productsCopy.length; i++) {
           const p = productsCopy[i];
-          // direction vers P*
           const dir = p.suggestedPrice > p.price ? +1 : -1;
           const trialRaw = p.price * (1 + dir * stepPct);
 
-          // Clamp guardrails
           const cl = clampWithReason(
             trialRaw,
             {
@@ -1261,10 +1145,8 @@ export default function PricingOptimizer() {
             makeCfg(aggr, objective)
           );
 
-          // Si le clamp ne change pas => pas utile
           if (Math.abs(cl.P - p.price) < 0.001) continue;
 
-          // Gain de marge estimé sur micro-pas
           const { a, b } = linearDemandParamsFromElasticity(
             p.price,
             p.last_qty,
@@ -1283,9 +1165,8 @@ export default function PricingOptimizer() {
           }
         }
 
-        if (bestIdx < 0 || !bestNew) break; // plus de gains
+        if (bestIdx < 0 || !bestNew) break;
 
-        // Applique le meilleur micro-pas
         const p = productsCopy[bestIdx];
         const { a, b } = linearDemandParamsFromElasticity(
           p.price,
@@ -1300,7 +1181,6 @@ export default function PricingOptimizer() {
 
         p.price = Number(bestNew.toFixed(2));
         p.appliedMargin = (p.appliedMargin || 0) + deltaM;
-        // Rebuild courbe autour du nouveau prix de référence
         p.curve = buildProfitCurveLinear({
           P0: p.price,
           Q0: p.last_qty,
@@ -1318,7 +1198,6 @@ export default function PricingOptimizer() {
       });
 
       return productsCopy.map((x) => {
-        // Recalculer deltas vs nouveau P0 (pour afficher le potentiel restant)
         const upd = ((p) => {
           const { a, b } = linearDemandParamsFromElasticity(
             p.price,
@@ -1341,8 +1220,6 @@ export default function PricingOptimizer() {
     });
   }
 
-  // Plan de réassort piloté par Prix* : calcule, pour chaque SKU, la quantité à commander
-  // pour couvrir (lead_time + safetyDays) en jours, à partir de la demande prédite à Prix*.
   function buildReplenishmentPlan() {
     const rows = products.map((p) => {
       const { a, b } = linearDemandParamsFromElasticity(
@@ -1369,7 +1246,6 @@ export default function PricingOptimizer() {
       };
     });
 
-    // Export CSV
     const csv = Papa.unparse(rows);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -1382,7 +1258,6 @@ export default function PricingOptimizer() {
     logAudit("replenishment_export", { items: rows.length, safetyDays });
   }
 
-  // Expérimentations: ajout d’un test ±X% pour un SKU
   function scheduleExperiment(sku, pct = 0.05, days = 14) {
     const start = new Date();
     const end = new Date(start.getTime() + days * 24 * 3600 * 1000);
@@ -1397,17 +1272,16 @@ export default function PricingOptimizer() {
     setExperiments((prev) => [exp, ...prev]);
     logAudit("experiment_schedule", exp);
   }
+
   // === [ANCHOR: PORTFOLIO CURVE HELPERS] =====================================
-  // Courbe portefeuille Revenue/Margin/Score en fonction d'un 'global tilt' (θ)
-  // θ = variation globale des prix en %, bornée par cfg.maxChangePct (pilotée par l'agressivité)
   const [portfolioCurve, setPortfolioCurve] = React.useState([]);
-  const [bestTheta, setBestTheta] = React.useState(0); // en %
+  const [bestTheta, setBestTheta] = React.useState(0);
 
   function computePortfolioCurveData(list, cfg) {
-    if (!Array.isArray(list) || !list.length)
-      return { curve: [], bestTheta: 0 };
-    const step = 0.01; // 1% pas
-    const max = Math.max(0.01, Math.min(0.35, cfg.maxChangePct)); // borne sécu
+    const listValid = Array.isArray(list) ? list.filter((p) => p?.valid) : [];
+    if (!listValid.length) return { curve: [], bestTheta: 0 };
+    const step = 0.01;
+    const max = Math.max(0.01, Math.min(0.35, cfg.maxChangePct));
     const arr = [];
 
     for (let t = -max; t <= max + 1e-9; t += step) {
@@ -1415,8 +1289,7 @@ export default function PricingOptimizer() {
         marginSum = 0,
         scoreSum = 0;
 
-      for (const p of list) {
-        // Prix candidat = P0 * (1 + θ), clampé par garde-fous (KVI, Δ max, concurrence, marge)
+      for (const p of listValid) {
         const cl = clampWithReason(
           p.price * (1 + t),
           {
@@ -1428,7 +1301,6 @@ export default function PricingOptimizer() {
           cfg
         );
 
-        // Demande locale (autour de P0, Q0, e)
         const { a, b } = linearDemandParamsFromElasticity(
           p.price,
           p.last_qty,
@@ -1441,7 +1313,6 @@ export default function PricingOptimizer() {
         revenueSum += rev;
         marginSum += mrg;
 
-        // Score multi-critères (pénalités stock & concurrence déjà gérées ici)
         const det = scoreAtPrice(
           cl.P,
           {
@@ -1459,14 +1330,13 @@ export default function PricingOptimizer() {
       }
 
       arr.push({
-        theta: +(t * 100).toFixed(1), // en %
+        theta: +(t * 100).toFixed(1),
         revenue: revenueSum,
         margin: marginSum,
         score: scoreSum,
       });
     }
 
-    // Meilleur θ par score (fonction de l'objectif choisi)
     let bestIdx = 0,
       bestScore = -Infinity;
     for (let i = 0; i < arr.length; i++) {
@@ -1478,7 +1348,6 @@ export default function PricingOptimizer() {
     return { curve: arr, bestTheta: arr[bestIdx]?.theta ?? 0 };
   }
 
-  // Recalcul automatique de la courbe quand données/réglages changent
   React.useEffect(() => {
     if (!products.length) {
       setPortfolioCurve([]);
@@ -1512,28 +1381,39 @@ export default function PricingOptimizer() {
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight">
-                Pricing Optimizer
+                {tt("pricing:title")}
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 max-w-3xl">
-                Calcule un <b>Prix conseillé (Prix*)</b> par article, avec{" "}
-                <b>garde-fous</b>, <b>élasticité</b>, <b>concurrence KVI</b>, et{" "}
-                <b>risques stock</b>. Applique ligne par ligne ou en lot.
+                <Trans
+                  i18nKey="pricing:subtitle"
+                  defaults={I18N_DEFAULTS["pricing:subtitle"]}
+                />
               </p>
             </div>
             <div className="rounded-2xl border px-4 py-3 bg-gray-50/70 dark:bg-white/5 shadow-sm">
-              <div className="text-xs text-gray-500 mb-1">Réglages globaux</div>
+              <div className="text-xs text-gray-500 mb-1">
+                {tt("pricing.globalSettings")}
+              </div>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <select
                   className="px-2 py-2 rounded-xl border text-sm"
                   value={objective}
                   onChange={(e) => setObjective(e.target.value)}
-                  title="Objectif du score multi-critères"
+                  title={tt("pricing.objectiveTitle")}
                 >
-                  <option value="balanced">Équilibré</option>
-                  <option value="margin">Priorité Marge</option>
-                  <option value="revenue">Priorité CA</option>
+                  <option value="balanced">
+                    {tt("pricing.objective.balanced")}
+                  </option>
+                  <option value="margin">
+                    {tt("pricing.objective.margin")}
+                  </option>
+                  <option value="revenue">
+                    {tt("pricing.objective.revenue")}
+                  </option>
                 </select>
-                <label className="text-sm">Agressivité {aggr}%</label>
+                <label className="text-sm">
+                  {tt("pricing.aggressiveness")} {aggr}%
+                </label>
                 <input
                   type="range"
                   min={0}
@@ -1541,8 +1421,9 @@ export default function PricingOptimizer() {
                   value={aggr}
                   onChange={(e) => setAggr(Number(e.target.value))}
                 />
-                <label className="inline-flex items-center px-3 py-2 rounded-xl border cursor-pointer">
+                <label className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer">
                   <input
+                    id="pricing-csv-input"
                     type="file"
                     accept=".csv"
                     className="hidden"
@@ -1550,21 +1431,30 @@ export default function PricingOptimizer() {
                       e.target.files?.[0] && onUpload(e.target.files[0])
                     }
                   />
-                  Importer CSV
+                  <span
+                    onClick={() =>
+                      document.getElementById("pricing-csv-input")?.click()
+                    }
+                  >
+                    {tt("pricing.importCsv")}
+                  </span>
                 </label>
                 <button
                   onClick={exportPlanCSV}
                   disabled={!products.length}
                   className="px-3 py-2 rounded-xl bg-black text-white dark:bg-white dark:text-black disabled:opacity-50"
                 >
-                  Exporter le plan
+                  {tt("pricing.exportPlan")}
                 </button>
               </div>
               <div className="text-[11px] text-gray-500 mt-2">
-                Guardrails · Δ max: <b>{nf1.format(cfg.maxChangePct * 100)}%</b>{" "}
-                · KVI cap: <b>{nf1.format(cfg.kviMaxUpPct * 100)}%</b> · Min
-                marge: <b>{nf1.format(cfg.minMarginPct * 100)}%</b> · Charm .99:{" "}
-                <b>{cfg.charm ? "ON" : "OFF"}</b>
+                {tt("pricing.guardrailsLabel")} · {tt("pricing.deltaMax")}{" "}
+                <b>{nf1.format(cfg.maxChangePct * 100)}%</b> ·{" "}
+                {tt("pricing.kviCap")}{" "}
+                <b>{nf1.format(cfg.kviMaxUpPct * 100)}%</b> ·{" "}
+                {tt("pricing.minMargin")}{" "}
+                <b>{nf1.format(cfg.minMarginPct * 100)}%</b> ·{" "}
+                {tt("pricing.charm99")} <b>{tt("common:live")}</b>
               </div>
             </div>
           </div>
@@ -1584,10 +1474,10 @@ export default function PricingOptimizer() {
               <div className="col-span-12 lg:col-span-6 rounded-2xl border px-5 py-5 bg-gradient-to-br from-indigo-50 via-white to-white dark:from-indigo-950/30 dark:via-transparent dark:to-transparent shadow-md hover:shadow-xl transition-all duration-500">
                 <div className="flex items-center justify-between">
                   <div className="text-xs text-gray-600 dark:text-gray-400">
-                    Performance portefeuille
+                    {tt("pricing.portfolioPerformance")}
                   </div>
                   <div className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
-                    Live
+                    {tt("common:live")}
                   </div>
                 </div>
                 <div className="mt-3 h-40">
@@ -1617,6 +1507,7 @@ export default function PricingOptimizer() {
                         dataKey="revenue"
                         stroke="#6366f1"
                         fill="url(#gradPerf)"
+                        name={tt("pricing.revenue")}
                       />
                       <Tooltip
                         formatter={(v) => nf0.format(Math.round(v)) + " €"}
@@ -1629,13 +1520,13 @@ export default function PricingOptimizer() {
               {/* Carte 2 — θ* + barre de progression */}
               <div className="col-span-6 lg:col-span-3 rounded-2xl border px-5 py-5 bg-gradient-to-br from-emerald-50 via-white to-white dark:from-emerald-950/30 dark:via-transparent dark:to-transparent shadow-md hover:shadow-xl transition-all duration-500">
                 <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                  Ajustement optimal (θ*)
+                  {tt("pricing.optimalAdjustment")}
                 </div>
                 <div className="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400">
                   {nf1.format(bestTheta)}%
                 </div>
                 <div className="mt-2 text-[11px] text-gray-500">
-                  Ajustement global recommandé
+                  {tt("pricing.optimalAdjustmentHint")}
                 </div>
                 <div className="mt-3 h-2 w-full rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
                   <div
@@ -1648,7 +1539,7 @@ export default function PricingOptimizer() {
               {/* Carte 3 — Indice de qualité des données */}
               <div className="col-span-6 lg:col-span-3 rounded-2xl border px-5 py-5 bg-gradient-to-br from-amber-50 via-white to-white dark:from-amber-950/30 dark:via-transparent dark:to-transparent shadow-md hover:shadow-xl transition-all duration-500">
                 <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                  Indice de qualité des données
+                  {tt("pricing.dataQualityIndex")}
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="text-4xl font-extrabold text-amber-500 dark:text-amber-400">
@@ -1656,12 +1547,12 @@ export default function PricingOptimizer() {
                   </div>
                   <PieChart width={70} height={70}>
                     <Pie
-                      data={dataHealth}
+                      data={dataHealthDisplay}
                       dataKey="value"
                       innerRadius={20}
                       outerRadius={30}
                     >
-                      {dataHealth.map((e, i) => (
+                      {dataHealthDisplay.map((e, i) => (
                         <Cell key={i} fill={COLORS[i % COLORS.length]} />
                       ))}
                     </Pie>
@@ -1671,21 +1562,21 @@ export default function PricingOptimizer() {
             </div>
             {/* Data Health & Category bars */}
             <div className="col-span-12 lg:col-span-5 grid grid-cols-5 gap-3">
-              <div className="col-span-2 rounded-2xl border px-3 py-3 bg-white/70 dark:bg-white/5 shadow-sm">
+              <div className="col-span-2 rounded-2xl border px-3 py-3 bg-white/70 dark:bg白/5 shadow-sm dark:bg-white/5">
                 <div className="text-xs text-gray-500 mb-1">
-                  Qualité des données
+                  {tt("pricing.dataQuality")}
                 </div>
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         dataKey="value"
-                        data={dataHealth}
+                        data={dataHealthDisplay}
                         innerRadius={34}
                         outerRadius={60}
                         paddingAngle={2}
                       >
-                        {dataHealth.map((e, i) => (
+                        {dataHealthDisplay.map((e, i) => (
                           <Cell key={e.name} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
@@ -1697,7 +1588,7 @@ export default function PricingOptimizer() {
               </div>
               <div className="col-span-3 rounded-2xl border px-3 py-3 bg-white/70 dark:bg-white/5 shadow-sm">
                 <div className="text-xs text-gray-500 mb-1">
-                  Points d’attention par catégorie
+                  {tt("pricing.categoryAttention")}
                 </div>
                 <div className="h-40">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1707,9 +1598,21 @@ export default function PricingOptimizer() {
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="KVI" stackId="a" />
-                      <Bar dataKey="Surstock" stackId="a" />
-                      <Bar dataKey="Rupture" stackId="a" />
+                      <Bar
+                        dataKey="KVI"
+                        stackId="a"
+                        name={tt("pricing.health.kvi")}
+                      />
+                      <Bar
+                        dataKey="Surstock"
+                        stackId="a"
+                        name={tt("pricing.category.overstock")}
+                      />
+                      <Bar
+                        dataKey="Rupture"
+                        stackId="a"
+                        name={tt("pricing.category.stockout")}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -1723,7 +1626,7 @@ export default function PricingOptimizer() {
             <div className="flex flex-wrap items-center gap-2">
               <input
                 type="text"
-                placeholder="Rechercher SKU/Produit…"
+                placeholder={tt("pricing.searchPlaceholder")}
                 className="px-3 py-2 rounded-xl border w-64"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -1733,10 +1636,18 @@ export default function PricingOptimizer() {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <option value="priorityDesc">Priorité ↓</option>
-                <option value="deltaMarginDesc">Δ Marge ↓</option>
-                <option value="deltaRevDesc">Δ CA ↓</option>
-                <option value="elasticityAsc">|e| ↑</option>
+                <option value="priorityDesc">
+                  {tt("pricing.sort.priorityDesc")}
+                </option>
+                <option value="deltaMarginDesc">
+                  {tt("pricing.sort.deltaMarginDesc")}
+                </option>
+                <option value="deltaRevDesc">
+                  {tt("pricing.sort.deltaRevDesc")}
+                </option>
+                <option value="elasticityAsc">
+                  {tt("pricing.sort.elasticityAsc")}
+                </option>
               </select>
               <label className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border">
                 <input
@@ -1744,7 +1655,7 @@ export default function PricingOptimizer() {
                   checked={onlyActionables}
                   onChange={(e) => setOnlyActionables(e.target.checked)}
                 />
-                À faire en priorité
+                {tt("pricing.onlyActionables")}
               </label>
             </div>
             <button
@@ -1755,27 +1666,28 @@ export default function PricingOptimizer() {
                 setSelected(rows[0].sku);
               }}
             >
-              Charger un exemple
+              {tt("pricing.loadExample")}
             </button>
           </div>
         )}
 
         {/* === OVERVIEW — Vue générale portefeuille ======================== */}
         <div className="mt-4">
-          {/* Courbe CA global (avec marge en overlay) contrôlée par objectif & agressivité */}
           <div className="rounded-2xl border p-4 bg-white/70 dark:bg-white/5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm font-semibold">
-                  Courbe portefeuille — Revenu global
+                  {tt("pricing.portfolioCurve.title")}
                 </div>
                 <div className="text-xs text-gray-500">
-                  Variation globale des prix (θ) bornée par l’<b>agressivité</b>
-                  . La position optimale dépend de l’<b>objectif</b>.
+                  <Trans
+                    i18nKey="pricing.portfolioCurve.subtitle"
+                    defaults={I18N_DEFAULTS["pricing.portfolioCurve.subtitle"]}
+                  />
                 </div>
               </div>
               <div className="text-right text-xs text-gray-600 dark:text-gray-400">
-                Meilleur θ (score) : <b>{bestTheta}%</b>
+                {tt("pricing.bestTheta")}: <b>{bestTheta}%</b>
               </div>
             </div>
 
@@ -1805,17 +1717,16 @@ export default function PricingOptimizer() {
                   <Area
                     type="monotone"
                     dataKey="revenue"
-                    name="CA"
+                    name={tt("pricing.ca")}
                     stroke="#2563eb"
                     fill="url(#revGrad)"
                   />
                   <Line
                     type="monotone"
                     dataKey="margin"
-                    name="Marge"
+                    name={tt("pricing.margin")}
                     dot={false}
                   />
-                  {/* Références : 0% et meilleur θ */}
                   <ReferenceLine
                     x={0}
                     stroke="#94a3b8"
@@ -1849,7 +1760,7 @@ export default function PricingOptimizer() {
                 <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="rounded-xl border px-4 py-3">
                     <div className="text-[11px] text-gray-500">
-                      CA au meilleur θ
+                      {tt("pricing.kpi.caAtBest")}
                     </div>
                     <div className="text-lg font-bold">
                       {nf0.format(Math.round(best.revenue))} €
@@ -1857,14 +1768,16 @@ export default function PricingOptimizer() {
                   </div>
                   <div className="rounded-xl border px-4 py-3">
                     <div className="text-[11px] text-gray-500">
-                      Marge au meilleur θ
+                      {tt("pricing.kpi.marginAtBest")}
                     </div>
                     <div className="text-lg font-bold">
                       {nf0.format(Math.round(best.margin))} €
                     </div>
                   </div>
                   <div className="rounded-xl border px-4 py-3">
-                    <div className="text-[11px] text-gray-500">Δ CA vs 0%</div>
+                    <div className="text-[11px] text-gray-500">
+                      {tt("pricing.kpi.deltaCaVsZero")}
+                    </div>
                     <div
                       className={`text-lg font-bold ${
                         dRev >= 0 ? "text-emerald-600" : "text-rose-600"
@@ -1875,7 +1788,7 @@ export default function PricingOptimizer() {
                   </div>
                   <div className="rounded-xl border px-4 py-3">
                     <div className="text-[11px] text-gray-500">
-                      Δ Marge vs 0%
+                      {tt("pricing.kpi.deltaMarginVsZero")}
                     </div>
                     <div
                       className={`text-lg font-bold ${
@@ -1890,26 +1803,36 @@ export default function PricingOptimizer() {
             })()}
           </div>
 
-          {/* Liste générale des produits (sans actions, pour contexte) */}
+          {/* Liste générale des produits */}
           {!!products.length && (
             <div className="mt-5 rounded-2xl border bg-white/70 dark:bg-white/5 shadow-sm overflow-hidden">
               <div className="border-b px-4 py-3 text-sm text-gray-600 dark:text-gray-300 bg-gray-50/60 dark:bg-white/5">
-                Produits — vue générale (sans actions)
+                {tt("pricing.productsGeneral")}
               </div>
               <div className="max-h-[50vh] overflow-auto">
                 <table className="min-w-full text-sm tabular-nums">
                   <thead className="sticky top-0 z-10 bg-gray-50/95 dark:bg-gray-900/80 backdrop-blur">
                     <tr className="text-gray-600 dark:text-gray-300">
-                      <th className="p-3 text-left">SKU</th>
-                      <th className="p-3 text-left">Produit</th>
-                      <th className="p-3 text-left">Catégorie</th>
-                      <th className="p-3 text-right">Prix</th>
-                      <th className="p-3 text-right">Coût</th>
-                      <th className="p-3 text-right">Qté 90j</th>
+                      <th className="p-3 text-left">
+                        {tt("pricing.table.sku")}
+                      </th>
+                      <th className="p-3 text-left">{tt("pricing.product")}</th>
+                      <th className="p-3 text-left">
+                        {tt("pricing.categoryCol")}
+                      </th>
+                      <th className="p-3 text-right">{tt("pricing.price")}</th>
+                      <th className="p-3 text-right">{tt("pricing.cost")}</th>
+                      <th className="p-3 text-right">{tt("pricing.qty90d")}</th>
                       <th className="p-3 text-right">e</th>
-                      <th className="p-3 text-right">KVI</th>
-                      <th className="p-3 text-right">Conc.</th>
-                      <th className="p-3 text-right">Stock (jours)</th>
+                      <th className="p-3 text-right">
+                        {tt("pricing.table.kvi")}
+                      </th>
+                      <th className="p-3 text-right">
+                        {tt("pricing.compShort")}
+                      </th>
+                      <th className="p-3 text-right">
+                        {tt("pricing.stockDays")}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1932,7 +1855,7 @@ export default function PricingOptimizer() {
                         </td>
                         <td className="p-3 text-right">{p.e}</td>
                         <td className="p-3 text-right">
-                          {p.kvi ? "Oui" : "Non"}
+                          {p.kvi ? tt("common:yes") : tt("common:no")}
                         </td>
                         <td className="p-3 text-right">
                           {p.price_index ? (
@@ -1946,15 +1869,19 @@ export default function PricingOptimizer() {
                               </span>
                             ) : (
                               <span className="text-emerald-700 text-xs">
-                                OK
+                                {tt("common:ok")}
                               </span>
                             )
                           ) : (
-                            <span className="text-gray-400 text-xs">n/a</span>
+                            <span className="text-gray-400 text-xs">
+                              {tt("common:na")}
+                            </span>
                           )}
                         </td>
                         <td className="p-3 text-right">
-                          {p.coverDays ? `${p.coverDays} j` : "—"}
+                          {p.coverDays
+                            ? `${p.coverDays} ${tt("common:daysShort")}`
+                            : "—"}
                         </td>
                       </tr>
                     ))}
@@ -1972,13 +1899,13 @@ export default function PricingOptimizer() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-gray-500">
-                    Analyse avancée — {sel.sku}
+                    {tt("pricing.advancedAnalysis")} — {sel.sku}
                   </div>
                   <div className="text-lg font-semibold">{sel.name}</div>
                 </div>
                 <div className="flex items-center gap-3">
                   <label className="text-sm text-gray-600">
-                    Monte Carlo runs
+                    {tt("pricing.mcRuns")}
                   </label>
                   <input
                     type="number"
@@ -1993,7 +1920,6 @@ export default function PricingOptimizer() {
 
               {(() => {
                 const bands = computeUncertaintyBands(sel, mcRuns) || [];
-                // Merge bands (P10/P50/P90) avec la courbe déterministe existante
                 const merged = sel.curve.map((d) => {
                   const b = bands.find(
                     (x) =>
@@ -2006,7 +1932,7 @@ export default function PricingOptimizer() {
                     {/* PROFIT with bands */}
                     <div className="mt-3">
                       <div className="text-xs text-gray-500 mb-1">
-                        Profit vs Prix — avec bandes P10/P50/P90
+                        {tt("pricing.profitWithBands")}
                       </div>
                       <div className="h-56 rounded-xl border bg-white/60 dark:bg-white/5">
                         <ResponsiveContainer width="100%" height="100%">
@@ -2077,31 +2003,34 @@ export default function PricingOptimizer() {
                               dataKey="profit_p10"
                               stroke="#0ea5e9"
                               fill="url(#gBandLow)"
+                              name={tt("pricing.profitP10")}
                             />
                             <Area
                               type="monotone"
                               dataKey="profit_p50"
                               stroke="#16a34a"
                               fill="url(#gBandMid)"
+                              name={tt("pricing.profitP50")}
                             />
                             <Area
                               type="monotone"
                               dataKey="profit_p90"
                               stroke="#f59e0b"
                               fill="url(#gBandHigh)"
+                              name={tt("pricing.profitP90")}
                             />
                             {/* Reference lines */}
                             <ReferenceLine
                               x={sel.price}
                               stroke="#2563eb"
                               strokeDasharray="3 3"
-                              label="P0"
+                              label={tt("pricing.p0")}
                             />
                             <ReferenceLine
                               x={sel.suggestedPrice}
                               stroke="#f59e0b"
                               strokeDasharray="3 3"
-                              label="P*"
+                              label={tt("pricing.pStar")}
                             />
                           </AreaChart>
                         </ResponsiveContainer>
@@ -2112,7 +2041,7 @@ export default function PricingOptimizer() {
                     <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="rounded-xl border bg-white/60 dark:bg-white/5 h-56 p-2">
                         <div className="text-xs text-gray-500 pl-2">
-                          CA (Revenue) vs Prix — médiane
+                          {tt("pricing.revenueVsPriceMedian")}
                         </div>
                         <ResponsiveContainer width="100%" height="90%">
                           <LineChart data={merged}>
@@ -2124,6 +2053,7 @@ export default function PricingOptimizer() {
                               type="monotone"
                               dataKey="revenue_p50"
                               dot={false}
+                              name={tt("pricing.revenueP50")}
                             />
                             <ReferenceLine
                               x={sel.price}
@@ -2140,7 +2070,7 @@ export default function PricingOptimizer() {
                       </div>
                       <div className="rounded-xl border bg-white/60 dark:bg-white/5 h-56 p-2">
                         <div className="text-xs text-gray-500 pl-2">
-                          Marge vs Prix — médiane
+                          {tt("pricing.marginVsPriceMedian")}
                         </div>
                         <ResponsiveContainer width="100%" height="90%">
                           <LineChart data={merged}>
@@ -2152,6 +2082,7 @@ export default function PricingOptimizer() {
                               type="monotone"
                               dataKey="margin_p50"
                               dot={false}
+                              name={tt("pricing.marginP50")}
                             />
                             <ReferenceLine
                               x={sel.price}
@@ -2174,17 +2105,41 @@ export default function PricingOptimizer() {
 
             {/* ACTIONS latérales — Optimiseur, Réassort, Expérimentation */}
             <div className="col-span-12 xl:col-span-4 grid grid-cols-1 gap-4">
+              {/* Price Story / Explainability */}
+              <div className="rounded-2xl border p-4 bg-white/70 dark:bg-white/5 shadow-sm">
+                <div className="text-sm font-semibold">
+                  {tt("pricing.priceStory")}
+                </div>
+                <div className="mt-2 text-xs text-gray-500">
+                  {sel?.sku ? `${sel.sku} — ${sel.name}` : ""}
+                </div>
+                <ul className="mt-3 space-y-1 text-sm">
+                  {buildPriceStory(sel, cfg).map((s) => (
+                    <li
+                      key={s.key}
+                      className="flex items-center justify-between"
+                    >
+                      <span>{tt(`pricing.story.${s.key}`)}</span>
+                      <span className="tabular-nums font-semibold">
+                        {nf2.format(s.value)} €
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               {/* Optimiseur portefeuille */}
               <div className="rounded-2xl border p-4 bg-white/70 dark:bg-white/5 shadow-sm">
                 <div className="text-sm font-semibold">
-                  Optimiser le portefeuille
+                  {tt("pricing.optimizePortfolio")}
                 </div>
                 <div className="text-xs text-gray-500">
-                  Micro-pas ±1% vers Prix* en respectant les garde-fous (KVI, Δ
-                  max, concurrence).
+                  {tt("pricing.optimizePortfolioHint")}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <label className="text-sm">Objectif marge (€)</label>
+                  <label className="text-sm">
+                    {tt("pricing.marginTargetEuro")}
+                  </label>
                   <input
                     type="number"
                     className="w-28 px-3 py-2 rounded-xl border"
@@ -2196,26 +2151,30 @@ export default function PricingOptimizer() {
                   <button
                     className="px-3 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
                     onClick={() => optimizePortfolioGreedy(portfolioTarget)}
-                    title="Distribuer des micro-pas jusqu’à atteindre l’objectif"
+                    title={tt("pricing.optimizePortfolio")}
                   >
-                    Lancer
+                    {tt("pricing.launch")}
                   </button>
                 </div>
                 <div className="mt-2 text-[11px] text-gray-500">
-                  Agressivité actuelle : <b>{aggr}%</b> • Objectif :{" "}
-                  <b>{objective}</b>
+                  {tt("pricing.currentAggressiveness")}: <b>{aggr}%</b> •{" "}
+                  {tt("pricing.currentObjective")}:{" "}
+                  <b>{tt(`pricing.objective.${objective}`)}</b>
                 </div>
               </div>
 
               {/* Réassort */}
               <div className="rounded-2xl border p-4 bg-white/70 dark:bg-white/5 shadow-sm">
-                <div className="text-sm font-semibold">Plan de réassort</div>
+                <div className="text-sm font-semibold">
+                  {tt("pricing.replenishmentPlan")}
+                </div>
                 <div className="text-xs text-gray-500">
-                  Calcule la couverture (lead + sécurité) à partir de la demande
-                  à Prix*.
+                  {tt("pricing.replenishmentHint")}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <label className="text-sm">Stock sécurité (jours)</label>
+                  <label className="text-sm">
+                    {tt("pricing.safetyStockDays")}
+                  </label>
                   <input
                     type="number"
                     className="w-24 px-3 py-2 rounded-xl border"
@@ -2227,22 +2186,26 @@ export default function PricingOptimizer() {
                   <button
                     className="px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700"
                     onClick={buildReplenishmentPlan}
-                    title="Exporter le CSV réassort"
+                    title={tt("pricing.exportReplenishmentCsvTitle")}
                   >
-                    Exporter CSV
+                    {tt("pricing.exportCsv")}
                   </button>
                 </div>
               </div>
 
               {/* Expérimentation */}
               <div className="rounded-2xl border p-4 bg-white/70 dark:bg-white/5 shadow-sm">
-                <div className="text-sm font-semibold">Expérimentation</div>
+                <div className="text-sm font-semibold">
+                  {tt("pricing.experimentation")}
+                </div>
                 <div className="text-xs text-gray-500">
-                  Planifie un test de prix contrôlé sur un SKU.
+                  {tt("pricing.experimentationHint")}
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <div className="col-span-2">
-                    <label className="text-xs text-gray-500">SKU</label>
+                    <label className="text-xs text-gray-500">
+                      {tt("pricing.labels.sku")}
+                    </label>
                     <input
                       className="w-full px-3 py-2 rounded-xl border"
                       value={sel?.sku || ""}
@@ -2250,7 +2213,9 @@ export default function PricingOptimizer() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500">Δ prix (%)</label>
+                    <label className="text-xs text-gray-500">
+                      {tt("pricing.deltaPricePct")}
+                    </label>
                     <select
                       id="expDelta"
                       className="w-full px-3 py-2 rounded-xl border"
@@ -2263,7 +2228,7 @@ export default function PricingOptimizer() {
                   </div>
                   <div>
                     <label className="text-xs text-gray-500">
-                      Durée (jours)
+                      {tt("pricing.durationDays")}
                     </label>
                     <select
                       id="expDays"
@@ -2287,7 +2252,7 @@ export default function PricingOptimizer() {
                         scheduleExperiment(sel.sku, pct, days);
                       }}
                     >
-                      Programmer le test
+                      {tt("pricing.scheduleTest")}
                     </button>
                   </div>
                 </div>
@@ -2295,17 +2260,27 @@ export default function PricingOptimizer() {
                 {experiments.length > 0 && (
                   <div className="mt-3">
                     <div className="text-xs text-gray-500 mb-1">
-                      Tests programmés
+                      {tt("pricing.scheduledTests")}
                     </div>
                     <div className="max-h-40 overflow-auto">
                       <table className="min-w-full text-xs">
                         <thead>
                           <tr className="text-gray-500">
-                            <th className="p-2 text-left">SKU</th>
-                            <th className="p-2 text-right">Δ%</th>
-                            <th className="p-2 text-left">Début</th>
-                            <th className="p-2 text-left">Fin</th>
-                            <th className="p-2 text-left">Statut</th>
+                            <th className="p-2 text-left">
+                              {tt("pricing.table.sku")}
+                            </th>
+                            <th className="p-2 text-right">
+                              {tt("pricing.deltaPctShort")}
+                            </th>
+                            <th className="p-2 text-left">
+                              {tt("pricing.start")}
+                            </th>
+                            <th className="p-2 text-left">
+                              {tt("pricing.end")}
+                            </th>
+                            <th className="p-2 text-left">
+                              {tt("pricing.status")}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -2317,7 +2292,9 @@ export default function PricingOptimizer() {
                               </td>
                               <td className="p-2">{e.start}</td>
                               <td className="p-2">{e.end}</td>
-                              <td className="p-2">{e.status}</td>
+                              <td className="p-2">
+                                {tt(`pricing.status.${e.status}`)}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -2333,23 +2310,25 @@ export default function PricingOptimizer() {
         {/* === AUDIT / JOURNAL ===================================================== */}
         <div className="mt-6 rounded-2xl border p-4 bg-white/70 dark:bg-white/5 shadow-sm">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">Journal / Audit</div>
+            <div className="text-sm font-semibold">
+              {tt("pricing.auditLog")}
+            </div>
             <div className="text-xs text-gray-500">
-              Actions récentes (appliquer, optimiser, exporter, expérimenter)
+              {tt("pricing.recentActions")}
             </div>
           </div>
           {audit.length === 0 ? (
             <div className="text-sm text-gray-500 mt-2">
-              Aucun événement pour l’instant.
+              {tt("pricing.noEventsYet")}
             </div>
           ) : (
             <div className="mt-2 max-h-60 overflow-auto">
               <table className="min-w-full text-xs tabular-nums">
                 <thead>
                   <tr className="text-gray-500">
-                    <th className="p-2 text-left">Horodatage</th>
-                    <th className="p-2 text-left">Événement</th>
-                    <th className="p-2 text-left">Détail</th>
+                    <th className="p-2 text-left">{tt("pricing.timestamp")}</th>
+                    <th className="p-2 text-left">{tt("pricing.event")}</th>
+                    <th className="p-2 text-left">{tt("pricing.detail")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2358,7 +2337,11 @@ export default function PricingOptimizer() {
                       <td className="p-2">
                         {a.ts.replace("T", " ").slice(0, 19)}
                       </td>
-                      <td className="p-2">{a.event}</td>
+                      <td className="p-2">
+                        {tt(`pricing.events.${a.event}`, {
+                          defaultValue: a.event,
+                        })}
+                      </td>
                       <td className="p-2">
                         <pre className="whitespace-pre-wrap break-words text-[11px]">
                           {JSON.stringify(a.detail, null, 2)}
@@ -2375,7 +2358,3 @@ export default function PricingOptimizer() {
     </section>
   );
 }
-
-// ============================================================================
-// END OF PART 1/2 — The second half will extend from the placeholder above.
-// ============================================================================

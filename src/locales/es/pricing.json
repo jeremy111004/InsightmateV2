@@ -1,0 +1,132 @@
+{
+  "title": "Optimizador de Precios",
+  "subtitle": "Calcula un <b>Precio recomendado (P*)</b> por artículo, con <b>límites (guardrails)</b>, <b>elasticidad</b>, <b>competencia KVI</b> y <b>riesgos de inventario</b>. Aplica línea por línea o en lote.",
+  "globalSettings": "Ajustes globales",
+  "objectiveTitle": "Objetivo del puntaje multi-criterio",
+  "objective": {
+    "balanced": "Equilibrado",
+    "margin": "Prioridad Margen",
+    "revenue": "Prioridad Ingresos"
+  },
+  "aggressiveness": "Agresividad",
+  "importCsv": "Importar CSV",
+  "exportPlan": "Exportar plan",
+  "guardrailsLabel": "Guardrails",
+  "deltaMax": "Δ máx",
+  "kviCap": "Tope KVI",
+  "minMargin": "Margen mín.",
+  "charm99": ".99",
+  "portfolioPerformance": "Rendimiento de la cartera",
+  "revenue": "Ingresos",
+  "optimalAdjustment": "Ajuste óptimo θ*",
+  "optimalAdjustmentHint": "Desplazamiento global según el objetivo",
+  "dataQualityIndex": "Índice de calidad de datos",
+  "health": {
+    "knownCompetition": "Competencia conocida",
+    "kvi": "KVI",
+    "lowElasticity": "Elasticidad baja / datos escasos",
+    "ok": "OK"
+  },
+  "dataQuality": "Calidad de los datos",
+  "categoryAttention": "Categorías a vigilar",
+  "category": {
+    "overstock": "Sobrestock",
+    "stockout": "Ruptura de stock"
+  },
+  "searchPlaceholder": "Buscar SKU/nombre…",
+  "sort": {
+    "priorityDesc": "Orden: prioridad",
+    "deltaMarginDesc": "Orden: Δ margen",
+    "deltaRevDesc": "Orden: Δ ingresos",
+    "elasticityAsc": "Orden: |elasticidad|"
+  },
+  "onlyActionables": "Solo accionables",
+  "loadExample": "Cargar ejemplo",
+  "portfolioCurve": {
+    "title": "Curva de cartera (θ)",
+    "subtitle": "Variación global de precios (θ) limitada por la agresividad. La posición óptima depende del objetivo."
+  },
+  "bestTheta": "Mejor θ",
+  "ca": "Ingresos",
+  "margin": "Margen",
+  "kpi": {
+    "caAtBest": "Ingresos al mejor θ",
+    "marginAtBest": "Margen al mejor θ",
+    "deltaCaVsZero": "Δ Ingresos vs θ = 0%",
+    "deltaMarginVsZero": "Δ Margen vs θ = 0%"
+  },
+  "productsGeneral": "Productos (vista general)",
+  "product": "Producto",
+  "categoryCol": "Categoría",
+  "price": "Precio",
+  "cost": "Coste",
+  "qty90d": "Cant. 90d",
+  "compShort": "Comp.",
+  "stockDays": "Días de stock",
+  "advancedAnalysis": "Análisis avanzado",
+  "mcRuns": "Iteraciones MC",
+  "profitWithBands": "Beneficio con bandas de incertidumbre",
+  "profitP10": "Beneficio P10",
+  "profitP50": "Beneficio P50",
+  "profitP90": "Beneficio P90",
+  "p0": "P0",
+  "pStar": "P*",
+  "revenueVsPriceMedian": "Ingresos vs precio (mediana)",
+  "revenueP50": "Ingresos P50",
+  "marginVsPriceMedian": "Margen vs precio (mediana)",
+  "marginP50": "Margen P50",
+  "optimizePortfolio": "Optimizar la cartera",
+  "optimizePortfolioHint": "Micro-pasos hacia P* para alcanzar un objetivo de margen.",
+  "marginTargetEuro": "Objetivo de margen (€)",
+  "launch": "Lanzar",
+  "currentAggressiveness": "Agresividad actual",
+  "currentObjective": "Objetivo actual",
+  "replenishmentPlan": "Plan de reposición",
+  "replenishmentHint": "Cubrir lead time + stock de seguridad a P*.",
+  "safetyStockDays": "Días de seguridad",
+  "exportReplenishmentCsvTitle": "Exportar CSV de reposición",
+  "exportCsv": "Exportar CSV",
+  "experimentation": "Experimentación",
+  "experimentationHint": "Planificar una prueba de precio en un SKU.",
+  "deltaPricePct": "Δ precio (%)",
+  "durationDays": "Duración (días)",
+  "scheduleTest": "Programar prueba",
+  "scheduledTests": "Pruebas programadas",
+  "start": "Inicio",
+  "end": "Fin",
+  "status": "Estado",
+  "auditLog": "Registro",
+  "recentActions": "Acciones recientes",
+  "noEventsYet": "Aún no hay eventos.",
+  "timestamp": "Marca de tiempo",
+  "event": "Evento",
+  "detail": "Detalle",
+
+  "priceStory": "Reglas aplicadas al precio",
+  "story": {
+    "costFloor": "Suelo por margen (c × (1 + margen mín))",
+    "maxDown": "Disminución máx permitida",
+    "maxUp": "Aumento máx permitido",
+    "kviCap": "Tope de aumento KVI",
+    "compCap": "Tope por competencia",
+    "charm99": "Terminación psicológica .99"
+  },
+  "table": {
+    "sku": "SKU",
+    "kvi": "KVI"
+  },
+  "deltaPctShort": "Δ%",
+  "labels": {
+    "sku": "SKU"
+  },
+  "status.scheduled": "Programado",
+
+  "events": {
+    "nudge_price": "Ajuste manual del precio",
+    "apply_suggested": "Precio sugerido aplicado",
+    "export_plan_csv": "Plan exportado (CSV)",
+    "portfolio_optimize": "Optimización de cartera",
+    "replenishment_export": "Exportación de reposición (CSV)",
+    "experiment_schedule": "Prueba programada"
+  }
+}

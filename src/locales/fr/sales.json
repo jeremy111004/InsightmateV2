@@ -1,0 +1,137 @@
+{
+  "import": {
+    "title": "Importer les ventes (CSV)",
+    "currency": { "eur": "EUR (€)", "usd": "USD ($)", "gbp": "GBP (£)" },
+    "loadSample": "Charger un exemple",
+    "downloadSample": "Télécharger l’exemple",
+    "upload": {
+      "title": "Importer votre fichier CSV",
+      "cta": "Charger un CSV"
+    },
+    "drop": {
+      "title": "Glissez-déposez un CSV ici",
+      "hint": "Astuce : glissez-déposez un fichier CSV ici pour l’importer."
+    },
+    "altSelect": { "label": "Ou sélectionnez un fichier :" },
+    "requiredCols": { "label": "Colonnes requises:" }
+  },
+  "upload": {
+    "errorParse": "Erreur de lecture du CSV."
+  },
+  "filters": {
+    "smooth": "Lissage (jours)",
+    "from": "Du",
+    "to": "Au"
+  },
+  "kpi": {
+    "ca30": { "label": "CA 30 jours" },
+    "changeUp": "↗ +{{v}}%",
+    "changeDown": "↘ {{v}}%",
+    "stable": "Stable",
+    "basket": { "label": "Panier moyen", "note": "Sur les commandes" },
+    "clients": { "label": "Clients uniques", "note": "30 derniers jours" }
+  },
+  "forecast": {
+    "sectionTitle": "Historique & Prévision (30j)",
+    "exportPdf": "Exporter PDF (1 page)",
+    "badge": { "smart": "Smart forecast" },
+    "quality": { "prefix": "Qualité :", "mape": "MAPE ≈" },
+    "growthTitle": "Croissance moyenne prévue vs 14 derniers jours",
+    "uncertaintyTitle": "Incertitude moyenne (±)",
+    "legend": {
+      "historical": "Historique",
+      "ciLo": "Borne 95% (basse)",
+      "ciHi": "Borne 95% (haute)",
+      "scenarioPrudent": "Scénario prudent",
+      "scenarioOptimistic": "Scénario optimiste",
+      "scenarioKeyword": "Scénario",
+      "bandKeyword": "Borne 95%"
+    },
+    "chips": {
+      "historical": "Historique",
+      "central": "Prévision centrale",
+      "optimistic": "Scénario optimiste",
+      "prudent": "Scénario prudent"
+    },
+    "summaryTail": "sur 30 jours · Incertitude ±{{unc}}%"
+  },
+  "chart": {
+    "forecastLabel": "Prévision (Smart)"
+  },
+  "top": {
+    "title": "Top produits (CA)",
+    "barName": "CA"
+  },
+  "advice": {
+    "sectionTitle": "Conseiller",
+    "badge": "Conseils actionnables",
+    "basedOn": "Basé sur vos données récentes",
+    "toggle": {
+      "local": "Conseils locaux",
+      "ai": "IA personnalisée"
+    },
+    "ai": {
+      "title": "Conseils IA personnalisés",
+      "subtitle": "à partir de vos KPI & prévisions",
+      "loading": "Analyse…",
+      "regenerate": "Regénérer",
+      "hint": "Activez l’IA puis cliquez sur « Regénérer »."
+    },
+    "local": {
+      "uptrend": "Tendance haussière: +{{change}}% sur la période. Augmente le stock des best-sellers et teste un prix légèrement plus élevé (+2–3%).",
+      "downtrend": "Tendance baissière: {{change}}%. Lance une promo ciblée 7 jours (10–15%) sur les 2 produits principaux.",
+      "stable": "Ventes stables: active une offre fidélité (10 achats = 1 offert) pour doper la rétention.",
+      "slowDay": "Jour creux: {{day}}. Propose une offre spéciale ce jour-là (2×1 ou push SMS).",
+      "topProduct": "Produit leader: {{name}}. Mets-le en avant sur la caisse et sur la home.",
+      "bundle": "Bundle: {{top}} + {{other}} (-10%) pour augmenter le panier moyen.",
+      "none": "Aucun conseil disponible"
+    }
+  },
+  "actions": {
+    "title": "À faire cette semaine",
+    "subtitle": "Basé sur vos données récentes (tendance, jours creux, top produits).",
+    "clipboardTitle": "À faire cette semaine:",
+    "none": "Aucune action priorisée"
+  },
+  "preview": {
+    "title": "Aperçu des données",
+    "footer": "Aperçu (30 lignes max)"
+  },
+  "ai": {
+    "summaryTitle": "Résumé exécutif (IA locale) :",
+    "kpi": {
+      "ca30": "• CA 30j: {{v}} {{cur}}",
+      "basket": "• Panier moyen: {{v}} {{cur}}",
+      "clients": "• Clients: {{v}}"
+    },
+    "topProduct": "• Produit leader: {{name}}",
+    "actions": "Actions: pousse best-sellers, traite le jour creux avec une offre, et teste une promo courte (-10%)."
+  },
+  "pdf": {
+    "headerTitle": "InsightMate · OnePager",
+    "headerSubtitle": "Rapport généré automatiquement — vos données restent locales",
+    "kpi": {
+      "ca30": "CA 30 jours: {{v}} {{cur}} ({{change}})",
+      "basket": "Panier moyen: {{v}} {{cur}}",
+      "unique": "Clients uniques (30j): {{v}}"
+    },
+    "forecast": "Prévision 30j : {{sign}}{{growth}}% · Incertitude ±{{unc}}%",
+    "forecastNA": "Prévision 30j : n/a",
+    "footer": "© 2025 InsightMate — Démo. Vos données restent locales.",
+    "errorExport": "Export PDF impossible."
+  },
+  "weekdays": {
+    "0": "dim.",
+    "1": "lun.",
+    "2": "mar.",
+    "3": "mer.",
+    "4": "jeu.",
+    "5": "ven.",
+    "6": "sam."
+  },
+  "common": {
+    "copy": "Copier",
+    "share": "Partager",
+    "shareAlert": "Fonction « Partager » à connecter"
+  }
+}

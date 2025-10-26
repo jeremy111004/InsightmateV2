@@ -2,6 +2,8 @@
 import React from "react";
 import "./index.css";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./components/LanguageSwitcher.jsx";
 
 // Pages (code-splitting)
 const HomePage = React.lazy(() => import("./pages/HomePage.jsx"));
@@ -14,23 +16,40 @@ const PricingOptimizer = React.lazy(() =>
 const AccessProPage = React.lazy(() => import("./pages/AccessProPage.jsx"));
 const RiskHub = React.lazy(() => import("./pages/RiskHub.jsx"));
 const Connecteurs = React.lazy(() => import("./pages/Connecteurs.jsx"));
-// NOTE: LeakageRadar is expected to be used inside RiskHub or ClientRisk pages,
-// so we don't import it here globally.
 
-const TABS = [
-  { key: "home", label: "Accueil", Comp: HomePage },
-  { key: "sales", label: "Ventes", Comp: SalesDemo },
-  { key: "cash", label: "Analyse Clients", Comp: ClientRisk },
-  { key: "eco", label: "Éco-Label", Comp: EcoLabelPage },
-  { key: "pricing", label: "Pricing", Comp: PricingOptimizer },
-  { key: "risk", label: "Risque", Comp: RiskHub },
-  { key: "pro", label: "Aide", Comp: AccessProPage },
-  { key: "connectors", label: "Connecteurs Auto", Comp: Connecteurs },
-];
-
-const TAB_KEYS = new Set(TABS.map((t) => t.key));
+// Static list of keys (labels come from i18n)
+const TAB_KEYS = new Set([
+  "home",
+  "sales",
+  "cash",
+  "eco",
+  "pricing",
+  "risk",
+  "pro",
+]);
 
 export default function AppModular() {
+  const { t, i18n } = useTranslation();
+
+  // Force a re-render when language changes (so labels update)
+  const [, forceRender] = React.useReducer((x) => x + 1, 0);
+  React.useEffect(() => {
+    const onLang = () => forceRender();
+    i18n.on("languageChanged", onLang);
+    return () => i18n.off("languageChanged", onLang);
+  }, [i18n]);
+
+  // Build tabs using t() every render (simple & reliable)
+  const TABS = [
+    { key: "home", label: t("nav.home"), Comp: HomePage },
+    { key: "sales", label: t("nav.sales"), Comp: SalesDemo },
+    { key: "cash", label: t("nav.clientRisk"), Comp: ClientRisk },
+    { key: "eco", label: t("nav.eco"), Comp: EcoLabelPage },
+    { key: "pricing", label: t("nav.pricing"), Comp: PricingOptimizer },
+    { key: "risk", label: t("nav.risk"), Comp: RiskHub },
+    { key: "pro", label: t("nav.help"), Comp: AccessProPage },
+    { key: "connectors", label: t("nav.connectors"), Comp: Connecteurs },
+  ];
   // init: hash > localStorage > default
   const initial = React.useMemo(() => {
     const fromHash = (window.location.hash || "").replace(/^#/, "");
@@ -50,8 +69,8 @@ export default function AppModular() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
   React.useEffect(() => {
-    // ensure scroll top for inView triggers
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [tab]);
 
@@ -69,33 +88,44 @@ export default function AppModular() {
 
   return (
     <div className="w-full min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 nav-glass">
+      {/* Navigation with switcher on the right */}
+      <nav className="sticky top-0 z-[60] nav-glass">
         <div
-          className="max-w-7xl mx-auto w-full px-4 md:px-6 py-3 flex flex-wrap items-center justify-center gap-2 md:gap-3"
+          className="max-w-7xl mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3"
           role="tablist"
           aria-label="Sections InsightMate"
         >
-          {TABS.map((t) => {
-            const active = tab === t.key;
-            return (
-              <button
-                key={t.key}
-                role="tab"
-                aria-selected={active}
-                aria-controls={`panel-${t.key}`}
-                aria-current={active ? "page" : undefined}
-                onClick={() => setTab(t.key)}
-                className={`px-4 md:px-5 py-2 md:py-2.5 rounded-2xl text-sm md:text-base border transition outline-offset-2 ${
-                  active
-                    ? "bg-gray-900/90 text-white dark:bg-white dark:text-gray-900 border-transparent"
-                    : "bg-white/5 hover:bg-white/10 border-white/10 text-white"
-                }`}
-              >
-                {t.label}
-              </button>
-            );
-          })}
+          {/* Left (optional placeholder for logo/title) */}
+          <div className="hidden md:block text-sm opacity-70" />
+
+          {/* Center: tabs */}
+          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+            {TABS.map((t) => {
+              const active = tab === t.key;
+              return (
+                <button
+                  key={t.key}
+                  role="tab"
+                  aria-selected={active}
+                  aria-controls={`panel-${t.key}`}
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => setTab(t.key)}
+                  className={`px-4 md:px-5 py-2 md:py-2.5 rounded-2xl text-sm md:text-base border transition outline-offset-2 ${
+                    active
+                      ? "bg-gray-900/90 text-white dark:bg-white dark:text-gray-900 border-transparent"
+                      : "bg-white/5 hover:bg-white/10 border-white/10 text-white"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right: language switcher */}
+          <div className="shrink-0">
+            <LanguageSwitcher />
+          </div>
         </div>
       </nav>
 

@@ -16,6 +16,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 /* ---------- utils ---------- */
 function toNum(v, fb = null) {
@@ -41,49 +42,6 @@ function mad(a) {
 function shortLabel(str, max = 18) {
   const s = String(str || "");
   return s.length <= max ? s : s.slice(0, max - 1) + "…";
-}
-function buildAdvisorText(kpi, lists) {
-  const { leakUnderCost, leakErosion, leakDiscount, leakShipping, leakTotal } =
-    kpi;
-  if (!(leakTotal > 0))
-    return "Aucune fuite détectée sur l’échantillon. Gardez un œil sur les drifts de prix et les remises extrêmes.";
-  const biggest = [
-    {
-      key: "Sous le coût",
-      v: leakUnderCost,
-      reco: "bloquer la vente sous coût et corriger les règles de prix remisé (min net ≥ coût).",
-    },
-    {
-      key: "Sous marge cible",
-      v: leakErosion,
-      reco: "rehausser les prix nets des 10 SKUs principaux de +2 à +4 pts et revoir la grille remise.",
-    },
-    {
-      key: "Remises/Drifts",
-      v: leakDiscount,
-      reco: "raboter les remises > médiane + 3×MAD et auditer les promos en caisse + mapping des codes.",
-    },
-    {
-      key: "Transport",
-      v: leakShipping,
-      reco: "ajuster les frais de port au coût réel sur les tranches déficitaires.",
-    },
-  ].sort((a, b) => b.v - a.v)[0];
-
-  const lead =
-    lists?.topUnderCost?.[0] ||
-    lists?.topErosion?.[0] ||
-    lists?.topDiscount?.[0] ||
-    null;
-  const leadName = lead ? lead.name || lead.sku : null;
-
-  return `Priorité 1 : ${biggest.key}. Recommandation : ${
-    biggest.reco
-  } Impact estimé : ${Math.round(
-    leakTotal
-  )} € récupérables (échantillon). Démarrer par ${
-    leadName ? "« " + leadName + " »" : "les 10 SKUs du Top fuite"
-  } puis déployer par règle (niveau SKU, famille et segment remise).`;
 }
 
 function normRow(r) {
@@ -275,6 +233,8 @@ export default function LeakageRadar({
   embedMode = false,
   initialRows = null,
 }) {
+  const { t, i18n } = useTranslation("risk");
+
   const [rawRows, setRawRows] = React.useState([]);
   const [res, setRes] = React.useState(null);
   const [targetMarginPct, setTargetMarginPct] = React.useState(0.3);
@@ -286,10 +246,16 @@ export default function LeakageRadar({
   const hostRef = React.useRef(null);
   const contentRef = React.useRef(null);
 
-  const nf0 = React.useMemo(
-    () => new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }),
-    []
-  );
+  // locale-aware number formatter
+  const nf0 = React.useMemo(() => {
+    const map =
+      i18n.language === "fr"
+        ? "fr-FR"
+        : i18n.language === "es"
+        ? "es-ES"
+        : "en-US";
+    return new Intl.NumberFormat(map, { maximumFractionDigits: 0 });
+  }, [i18n.language]);
 
   const handleCSV = (file) => {
     setLoading(true);
@@ -377,27 +343,27 @@ export default function LeakageRadar({
   const kpiCards = res
     ? [
         {
-          label: "Sous le coût",
+          key: "underCost",
           value: res.kpi.leakUnderCost,
           color: "bg-rose-100 text-rose-900 border-rose-200",
         },
         {
-          label: "Sous marge cible",
+          key: "erosion",
           value: res.kpi.leakErosion,
           color: "bg-amber-100 text-amber-900 border-amber-200",
         },
         {
-          label: "Remises/Drifts",
+          key: "discount",
           value: res.kpi.leakDiscount,
           color: "bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200",
         },
         {
-          label: "Transport",
+          key: "shipping",
           value: res.kpi.leakShipping,
           color: "bg-cyan-100 text-cyan-900 border-cyan-200",
         },
         {
-          label: "Total fuites",
+          key: "total",
           value: res.kpi.leakTotal,
           color: "bg-emerald-100 text-emerald-900 border-emerald-200",
           bold: true,
@@ -407,10 +373,10 @@ export default function LeakageRadar({
 
   const pieData = res
     ? [
-        { name: "Sous coût", value: res.kpi.leakUnderCost },
-        { name: "Marge cible", value: res.kpi.leakErosion },
-        { name: "Remises/Drifts", value: res.kpi.leakDiscount },
-        { name: "Transport", value: res.kpi.leakShipping },
+        { name: t("leakage.kpi.underCost"), value: res.kpi.leakUnderCost },
+        { name: t("leakage.kpi.erosion"), value: res.kpi.leakErosion },
+        { name: t("leakage.kpi.discount"), value: res.kpi.leakDiscount },
+        { name: t("leakage.kpi.shipping"), value: res.kpi.leakShipping },
       ]
     : [];
 
@@ -437,7 +403,6 @@ export default function LeakageRadar({
       }`}
       style={{
         overflow: "visible",
-        // Tech palette as CSS vars for reuse in gradients
         "--c-cyan": "#22d3ee",
         "--c-blue": "#0ea5e9",
         "--c-violet": "#7c3aed",
@@ -448,7 +413,7 @@ export default function LeakageRadar({
         "--grid": "rgba(148,163,184,0.28)",
       }}
     >
-      {/* Main wrapper (kept; no width hacks) */}
+      {/* Main wrapper */}
       <div
         ref={contentRef}
         className="w-full px-4 lg:px-6"
@@ -457,18 +422,25 @@ export default function LeakageRadar({
         {!embedMode && (
           <header className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold">Revenue Leakage Radar</h2>
+              <h2 className="text-2xl font-semibold">
+                {t("leakage.header.title")}
+              </h2>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                Importez un CSV de ventes pour détecter et quantifier les fuites
-                de CA/Marge.
+                {t("leakage.header.subtitle")}
               </p>
             </div>
             <button
               onClick={toggleFS}
               className="text-xs px-3 py-1 rounded-full border hover:shadow-sm"
-              title="Plein écran"
+              title={
+                fs
+                  ? t("leakage.header.fullscreenExit")
+                  : t("leakage.header.fullscreenEnter")
+              }
             >
-              {fs ? "Quitter plein écran" : "Plein écran"}
+              {fs
+                ? t("leakage.header.fullscreenExit")
+                : t("leakage.header.fullscreenEnter")}
             </button>
           </header>
         )}
@@ -476,11 +448,11 @@ export default function LeakageRadar({
         {/* Controls */}
         <div className="rounded-2xl border px-4 py-3 bg-gray-50/70 dark:bg-white/5 mb-4 w-full min-w-0">
           <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
-            Paramètres
+            {t("leakage.controls.title")}
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             <label className="text-sm">
-              Marge cible (%)
+              {t("leakage.controls.targetMargin")}
               <input
                 type="number"
                 min="0"
@@ -496,7 +468,7 @@ export default function LeakageRadar({
               />
             </label>
             <label className="text-sm">
-              Drift prix (%)
+              {t("leakage.controls.priceDrift")}
               <input
                 type="number"
                 min="5"
@@ -516,7 +488,7 @@ export default function LeakageRadar({
               disabled={!rawRows.length}
               className="px-3 py-2 rounded-xl border transition-transform active:scale-[0.98] hover:shadow-sm"
             >
-              Recalculer
+              {t("leakage.controls.recompute")}
             </button>
             <label className="inline-flex items-center px-3 py-2 rounded-xl border cursor-pointer transition-transform active:scale-[0.98] hover:shadow-sm">
               <input
@@ -527,49 +499,41 @@ export default function LeakageRadar({
                   e.target.files?.[0] && handleCSV(e.target.files[0])
                 }
               />
-              Importer ventes (CSV&nbsp;UTF-8)
+              {t("leakage.controls.importCsv")}
             </label>
             <button
               onClick={loadSample}
               className="px-3 py-2 rounded-xl border bg-emerald-600 text-white transition-transform active:scale-[0.98] hover:shadow-sm"
             >
-              Charger un exemple
+              {t("leakage.controls.loadSample")}
             </button>
             <button
               onClick={downloadSampleCSV}
               className="px-3 py-2 rounded-xl border transition-transform active:scale-[0.98] hover:shadow-sm"
-              title="Télécharger un modèle de fichier CSV"
+              title={t("leakage.controls.downloadTemplate")}
             >
-              Télécharger le modèle CSV
+              {t("leakage.controls.downloadTemplate")}
             </button>
           </div>
 
-          {/* ✦ Explication sur le type de fichier attendu */}
+          {/* File help */}
           <div className="mt-3 text-[12px] text-gray-700 dark:text-gray-300 leading-relaxed">
             <div className="font-medium text-[11px] uppercase tracking-wide mb-1">
-              Format du fichier attendu
+              {t("leakage.fileHelp.title")}
             </div>
             <ul className="list-disc pl-5 space-y-1">
+              <li>{t("leakage.fileHelp.csvNote")}</li>
+              <li>{t("leakage.fileHelp.decimalsNote")}</li>
+              <li>{t("leakage.fileHelp.rowNote")}</li>
               <li>
-                Fichier <strong>CSV (UTF-8)</strong>, séparateur <code>,</code>{" "}
-                ou <code>;</code>.
-              </li>
-              <li>
-                Décimaux: <code>.</code> ou <code>,</code> acceptés (ex:{" "}
-                <code>12.90</code> ou <code>12,90</code>).
-              </li>
-              <li>Une ligne = un article de commande (SKU).</li>
-              <li>
-                En-têtes requis:&nbsp;
-                <code>
-                  date,order_id,sku,name,qty,unit_price,unit_cost,discount,shipping_fee,shipping_cost
-                </code>
+                {t("leakage.fileHelp.headersTitle")}{" "}
+                <code>{t("leakage.fileHelp.headersList")}</code>
               </li>
             </ul>
             <div className="mt-2 font-mono text-[11px] bg-gray-100 dark:bg-zinc-800 rounded-xl px-3 py-2 overflow-x-auto">
-              date,order_id,sku,name,qty,unit_price,unit_cost,discount,shipping_fee,shipping_cost
+              {t("leakage.fileHelp.headersList")}
               <br />
-              2025-10-01,A-1001,SKU-A,Café&nbsp;grain&nbsp;1kg,3,12.9,9.5,4.5,3.9,4.5
+              {t("leakage.fileHelp.exampleRow")}
             </div>
           </div>
         </div>
@@ -584,7 +548,7 @@ export default function LeakageRadar({
                 style={{ borderColor: "rgba(0,0,0,0.08)" }}
               >
                 <div className="text-[11px] uppercase tracking-wide opacity-70">
-                  {k.label}
+                  {t(`leakage.kpi.${k.key}`)}
                 </div>
                 <div
                   className={`text-[28px] leading-none mt-1 font-extrabold ${
@@ -603,14 +567,15 @@ export default function LeakageRadar({
           <div className="grid grid-cols-12 gap-6 items-start">
             {/* PIE */}
             <div className="col-span-12 lg:col-span-5 rounded-2xl border p-4 bg-white/70 dark:bg-white/5">
-              <h4 className="font-medium mb-2">Répartition des fuites (€)</h4>
+              <h4 className="font-medium mb-2">
+                {t("leakage.charts.splitTitle")}
+              </h4>
               <div className="h-[360px] w-full min-w-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart
                     margin={{ top: 10, right: 20, bottom: 10, left: 10 }}
                   >
                     <defs>
-                      {/* soft glow */}
                       <filter
                         id="pieGlow"
                         x="-50%"
@@ -624,7 +589,6 @@ export default function LeakageRadar({
                           <feMergeNode in="SourceGraphic" />
                         </feMerge>
                       </filter>
-                      {/* segment gradients */}
                       <radialGradient id="pie0" cx="50%" cy="50%" r="65%">
                         <stop
                           offset="0%"
@@ -712,7 +676,7 @@ export default function LeakageRadar({
             {/* BAR */}
             <div className="col-span-12 lg:col-span-7 rounded-2xl border p-4 bg-white/70 dark:bg-white/5">
               <h4 className="font-medium mb-2">
-                Top fuites par produit (total €)
+                {t("leakage.charts.topLeaksTitle")}
               </h4>
               <div className="h-[360px] w-full min-w-0">
                 <ResponsiveContainer width="100%" height="100%">
@@ -759,7 +723,7 @@ export default function LeakageRadar({
                     />
                     <Bar
                       dataKey="leak"
-                      name="Fuite (€)"
+                      name={t("leakage.charts.barLeakName")}
                       isAnimationActive
                       animationDuration={700}
                       animationEasing="ease-out"
@@ -778,7 +742,9 @@ export default function LeakageRadar({
         {/* Time series */}
         {res && res.series?.length > 0 && (
           <div className="mt-6 rounded-2xl border p-4 bg-white/70 dark:bg-white/5">
-            <h4 className="font-medium mb-2">Fuites dans le temps (€/jour)</h4>
+            <h4 className="font-medium mb-2">
+              {t("leakage.charts.timeseriesTitle")}
+            </h4>
             <div className="h-[360px] w-full min-w-0">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
@@ -844,7 +810,7 @@ export default function LeakageRadar({
                   <Line
                     type="monotone"
                     dataKey="uc"
-                    name="Sous coût"
+                    name={t("leakage.kpi.underCost")}
                     dot={false}
                     isAnimationActive
                     animationDuration={600}
@@ -856,7 +822,7 @@ export default function LeakageRadar({
                   <Line
                     type="monotone"
                     dataKey="ero"
-                    name="Marge cible"
+                    name={t("leakage.kpi.erosion")}
                     dot={false}
                     isAnimationActive
                     animationDuration={600}
@@ -868,7 +834,7 @@ export default function LeakageRadar({
                   <Line
                     type="monotone"
                     dataKey="disc"
-                    name="Remises/Drifts"
+                    name={t("leakage.kpi.discount")}
                     dot={false}
                     isAnimationActive
                     animationDuration={600}
@@ -880,7 +846,7 @@ export default function LeakageRadar({
                   <Line
                     type="monotone"
                     dataKey="ship"
-                    name="Transport"
+                    name={t("leakage.kpi.shipping")}
                     dot={false}
                     isAnimationActive
                     animationDuration={600}
@@ -897,12 +863,13 @@ export default function LeakageRadar({
 
         {!res && !loading && (
           <div className="mt-6 rounded-2xl border p-6 text-sm text-gray-600 dark:text-gray-300 bg-gray-50/60 dark:bg-white/5">
-            Importez un CSV (ou chargez l'exemple) pour voir les fuites de
-            CA/Marge.
+            {t("leakage.empty.prompt")}
           </div>
         )}
         {loading && (
-          <div className="mt-6 text-sm opacity-70">Analyse en cours…</div>
+          <div className="mt-6 text-sm opacity-70">
+            {t("leakage.empty.loading")}
+          </div>
         )}
       </div>
     </section>
@@ -951,7 +918,6 @@ function buildSampleRawRows() {
       shipping_fee: 3.9,
       shipping_cost: 4.2,
     },
-
     {
       date: d(9),
       order_id: "B-2001",
@@ -988,7 +954,6 @@ function buildSampleRawRows() {
       shipping_fee: 2.9,
       shipping_cost: 3.0,
     },
-
     {
       date: d(6),
       order_id: "C-3001",
@@ -1025,7 +990,6 @@ function buildSampleRawRows() {
       shipping_fee: 2.5,
       shipping_cost: 2.4,
     },
-
     {
       date: d(3),
       order_id: "D-4001",

@@ -1,0 +1,128 @@
+{
+  "page": {
+    "title": "Trésorerie — Clients à risque",
+    "tagline": "KPIs + charts, liste priorisée (emails cliquables) & import CSV — rendu pro, tech & animé.",
+    "dataSourceLabel": "Source des données :",
+    "dataSource": {
+      "csv": "CSV importé ({{count}} lignes)",
+      "demo": "Démo / LocalStorage"
+    },
+    "btn": {
+      "reset": "Réinitialiser"
+    }
+  },
+
+  "kpi": {
+    "totalExposure": {
+      "title": "Exposition totale",
+      "caption": "Montant total en attente"
+    },
+    "recoveryPotential": {
+      "title": "Potentiel recouvrement",
+      "caption": "Estimation pondérée"
+    },
+    "riskyClients": {
+      "title": "Clients à risque",
+      "caption": ">60j ou faible prob."
+    }
+  },
+
+  "charts": {
+    "pie": {
+      "title": "Répartition du potentiel",
+      "recoverable": "Potentiel récupérable",
+      "remainingExposure": "Exposition restante"
+    },
+    "top5": {
+      "title": "Top 5 — potentiel par client",
+      "barName": "Potentiel"
+    },
+    "history": {
+      "title": "Historique — exposition simulée"
+    }
+  },
+
+  "priority": {
+    "title": "Priorités de relance",
+    "subtitle": "Tri par score (montant, retard, prob. récup).",
+    "clientsLabel": "Clients :",
+    "totalDueLabel": "Dû total :",
+    "potentialLabel": "Potentiel :",
+    "searchPlaceholder": "Rechercher client/ID/email",
+    "previewBtn": "Prévisualiser",
+    "exportBtn": "Export CSV",
+
+    "headers": {
+      "client": "Client",
+      "overdue": "Retard (j)",
+      "due": "Dû",
+      "potential": "Potentiel",
+      "action": "Action"
+    },
+
+    "scoreLabel": "Score priorité",
+    "probAbbr": "Prob. récup.",
+    "remindBtn": "Relancer",
+    "noMatch": "Aucun client ne correspond au filtre.",
+
+    "email": {
+      "missing": "(email manquant)",
+      "completeHint": "email à compléter",
+      "defaultClient": "Client",
+      "defaultGreeting": "Madame, Monsieur",
+      "subjectWithId": "Relance facture — {{name}} ({{id}})",
+      "body": "Bonjour {{name}},\n\nNous revenons vers vous concernant un impayé de {{amount}} (facture {{id}}).\nAncienneté : {{overdue}} jours.\n\nNous pouvons convenir d'un échéancier si nécessaire.\nMerci de nous répondre sous 7 jours.\n\nCordialement,\nL’équipe Finance"
+    },
+
+    "preview": {
+      "title": "Prévisualisation des emails",
+      "windowTitle": "Prévisualisation emails — InsightMate",
+      "recipients": "Destinataires (max 50 — filtre appliqué)",
+      "templateLabel": "Template",
+      "subjectLabel": "Objet",
+      "subject": "Relance facture — {{name}}",
+      "toLine": "À : {{email}} — {{name}} — Est. {{amount}}",
+      "allowPopups": "Autorisez les pop-ups pour prévisualiser."
+    }
+  },
+
+  "csv": {
+    "card": {
+      "title": "Ajoute ton CSV",
+      "supportedColsHtml": "Colonnes supportées : <code>id</code>, <code>name</code>, <code>email</code>, <code>outstanding</code>, <code>overdue</code>, <code>probability_recovery</code> (0–1).",
+      "minimumColsHtml": "Minimum requis : <code>id</code>, <code>name</code>, <code>outstanding</code>. Idéal : ajouter <code>email</code> + <code>overdue</code>."
+    },
+    "btn": {
+      "template": "Modèle",
+      "chooseFile": "Choisir un fichier"
+    },
+    "hint": {
+      "dropHere": "Astuce : glisse-dépose ton fichier CSV ici."
+    },
+    "status": {
+      "parsing": "Parsing du CSV…",
+      "noValidRows": "Aucune ligne valide trouvée (vérifie les colonnes).",
+      "ok": "Import réussi — {{count}} lignes",
+      "error": {
+        "map": "Erreur lors du mapping du CSV.",
+        "parse": "Erreur de parsing CSV."
+      }
+    },
+    "filename": {
+      "template": "modele_clients_risque.csv"
+    },
+    "filenames": {
+      "priorities": "clients_priorites.csv",
+      "clients": "clients_list.csv"
+    }
+  },
+
+  "clientsList": {
+    "title": "Clients signalés",
+    "found": "{{count}} trouvés",
+    "export": "Export",
+    "searchPlaceholder": "Rechercher client/ID/email",
+    "delayLabel": "{{days}}j retard",
+    "potentialPrefix": "Potentiel "
+  }
+}

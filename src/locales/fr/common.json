@@ -1,0 +1,15 @@
+{
+  "app.name": "InsightMate",
+  "nav.home": "Accueil",
+  "nav.sales": "Ventes",
+  "nav.clientRisk": "Analyse Clients",
+  "nav.eco": "Éco-Label",
+  "nav.pricing": "Pricing",
+  "nav.risk": "Risque",
+  "nav.help": "Aide",
+  "cta.getStarted": "C’est parti",
+  "label.language": "Langue",
+  "toast.saved": "C’est enregistré.",
+  "error.generic": "Oups, un truc a coincé.",
+  "nav.connectors": "Connecteurs Auto"
+}

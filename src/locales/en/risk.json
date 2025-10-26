@@ -1,0 +1,145 @@
+{
+  "topbar": {
+    "title": "Sales / Orders Data",
+    "csvExpected": "Expected CSV:",
+    "downloadSample": "Download sample",
+    "uploadCsv": "Upload CSV"
+  },
+  "header": {
+    "title": "Risk",
+    "subtitle": "CFaR / ES, fan chart, stress tests and concentration.",
+    "modeDemo": "Mode: Demo"
+  },
+  "tooltip": {
+    "p95": "p95",
+    "median": "Median",
+    "mc": "Monte Carlo",
+    "p5": "p5",
+    "note": "Bands = simulated cash uncertainty (AR(1), 3k–8k paths)."
+  },
+  "kpi": {
+    "cfar": "Cash at Risk p{{alphaPct}} ({{horizon}} d)",
+    "es": "Expected loss under stress",
+    "probOverdraft": "Prob. of overdraft over period",
+    "runway": "Runway",
+    "hhi": "Client concentration"
+  },
+  "chart": {
+    "title": "Treasury — Fan chart",
+    "subtitle": "Horizon {{horizon}} d • α={{alphaPct}} • Sim={{nSim}}",
+    "cfar": "Cash at risk:",
+    "es": "Expected shortfall:"
+  },
+  "legend": {
+    "p95Optimistic": "p95 (optimistic)",
+    "median": "Median",
+    "p5Conservative": "p5 (conservative)",
+    "mc": "Monte Carlo",
+    "stress": "Stress",
+    "optimistic": "Optimistic"
+  },
+  "block": {
+    "stressSim": {
+      "title": "Stress & Simulation",
+      "subtitle": "Adjust and re-run calculation"
+    },
+    "advisor": {
+      "title": "AI Advisor (Risk)",
+      "subtitle": "Problem → Cause → Solution (+ROI)"
+    }
+  },
+  "radar": {
+    "title": "Revenue Leakage Radar",
+    "subtitle": "Under-cost • Target margin • Over-discount • Shipping",
+    "tip": "Tip: Load the sample or import your CSV to visualize leaks (€)."
+  },
+  "clients": {
+    "title": "Client concentration",
+    "none": "No clients identified."
+  },
+  "csv": {
+    "invalidRows": "No valid rows detected.",
+    "invalid": "Invalid CSV. Check header and expected columns (see help).",
+    "parseError": "CSV parsing error."
+  },
+  "leakage": {
+    "header": {
+      "title": "Revenue Leakage Radar",
+      "subtitle": "Import a sales CSV to detect and quantify revenue/margin leaks.",
+      "fullscreenEnter": "Full screen",
+      "fullscreenExit": "Exit full screen"
+    },
+    "controls": {
+      "title": "Settings",
+      "targetMargin": "Target margin (%)",
+      "priceDrift": "Price drift (%)",
+      "recompute": "Recompute",
+      "importCsv": "Import sales (CSV UTF-8)",
+      "loadSample": "Load sample",
+      "downloadTemplate": "Download CSV template"
+    },
+    "fileHelp": {
+      "title": "Expected file format",
+      "csvNote": "CSV file (UTF-8), separator \",\" or \";\".",
+      "decimalsNote": "Decimals: both \".\" or \",\" accepted (ex: 12.90 or 12,90).",
+      "rowNote": "One row = one order item (SKU).",
+      "headersTitle": "Required headers:",
+      "headersList": "date,order_id,sku,name,qty,unit_price,unit_cost,discount,shipping_fee,shipping_cost",
+      "exampleRow": "Example: 2025-10-01,A-1001,SKU-A,Coffee beans 1kg,3,12.9,9.5,4.5,3.9,4.5"
+    },
+    "kpi": {
+      "underCost": "Under-cost",
+      "erosion": "Below target margin",
+      "discount": "Discounts/Drift",
+      "shipping": "Shipping",
+      "total": "Total leaks"
+    },
+    "charts": {
+      "splitTitle": "Leak breakdown (€)",
+      "topLeaksTitle": "Top leaks by product (€)",
+      "timeseriesTitle": "Leaks over time (€ / day)",
+      "barLeakName": "Leak (€)"
+    },
+    "empty": {
+      "prompt": "Import a CSV (or load the sample) to see revenue/margin leaks.",
+      "loading": "Analysing…"
+    }
+  },
+  "glossary": {
+    "title": "How is it calculated?",
+    "items": {
+      "increments": {
+        "label": "Cash increments",
+        "text": "Daily series of net cash ≈ margin on sales + payments + banking flows."
+      },
+      "model": {
+        "label": "Model",
+        "text": "AR(1) on increments (μ, φ, σ estimated) → 3k–8k simulated paths over 30–180 days."
+      },
+      "fan": {
+        "label": "Fan chart",
+        "text": "Curves represent quantiles p5, p50 (median), p95 of simulated paths."
+      },
+      "cfar": {
+        "label": "CFaR / ES",
+        "text": "Cash-flow-at-Risk and Expected Shortfall at quantile α: potential losses on ΔCash at horizon."
+      },
+      "prob": {
+        "label": "Prob(Overdraft)",
+        "text": "Share of trajectories that fall below €0 at least once before the horizon."
+      },
+      "runway": {
+        "label": "Runway P5",
+        "text": "5th-percentile of days before €0 (if no trajectory crosses 0 → ∞)."
+      },
+      "hhi": {
+        "label": "Client HHI",
+        "text": "Concentration index on client sales shares (0 = diversified, >0.2 = high)."
+      },
+      "stress": {
+        "label": "Stress tests",
+        "text": "Δ% sales (scaling), Δ% costs (margin impact), +DSO days (delay in payments)."
+      }
+    }
+  }
+}

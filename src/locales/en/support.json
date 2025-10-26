@@ -1,0 +1,183 @@
+{
+  "top": {
+    "notice": "Support & Onboarding — turnkey setup, data connected, team trained."
+  },
+  "hero": {
+    "badge": "Onboarded in < 7 days • KPIs ready • No broken Excel",
+    "title": {
+      "pre": "Need a",
+      "highlight": "turnkey setup",
+      "qmark": "?",
+      "line2": "We handle it. You execute, we industrialize."
+    },
+    "text": "We connect your data (bank, sales, accounting), configure your KPIs, and train your team. You keep InsightMate’s simplicity with a professional, fast deployment.",
+    "cta": {
+      "audit": "Free 15-min audit",
+      "csvTitle": "Download the sample CSV",
+      "csv": "Sample CSV",
+      "video": "90s video"
+    },
+    "checks": {
+      "fastDeploy": "Fast deployment",
+      "secureData": "Secure data",
+      "noCode": "Zero code required"
+    },
+    "kpi": {
+      "headerLeft": "KPI preview",
+      "headerRight": "Real-time",
+      "ca30": "Revenue 30d",
+      "basket": "Avg. basket",
+      "runway": "Runway"
+    }
+  },
+  "quick": {
+    "title": "Quick Start (3 steps)",
+    "subtitle": "You can use it self-service. But clients go 3× faster with onboarding.",
+    "cards": {
+      "1": {
+        "title": "1) Import",
+        "desc": "Download the sample CSV and import your sales or payments.",
+        "pill": "2 min"
+      },
+      "2": {
+        "title": "2) Connect",
+        "desc": "Optional: connect Bank/Stripe/Shopify for auto-sync.",
+        "pill": "Plug & play"
+      },
+      "3": {
+        "title": "3) Go Live",
+        "desc": "Your KPIs update. We train you (30–60 min).",
+        "pill": "< 7 d"
+      },
+      "csvButton": "Sample CSV"
+    }
+  },
+  "usecases": {
+    "title": "Use cases",
+    "cards": {
+      "cafe": {
+        "title": "Coffee shop / Point of sale",
+        "bullets": {
+          "0": "30-day revenue forecast",
+          "1": "Stock-outs avoided",
+          "2": "Clarified payments"
+        },
+        "stat": "+12 h saved / month"
+      },
+      "ecom": {
+        "title": "E-commerce",
+        "bullets": {
+          "0": "Top products",
+          "1": "Customer cohorts",
+          "2": "Forecast + scenarios"
+        },
+        "stat": "-18% Excel errors"
+      },
+      "b2b": {
+        "title": "B2B / Services",
+        "bullets": {
+          "0": "DSO & reminders",
+          "1": "Cash runway",
+          "2": "Client risks"
+        },
+        "stat": "Payment delay −9d"
+      }
+    }
+  },
+  "services": {
+    "title": "Services & Support",
+    "subtitle": {
+      "prefix": "Choose your mode:",
+      "or": "or"
+    },
+    "modes": {
+      "dfy": "Done-For-You",
+      "dwy": "Done-With-You",
+      "self": "Self-serve + Support"
+    },
+    "packages": {
+      "dfy": {
+        "name": "Done-For-You",
+        "tagline": "We do everything for you",
+        "price": "from €990",
+        "points": {
+          "0": "Full audit & setup",
+          "1": "Connectors & mapping",
+          "2": "Custom dashboard + training"
+        }
+      },
+      "dwy": {
+        "name": "Done-With-You",
+        "tagline": "We configure together",
+        "price": "from €590",
+        "points": {
+          "0": "2×60 min workshop",
+          "1": "CSV import & QA",
+          "2": "Operating playbook"
+        }
+      },
+      "self": {
+        "name": "Self-serve + Support",
+        "tagline": "Guided autonomy",
+        "price": "from €0",
+        "points": {
+          "0": "Sample CSV & mini-video",
+          "1": "Short FAQ",
+          "2": "Email support (48h)"
+        }
+      }
+    },
+    "recommended": "Recommended",
+    "priceLabel": "Price",
+    "buttons": {
+      "contact": "Contact us",
+      "call": "Call"
+    }
+  },
+  "metrics": {
+    "setup": { "label": "Setup time", "value": "< 7 days" },
+    "gain": { "label": "Average gain", "value": "+12 h/month" },
+    "errors": { "label": "Error reduction", "value": "-18%" }
+  },
+  "demo": {
+    "title": "90s video — Import & KPIs",
+    "soonTitle": "Coming soon",
+    "soon": "Coming soon"
+  },
+  "faq": {
+    "title": "FAQ (5 answers max)",
+    "items": {
+      "0": {
+        "q": "How long to be operational?",
+        "a": "Under a week for 80% of cases. Depends on data volume and quality."
+      },
+      "1": {
+        "q": "Can we use it self-service?",
+        "a": "Yes. The sample CSV + video are enough to get started. The service speeds up go-live."
+      },
+      "2": {
+        "q": "Which connectors are prioritized?",
+        "a": "Stripe + Bank (Bridge/Powens) first, then Shopify/Presta/Woo, then Pennylane/Sage."
+      },
+      "3": {
+        "q": "Is the data secure?",
+        "a": "Yes. Read-only by default, encrypted in transit, with good access practices."
+      },
+      "4": {
+        "q": "What does the training cover?",
+        "a": "Reading KPIs, scenarios, best practices (imports, light cleaning, reminders)."
+      }
+    }
+  },
+  "creator": {
+    "byPrefix": "Guidance by",
+    "subtitle": "Data & Risk — HMM/SV-HMM — InsightMate. We turn data into decisions.",
+    "buttons": {
+      "contact": "Contact",
+      "call": "Call"
+    }
+  },
+  "footer": {
+    "createdBy": "Created by"
+  }
+}

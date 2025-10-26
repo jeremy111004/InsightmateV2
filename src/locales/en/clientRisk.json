@@ -1,0 +1,139 @@
+{
+  "page": {
+    "title": "Client Risk",
+    "tagline": "Dunning priorities, cash-in forecast, and ready-to-use exports.",
+    "dataSourceLabel": "Source:",
+    "dataSource": {
+      "csv": "{{count}} CSV rows",
+      "demo": "Built-in demo"
+    },
+    "btn": {
+      "reset": "Reset"
+    }
+  },
+  "kpi": {
+    "totalExposure": {
+      "title": "Total Exposure",
+      "caption": "Sum of client receivables"
+    },
+    "recoveryPotential": {
+      "title": "Recoverable (Expected)",
+      "caption": "Probability-weighted estimate"
+    },
+    "riskyClients": {
+      "title": "At-Risk Clients",
+      "caption": "Overdue > 60d or probability < 50%"
+    }
+  },
+  "charts": {
+    "pie": {
+      "title": "Exposure: recoverable vs remaining",
+      "recoverable": "Recoverable",
+      "remainingExposure": "Remaining exposure"
+    },
+    "top5": {
+      "title": "Top 5 — Recoverable amounts",
+      "barName": "Estimated recoverable"
+    },
+    "history": {
+      "title": "Exposure history (demo)"
+    }
+  },
+  "priority": {
+    "title": "Dunning Priority",
+    "subtitle": "Ranked by amount due, probability, and days overdue",
+    "clientsLabel": "Clients:",
+    "totalDueLabel": "Total due:",
+    "potentialLabel": "Recoverable potential:",
+    "previewBtn": "Preview emails",
+    "exportBtn": "Export priorities (CSV)",
+    "searchPlaceholder": "Search (name, ID, email)",
+    "headers": {
+      "client": "Client",
+      "overdue": "Overdue (d)",
+      "due": "Due (€)",
+      "potential": "Recoverable (€)",
+      "action": "Action"
+    },
+    "scoreLabel": "Score",
+    "probAbbr": "Prob.",
+    "remindBtn": "Remind",
+    "noMatch": "No results.",
+    "email": {
+      "missing": "Missing email",
+      "completeHint": "Complete contact details to follow up",
+      "defaultClient": "Client",
+      "defaultGreeting": "Hello",
+      "subjectWithId": "Invoice reminder — {{name}} ({{id}})",
+      "body": "Hello {{name}},\n\nFollowing up regarding invoice {{id}} for {{amount}}, overdue by {{overdue}} days. Could you please share a payment date or let us know if there is any issue?\n\nThank you."
+    },
+    "preview": {
+      "toLine": "{{email}} — {{name}} — {{amount}}",
+      "subject": "Invoice reminder — {{name}}",
+      "allowPopups": "Please allow pop-ups to show the preview.",
+      "windowTitle": "Reminder email preview",
+      "title": "Recipients preview (top 50)",
+      "recipients": "Recipient lines (email — name — estimated recoverable)",
+      "templateLabel": "Email template",
+      "subjectLabel": "Subject"
+    }
+  },
+  "csv": {
+    "card": {
+      "title": "Upload a CSV (overdue clients)",
+      "supportedColsHtml": "Supported columns: <code>id</code>, <code>name</code>, <code>email</code>, <code>outstanding</code>, <code>overdue</code>, <code>probability_recovery</code>.",
+      "minimumColsHtml": "Minimum required: <b>id</b>, <b>name</b>, <b>outstanding</b> (EUR). <i>probability_recovery</i> is optional."
+    },
+    "btn": {
+      "template": "Download template",
+      "chooseFile": "Choose a file"
+    },
+    "hint": {
+      "dropHere": "… or drag & drop a CSV here"
+    },
+    "status": {
+      "parsing": "Parsing file…",
+      "noValidRows": "No valid rows found.",
+      "ok": "{{count}} rows loaded.",
+      "error": {
+        "map": "Error while mapping columns.",
+        "parse": "Error parsing file."
+      }
+    },
+    "filename": {
+      "template": "clients_template.csv"
+    },
+    "filenames": {
+      "priorities": "dunning_priorities.csv",
+      "nextActions": "next_actions.csv",
+      "clients": "clients.csv",
+      "weeklyForecast": "weekly_forecast.csv"
+    }
+  },
+  "follow": {
+    "title": "Cash-in Forecast (Smart Follow-Up)",
+    "exportNextActions": "Export next actions (top 50)",
+    "exportWeekly": "Export weekly forecast",
+    "kpi": {
+      "next7": "Cash-in 7d",
+      "next7.caption": "expected (EV)",
+      "next30": "Cash-in 30d",
+      "next30.caption": "expected (EV)",
+      "horizon": "Horizon",
+      "horizon.caption": "weekly aggregation",
+      "weeks": "wks"
+    },
+    "chart": {
+      "barName": "Expected cash-in"
+    },
+    "note": "Simple deterministic assumptions: expected date = f(probability, overdue). Update your CSV to refresh the forecast."
+  },
+  "clientsList": {
+    "title": "Clients list",
+    "found": "{{count}} found",
+    "export": "Export (CSV)",
+    "searchPlaceholder": "Filter the list…",
+    "delayLabel": "{{days}} days overdue",
+    "potentialPrefix": "Potential: "
+  }
+}

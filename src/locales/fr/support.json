@@ -1,0 +1,183 @@
+{
+  "top": {
+    "notice": "Support & Onboarding — setup clé en main, données branchées, équipe formée."
+  },
+  "hero": {
+    "badge": "Onboardé en < 7 jours • KPI prêts • Sans Excel cassé",
+    "title": {
+      "pre": "Besoin d’un setup",
+      "highlight": "clé en main",
+      "qmark": "?",
+      "line2": "On s’en charge. Vous exécutez, on industrialise."
+    },
+    "text": "On connecte vos données (banque, ventes, compta), on configure vos KPI, on forme l’équipe. Vous gardez la simplicité d’InsightMate, avec un déploiement pro et rapide.",
+    "cta": {
+      "audit": "Audit gratuit 15 min",
+      "csvTitle": "Télécharger le CSV modèle",
+      "csv": "CSV modèle",
+      "video": "Vidéo 90s"
+    },
+    "checks": {
+      "fastDeploy": "Déploiement rapide",
+      "secureData": "Données sécurisées",
+      "noCode": "Zéro code requis"
+    },
+    "kpi": {
+      "headerLeft": "Aperçu KPI",
+      "headerRight": "Temps réel",
+      "ca30": "CA 30j",
+      "basket": "Panier moyen",
+      "runway": "Runway"
+    }
+  },
+  "quick": {
+    "title": "Quick Start (3 étapes)",
+    "subtitle": "Vous pouvez l’utiliser en self-service. Mais nos clients vont 3× plus vite avec l’onboarding.",
+    "cards": {
+      "1": {
+        "title": "1) Import",
+        "desc": "Téléchargez le CSV modèle et importez vos ventes ou encaissements.",
+        "pill": "2 min"
+      },
+      "2": {
+        "title": "2) Connect",
+        "desc": "Optionnel : branchez Banque/Stripe/Shopify pour l’auto-sync.",
+        "pill": "Plug & play"
+      },
+      "3": {
+        "title": "3) Go Live",
+        "desc": "Vos KPI se mettent à jour. On vous forme (30–60 min).",
+        "pill": "< 7 j"
+      },
+      "csvButton": "CSV modèle"
+    }
+  },
+  "usecases": {
+    "title": "Cas d’usage",
+    "cards": {
+      "cafe": {
+        "title": "Café / Point de vente",
+        "bullets": {
+          "0": "Prévision CA 30j",
+          "1": "Ruptures évitées",
+          "2": "Encaissements clarifiés"
+        },
+        "stat": "+12 h gagnées/mois"
+      },
+      "ecom": {
+        "title": "E-commerce",
+        "bullets": {
+          "0": "Top produits",
+          "1": "Cohortes clients",
+          "2": "Forecast + scénarios"
+        },
+        "stat": "-18% erreurs Excel"
+      },
+      "b2b": {
+        "title": "B2B / Services",
+        "bullets": {
+          "0": "DSO & relances",
+          "1": "Cash runway",
+          "2": "Risques clients"
+        },
+        "stat": "Délai de paiement −9j"
+      }
+    }
+  },
+  "services": {
+    "title": "Services & Support",
+    "subtitle": {
+      "prefix": "Choisissez votre mode :",
+      "or": "ou"
+    },
+    "modes": {
+      "dfy": "Done-For-You",
+      "dwy": "Done-With-You",
+      "self": "Self-serve + SAV"
+    },
+    "packages": {
+      "dfy": {
+        "name": "Done-For-You",
+        "tagline": "On fait tout pour vous",
+        "price": "à partir de 990€",
+        "points": {
+          "0": "Audit & setup complet",
+          "1": "Connecteurs & mapping",
+          "2": "Dashboard custom + formation"
+        }
+      },
+      "dwy": {
+        "name": "Done-With-You",
+        "tagline": "On configure ensemble",
+        "price": "à partir de 590€",
+        "points": {
+          "0": "Atelier 2×60 min",
+          "1": "Import CSV & QA",
+          "2": "Playbook d’exploitation"
+        }
+      },
+      "self": {
+        "name": "Self-serve + SAV",
+        "tagline": "Autonomie guidée",
+        "price": "à partir de 0€",
+        "points": {
+          "0": "CSV modèle & mini-vidéo",
+          "1": "FAQ courte",
+          "2": "Support email (48h)"
+        }
+      }
+    },
+    "recommended": "Recommandé",
+    "priceLabel": "Tarif",
+    "buttons": {
+      "contact": "Nous contacter",
+      "call": "Appeler"
+    }
+  },
+  "metrics": {
+    "setup": { "label": "Mise en place", "value": "< 7 jours" },
+    "gain": { "label": "Gain moyen", "value": "+12 h/mois" },
+    "errors": { "label": "Réduction erreurs", "value": "-18%" }
+  },
+  "demo": {
+    "title": "Vidéo 90s — Import & KPI",
+    "soonTitle": "Bientôt disponible",
+    "soon": "Bientôt disponible"
+  },
+  "faq": {
+    "title": "FAQ (5 réponses, pas plus)",
+    "items": {
+      "0": {
+        "q": "Combien de temps pour être opérationnel ?",
+        "a": "Moins d’une semaine pour 80% des cas. Dépend du volume et de la qualité des données."
+      },
+      "1": {
+        "q": "Peut-on l’utiliser en self-service ?",
+        "a": "Oui. Le CSV modèle + la vidéo suffisent pour commencer. Le service accélère le go-live."
+      },
+      "2": {
+        "q": "Quels connecteurs sont prioritaires ?",
+        "a": "Stripe + Banque (Bridge/Powens) en premier, puis Shopify/Presta/Woo, puis Pennylane/Sage."
+      },
+      "3": {
+        "q": "Les données sont-elles sécurisées ?",
+        "a": "Oui. Lecture seule par défaut, chiffrement en transit, bonnes pratiques d’accès."
+      },
+      "4": {
+        "q": "Que couvre la formation ?",
+        "a": "Lecture des KPI, scénarios, bonnes pratiques (imports, nettoyage léger, relances)."
+      }
+    }
+  },
+  "creator": {
+    "byPrefix": "Accompagnement par",
+    "subtitle": "Data & Risk — HMM/SV-HMM — InsightMate. On transforme vos données en décisions.",
+    "buttons": {
+      "contact": "Contacter",
+      "call": "Appeler"
+    }
+  },
+  "footer": {
+    "createdBy": "Créé par"
+  }
+}

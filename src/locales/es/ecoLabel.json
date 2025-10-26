@@ -1,0 +1,127 @@
+{
+  "page": {
+    "title": "Eco Label (estimación educativa)",
+    "tagline": "Estimación de intensidad de carbono de 30 días, composición, escenario de mejora y recursos.",
+    "csvHintHtml": "Formato esperado — <b>Ventas</b>: <code>date, qty, price</code> (opcionales: <code>order_id, product</code>). <b>Banco</b>: <code>date, amount, label</code>. CSV UTF-8 con cabecera."
+  },
+  "actions": {
+    "exportMethod": "Exportar metodología (.json)",
+    "addCsv": "Añadir un CSV",
+    "addCsvTitle": "Importar un CSV de ventas o banco"
+  },
+  "files": {
+    "methodology": "insightmate-methodology.json"
+  },
+  "panel": {
+    "brandTitle": "Eco-Label InsightMate",
+    "confidenceShort": "Confianza {{value}}%",
+    "uncertaintyBadge": "Banda de incertidumbre incluida",
+    "estimatedIntensity": "Intensidad estimada:",
+    "intensityUnit": "kgCO₂e/€"
+  },
+  "connect": {
+    "sales": {
+      "connected": "Ventas conectadas",
+      "missing": "Ventas faltantes"
+    },
+    "bank": {
+      "connected": "Banco conectado",
+      "missing": "Banco faltante"
+    }
+  },
+  "health": {
+    "measured": "Medido {{value}}%",
+    "param": "Parametrizado {{value}}%",
+    "proxy": "Proxy {{value}}%"
+  },
+  "summary": {
+    "title": "Resumen ejecutivo (30 días)",
+    "thisMonth": "Este mes",
+    "confidence": "Confianza: {{value}}%",
+    "currentIntensity": "Intensidad actual",
+    "intensityUnit": "kg/€",
+    "median": "mediana: {{value}} kg/€",
+    "target": "objetivo: {{value}} kg/€",
+    "compositionTitle": "Composición de emisiones",
+    "comp": {
+      "electricity": "Electricidad",
+      "fuel": "Combustible",
+      "shipping": "Envíos",
+      "other": "Otros"
+    },
+    "legend": {
+      "baseline": "Línea base",
+      "forecast": "Pronóstico (con acciones)"
+    },
+    "ref": {
+      "median": "Mediana del sector",
+      "target": "Objetivo"
+    },
+    "trendTitle": "Tendencia de intensidad (90 días) y escenario",
+    "dayMinus": "D-{{n}}",
+    "dayPlus": "D+{{n}}",
+    "assumptions": "Supuestos del pronóstico: adopción progresiva de las 3 acciones durante 30 días (rampa suavizada), impacto mensual máximo limitado al 45%. Se ajusta automáticamente si hay datos reales."
+  },
+  "advisor": {
+    "title": "Asesor IA — 3 acciones priorizadas",
+    "subhead": "Problema → Causa → Solución",
+    "tipN": "Consejo {{n}}",
+    "causeLabel": "Causa ·",
+    "solutionLabel": "Solución ·",
+    "impact": "Impacto estimado: ~{{kg}} kg / 30d",
+    "empty": "Ninguna acción priorizada.",
+    "disclaimer": "Estimaciones de orden de magnitud. Afinar con conectores de energía/transporte y validación experta.",
+    "pb": {
+      "elec": "Electricidad entre las 3 principales fuentes",
+      "fuel": "Uso elevado de combustible (Alcance 1)",
+      "ship": "Huella de envíos mejorable"
+    },
+    "cause": {
+      "elec": "Consumo estimado ≈ {{kwh}} kWh/mes; factor de red {{factor}} kg/kWh",
+      "fuel": "Consumo ≈ {{liters}} L/mes de diésel",
+      "ship": "Promedio ~{{perOrder}} kg/pedido"
+    },
+    "solution": {
+      "elec": "Plan de eco-consumo (-25%): consignas y standby, submedición, PPA/GO a medio plazo, LED y control HVAC.",
+      "fuel": "Optimizar rutas, aumentar factor de carga, transición gradual a vehículos electrificados.",
+      "ship": "Más puntos de recogida/carretera, embalaje más ligero, consolidación y reglas anti-exprés/aire por defecto."
+    }
+  },
+  "press": {
+    "title": "Selección — Prensa & insights"
+  },
+  "common": {
+    "open": "Abrir"
+  },
+  "subsidies": {
+    "title": "Ayudas y subvenciones elegibles (vista rápida)",
+    "lead": "Tus emisiones actuales ≈ {{kg}} kgCO₂e / 30d (~ {{tCO2}} tCO₂e/año).",
+    "potentialPrefix": "Ganancia potencial:",
+    "note": "Estimación indicativa. Los baremos y criterios varían según operación, región y calendario. Usa conectores de facturas/contadores para expedientes sólidos.",
+    "tag": {
+      "diagnostic": "Diagnóstico subvencionado",
+      "workGrant": "Subvención de obras",
+      "capex": "Inversión CAPEX",
+      "euCalls": "Convocatorias UE"
+    },
+    "dynamic": {
+      "ceePotential": "Electricidad evitada ≈ {{kwh}} kWh/año → simular subvención",
+      "ceeSimulate": "Importe a simular según obras",
+      "heatCheck": "A estudiar si el capítulo calor/combustible es significativo",
+      "euPotential": "Potencial (sitios > ~1 ktCO₂/año o proyectos pioneros)",
+      "euOutOfScope": "Probablemente fuera de alcance para pequeñas estructuras"
+    }
+  },
+  "decomp": {
+    "title": "Desglose diario (30 días)",
+    "actions": "Reparto diario ~electricidad/combustible/envíos/otros",
+    "note": "Enfoque educativo: asignación diaria simple (electricidad y combustible divididos entre 30, envíos por pedidos, proxy sector proporcional a ingresos)."
+  },
+  "table": {
+    "titleDefault": "Vista previa",
+    "preview": "Vista previa ({{shown}} / {{total}})"
+  },
+  "csv": {
+    "readError": "No se pudo leer el CSV."
+  }
+}

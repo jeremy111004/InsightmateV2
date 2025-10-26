@@ -1,0 +1,36 @@
+{
+  "banner": {
+    "soon": "PRÓXIMAMENTE",
+    "desc": "Llegan los conectores. Prepara tus accesos: todo será plug-and-play."
+  },
+  "header": {
+    "title": "Conectores",
+    "lead": "Centraliza tus ventas, pagos y bancos. De momento, esta página es una vista previa visual: las tarjetas están deshabilitadas a propósito.",
+    "prototype": "Prototipo de UI — no funcional"
+  },
+  "card": {
+    "soonTitle": "Disponible próximamente",
+    "pillSoon": "Pronto",
+    "queue": "En cola",
+    "notClickable": "No clicable",
+    "ribbonSoon": "PRÓXIMAMENTE"
+  },
+  "list": {
+    "stripe": { "desc": "Pagos en línea" },
+    "bridge": { "desc": "Banca FR (movimientos bancarios)" },
+    "shopify": { "desc": "Tienda online" },
+    "prestashop": { "desc": "Comercio electrónico" },
+    "woocommerce": { "desc": "Comercio electrónico (WordPress)" },
+    "pennylane": { "desc": "Contabilidad" },
+    "sage": { "desc": "Contabilidad" },
+    "sumup": { "desc": "Punto de venta" },
+    "sheets": { "desc": "Fuente de datos" },
+    "csv": { "desc": "Importación manual" },
+    "paypal": { "desc": "Pagos" }
+  },
+  "roadmap": {
+    "title": "Hoja de ruta",
+    "priority": "Prioridad: Stripe + Bridge/Powens → Shopify/Presta/Woo → Pennylane/Sage.",
+    "note": "Interfaz congelada por ahora — activación prevista en una versión futura."
+  }
+}

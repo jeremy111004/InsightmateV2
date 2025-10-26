@@ -1,0 +1,36 @@
+{
+  "banner": {
+    "soon": "COMING SOON",
+    "desc": "Connectors are coming. Prepare your credentials — everything will be plug-and-play."
+  },
+  "header": {
+    "title": "Connectors",
+    "lead": "Centralize your sales, payments, and banking. For now, this page is a visual preview: tiles are intentionally disabled.",
+    "prototype": "UI prototype — non-functional"
+  },
+  "card": {
+    "soonTitle": "Coming soon",
+    "pillSoon": "Soon",
+    "queue": "In queue",
+    "notClickable": "Not clickable",
+    "ribbonSoon": "COMING SOON"
+  },
+  "list": {
+    "stripe": { "desc": "Online payments" },
+    "bridge": { "desc": "FR banking (bank feeds)" },
+    "shopify": { "desc": "Online store" },
+    "prestashop": { "desc": "E-commerce" },
+    "woocommerce": { "desc": "E-commerce (WordPress)" },
+    "pennylane": { "desc": "Accounting" },
+    "sage": { "desc": "Accounting" },
+    "sumup": { "desc": "Point of sale" },
+    "sheets": { "desc": "Data source" },
+    "csv": { "desc": "Manual import" },
+    "paypal": { "desc": "Payments" }
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "priority": "Priority: Stripe + Bridge/Powens → Shopify/Presta/Woo → Pennylane/Sage.",
+    "note": "Interface is frozen for now — activation planned in a future release."
+  }
+}

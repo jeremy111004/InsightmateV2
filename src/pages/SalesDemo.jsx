@@ -1,14 +1,10 @@
 // ANCHOR: FILE_TOP SalesDemo.jsx
 // Page: Sales Demo (import + KPIs + Forecast + Actions + Preview)
-// Notes:
-// - Added a working "Charger un CSV" button (triggers hidden file input via ref).
-// - Kept ALL business logic intact (aggregation, forecast, KPIs).
-// - Added subtle tech animations (Framer Motion micro-interactions + gradient glow).
-// - No dependency changes required.
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Papa from "papaparse";
 import { jsPDF } from "jspdf";
+import { useTranslation } from "react-i18next";
 
 import useDataset from "../hooks/useDataset";
 import { formatNumber } from "../lib/format";
@@ -60,10 +56,7 @@ import {
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  Helper d'animation robuste
-      - immediate=true  -> apparaît au mount (AUCUN observer)
-      - immediate=false -> apparaît when-in-view (observer fiable)
-      - coupe élégamment si prefers-reduced-motion
+/*  Helper d'animation robuste                                         */
 /* ------------------------------------------------------------------ */
 function FadeIn({ children, delay = 0, immediate = false }) {
   const [reduced, setReduced] = useState(false);
@@ -95,7 +88,6 @@ function FadeIn({ children, delay = 0, immediate = false }) {
   };
 
   if (immediate) {
-    // Pas d'IntersectionObserver → aucun risque de "page blanche"
     return (
       <motion.div {...common} animate={{ opacity: 1, y: 0 }}>
         {children}
@@ -103,7 +95,6 @@ function FadeIn({ children, delay = 0, immediate = false }) {
     );
   }
 
-  // Révélation lors de l’entrée dans le viewport (one-shot, seuil bas)
   return (
     <motion.div
       {...common}
@@ -144,32 +135,37 @@ function sanitizePdfText(s = "") {
 }
 
 // Fallback IA local
-async function getAdviceOrFallback(kind, summary) {
+async function getAdviceOrFallback(kind, summary, t) {
   const lines = [];
-  lines.push("Résumé exécutif (IA locale) :");
+  lines.push(t("ai.summaryTitle"));
   if (summary?.kpis) {
     lines.push(
-      `• CA 30j: ${formatNumber(summary.kpis.ca30, 0)} ${summary.currency}`
+      t("ai.kpi.ca30", {
+        v: formatNumber(summary.kpis.ca30, 0),
+        cur: summary.currency,
+      })
     );
     lines.push(
-      `• Panier moyen: ${formatNumber(summary.kpis.basket, 2)} ${
-        summary.currency
-      }`
+      t("ai.kpi.basket", {
+        v: formatNumber(summary.kpis.basket, 2),
+        cur: summary.currency,
+      })
     );
-    lines.push(`• Clients: ${formatNumber(summary.kpis.unique, 0)}`);
+    lines.push(
+      t("ai.kpi.clients", { v: formatNumber(summary.kpis.unique, 0) })
+    );
   }
   if (summary?.topProducts?.length) {
     const top = summary.topProducts[0];
-    lines.push(`• Produit leader: ${top.name}`);
+    lines.push(t("ai.topProduct", { name: top.name }));
   }
-  lines.push(
-    "Actions: pousse best-sellers, traite le jour creux avec une offre, et teste une promo courte (-10%)."
-  );
+  lines.push(t("ai.actions"));
   return lines.join("\n");
 }
 
 // Mini preview table autonome
 function TablePreview({ rows = [] }) {
+  const { t } = useTranslation("sales");
   const cols = rows.length ? Object.keys(rows[0]) : [];
   return (
     <div className="overflow-auto rounded-xl border relative">
@@ -203,9 +199,7 @@ function TablePreview({ rows = [] }) {
           ))}
         </tbody>
       </table>
-      <div className="text-[11px] text-gray-500 p-2">
-        Aperçu (30 lignes max)
-      </div>
+      <div className="text-[11px] text-gray-500 p-2">{t("preview.footer")}</div>
     </div>
   );
 }
@@ -228,6 +222,8 @@ const SAMPLE_SALES = `date,order_id,product,qty,price,customer_id
 `;
 
 function SalesDemo() {
+  const { t } = useTranslation("sales");
+
   const [rows, setRows] = useState([]);
   const chartRef = useRef(null);
   const [currency, setCurrency] = useState("€");
@@ -268,7 +264,7 @@ function SalesDemo() {
         setRows(data);
       },
       error: () => {
-        alert("Erreur de lecture du CSV.");
+        alert(t("upload.errorParse"));
       },
     });
     // Reset input value to allow re-uploading the same file name
@@ -489,7 +485,7 @@ function SalesDemo() {
       };
     });
 
-    // Qualité
+    // Qualité (text remains computed; prefix is translated at render)
     const mapeVal = mape(
       values.slice(1),
       (fitted || []).slice(0, values.length - 1)
@@ -510,7 +506,7 @@ function SalesDemo() {
         icon: "!",
       };
 
-    const forecastLabel = `Prévision (Smart)`;
+    const forecastLabel = t("chart.forecastLabel");
 
     const productsTop5 = Object.entries(byProduct)
       .map(([name, revenue]) => ({ name, revenue }))
@@ -529,7 +525,7 @@ function SalesDemo() {
       maxDate,
       change,
     };
-  }, [rows, importedSales]);
+  }, [rows, importedSales, t]);
 
   // Filtre période
   const filteredSeries = useMemo(() => {
@@ -569,15 +565,15 @@ function SalesDemo() {
 
     const tone =
       growth > 5 ? "en hausse" : growth < -5 ? "en baisse" : "stable";
-    const msg = `Prévision ${tone} sur 30 jours : ${
-      growth >= 0 ? "+" : ""
-    }${formatNumber(growth, 1)}% avec une incertitude d’environ ±${formatNumber(
-      uncertaintyPct,
-      0
-    )}%.`;
+    const msg = t("forecast.msg", {
+      sign: growth >= 0 ? "+" : "",
+      growth: formatNumber(growth, 1),
+      unc: formatNumber(uncertaintyPct, 0),
+      tone,
+    });
 
     return { msg, growth, uncertaintyPct, tone };
-  }, [forecastSeries, filteredSeries]);
+  }, [forecastSeries, filteredSeries, t]);
 
   useEffect(() => {
     if (!dateFrom && minDate) setDateFrom(minDate);
@@ -596,57 +592,60 @@ function SalesDemo() {
       );
       if (change > 10)
         out.push(
-          `Tendance haussière: +${formatNumber(
-            change,
-            1
-          )}% sur la période. Augmente le stock des best-sellers et teste un prix légèrement plus élevé (+2–3%).`
+          t("advice.local.uptrend", { change: formatNumber(change, 1) })
         );
       if (change < -10)
         out.push(
-          `Tendance baissière: ${formatNumber(
-            change,
-            1
-          )}%. Lance une promo ciblée 7 jours (10–15%) sur les 2 produits principaux.`
+          t("advice.local.downtrend", { change: formatNumber(change, 1) })
         );
-      if (Math.abs(slope) < 0.01)
-        out.push(
-          "Ventes stables: active une offre fidélité (10 achats = 1 offert) pour doper la rétention."
-        );
+      if (Math.abs(slope) < 0.01) out.push(t("advice.local.stable"));
+
+      const names = [
+        t("weekdays.0"),
+        t("weekdays.1"),
+        t("weekdays.2"),
+        t("weekdays.3"),
+        t("weekdays.4"),
+        t("weekdays.5"),
+        t("weekdays.6"),
+      ];
       const byWeekday = Array.from({ length: 7 }, () => 0);
       filteredSeries.forEach((d) => {
         byWeekday[new Date(d.date).getDay()] += d.revenue;
       });
       const minIdx = byWeekday.indexOf(Math.min(...byWeekday));
-      const names = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."];
-      out.push(
-        `Jour creux: ${names[minIdx]}. Propose une offre spéciale ce jour-là (2×1 ou push SMS).`
-      );
+      out.push(t("advice.local.slowDay", { day: names[minIdx] }));
     }
     if (productsTop5 && productsTop5.length) {
       const top = productsTop5[0];
-      out.push(
-        `Produit leader: ${top.name}. Mets-le en avant sur la caisse et sur la home.`
-      );
+      out.push(t("advice.local.topProduct", { name: top.name }));
       if (productsTop5.length >= 2) {
         const runner = productsTop5[1];
         out.push(
-          `Bundle: ${top.name} + ${runner.name} (-10%) pour augmenter le panier moyen.`
+          t("advice.local.bundle", { top: top.name, other: runner.name })
         );
       }
     }
     return out;
-  }, [filteredSeries, productsTop5]);
+  }, [filteredSeries, productsTop5, t]);
 
   const topActions = useMemo(() => {
     if (!tips || !tips.length) return [];
-    const boost = (t) => {
+    const boost = (txt) => {
       let score = 0;
-      const s = t.toLowerCase();
-      if (s.includes("tendance baissière")) score += 5;
-      if (s.includes("jour creux")) score += 3;
+      const s = txt.toLowerCase();
+      if (s.includes("tendance baissière") || s.includes("downtrend"))
+        score += 5;
+      if (s.includes("jour creux") || s.includes("slow day")) score += 3;
       if (s.includes("bundle")) score += 2;
-      if (s.includes("promo") || s.includes("prix")) score += 2;
-      if (s.includes("fidelité") || s.includes("fidélité")) score += 1;
+      if (s.includes("promo") || s.includes("prix") || s.includes("price"))
+        score += 2;
+      if (
+        s.includes("fidelité") ||
+        s.includes("fidélité") ||
+        s.includes("loyalty")
+      )
+        score += 1;
       return score;
     };
     const ranked = tips
@@ -688,7 +687,7 @@ function SalesDemo() {
     setAiText("");
     try {
       const summary = buildSalesSummary();
-      const txt = await getAdviceOrFallback("sales", summary);
+      const txt = await getAdviceOrFallback("sales", summary, t);
       setAiText(txt);
     } finally {
       setAiLoading(false);
@@ -709,14 +708,10 @@ function SalesDemo() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
       doc.setTextColor(255, 255, 255);
-      doc.text("InsightMate · OnePager", margin, 32);
+      doc.text(t("pdf.headerTitle"), margin, 32);
       doc.setFontSize(10);
       doc.setTextColor(209, 213, 219);
-      doc.text(
-        "Rapport généré automatiquement — vos données restent locales",
-        margin,
-        48
-      );
+      doc.text(t("pdf.headerSubtitle"), margin, 48);
 
       const y0 = 88;
       // KPIs
@@ -727,24 +722,29 @@ function SalesDemo() {
       const changeTxt =
         typeof change === "number"
           ? change >= 0
-            ? `↗ +${formatNumber(change, 1)}%`
-            : `↘ ${formatNumber(change, 1)}%`
+            ? t("kpi.changeUp", { v: formatNumber(change, 1) })
+            : t("kpi.changeDown", { v: formatNumber(change, 1) })
           : "—";
       const kpiLines = [
-        `CA 30 jours: ${cf(kpis?.ca30, 0)} ${currency} (${changeTxt})`,
-        `Panier moyen: ${cf(kpis?.basket, 2)} ${currency}`,
-        `Clients uniques (30j): ${cf(kpis?.unique, 0)}`,
+        t("pdf.kpi.ca30", {
+          v: cf(kpis?.ca30, 0),
+          cur: currency,
+          change: changeTxt,
+        }),
+        t("pdf.kpi.basket", { v: cf(kpis?.basket, 2), cur: currency }),
+        t("pdf.kpi.unique", { v: cf(kpis?.unique, 0) }),
       ];
       doc.text(kpiLines, margin, y0);
 
       // Forecast résumé
       const y1 = y0 + 56;
       const ftxt = forecastText
-        ? `Prévision 30j : ${forecastText.growth >= 0 ? "+" : ""}${formatNumber(
-            forecastText.growth,
-            1
-          )}% · Incertitude ±${formatNumber(forecastText.uncertaintyPct, 0)}%`
-        : "Prévision 30j : n/a";
+        ? t("pdf.forecast", {
+            sign: forecastText.growth >= 0 ? "+" : "",
+            growth: formatNumber(forecastText.growth, 1),
+            unc: formatNumber(forecastText.uncertaintyPct, 0),
+          })
+        : t("pdf.forecastNA");
       doc.text(ftxt, margin, y1);
 
       // Actions
@@ -752,7 +752,7 @@ function SalesDemo() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
       doc.setTextColor(17, 24, 39);
-      doc.text("À faire cette semaine", margin, y2);
+      doc.text(t("actions.title"), margin, y2);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
       doc.setTextColor(55, 65, 81);
@@ -761,24 +761,20 @@ function SalesDemo() {
         3
       );
       const bullet = actions.length
-        ? actions.map((t) => `• ${sanitizePdfText(t)}`)
-        : ["• Aucune action priorisée"];
+        ? actions.map((tline) => `• ${sanitizePdfText(tline)}`)
+        : [`• ${t("actions.none")}`];
       doc.text(bullet, margin, y2 + 18);
 
       // Footer
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(120);
-      doc.text(
-        "© 2025 InsightMate — Démo. Vos données restent locales.",
-        margin,
-        pageH - 24
-      );
+      doc.text(t("pdf.footer"), margin, pageH - 24);
 
       doc.save("InsightMate_OnePager.pdf");
     } catch (e) {
       console.error("[Export PDF] Erreur", e);
-      alert("Export PDF impossible.");
+      alert(t("pdf.errorExport"));
     }
   }
 
@@ -787,26 +783,26 @@ function SalesDemo() {
       {/* FOLD INITIAL → apparaît immédiatement */}
       <FadeIn immediate>
         <Section
-          title="Importer les ventes (CSV)"
+          title={t("import.title")}
           icon={<Upload className="w-5 h-5" />}
           actions={
-            // ANCHOR: ACTIONS_RIGHT (added real 'Charger un CSV' button)
+            // ANCHOR: ACTIONS_RIGHT
             <div className="flex flex-wrap gap-2 items-center">
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
                 className="px-3 py-2 rounded-xl bg-gray-100 text-sm"
               >
-                <option value="€">EUR (€)</option>
-                <option value="$">USD ($)</option>
-                <option value="£">GBP (£)</option>
+                <option value="€">{t("import.currency.eur")}</option>
+                <option value="$">{t("import.currency.usd")}</option>
+                <option value="£">{t("import.currency.gbp")}</option>
               </select>
 
               <button
                 className="px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm"
                 onClick={loadSample}
               >
-                Charger un exemple
+                {t("import.loadSample")}
               </button>
 
               <a
@@ -816,7 +812,7 @@ function SalesDemo() {
                 )}`}
                 download="sample_sales.csv"
               >
-                <FileDown className="w-4 h-4" /> Télécharger l’exemple
+                <FileDown className="w-4 h-4" /> {t("import.downloadSample")}
               </a>
 
               {/* New: real upload button (triggers hidden input) */}
@@ -826,10 +822,10 @@ function SalesDemo() {
                 whileHover={{ y: -1 }}
                 onClick={() => fileInputRef.current?.click()}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm ring-1 ring-indigo-400/30"
-                title="Importer votre fichier CSV"
+                title={t("import.upload.title")}
               >
                 <Upload className="w-4 h-4" />
-                Charger un CSV
+                {t("import.upload.cta")}
               </motion.button>
             </div>
           }
@@ -846,21 +842,21 @@ function SalesDemo() {
             tabIndex={-1}
           />
 
-          {/* Drag & Drop helper zone (optional, no logic change) */}
+          {/* Drag & Drop helper zone */}
           <div
             onDrop={onDropFile}
             onDragOver={onDragOver}
             className="mt-2 rounded-xl border border-dashed p-3 text-xs text-gray-500 dark:text-gray-400"
-            title="Glissez-déposez un CSV ici"
+            title={t("import.drop.title")}
           >
-            Astuce : glissez-déposez un fichier CSV ici pour l’importer.
+            {t("import.drop.hint")}
           </div>
 
           <div className="grid md:grid-cols-2 gap-3 mt-3">
             <div>
               {/* Fallback plain input (kept for accessibility) */}
               <label className="block text-xs text-gray-500 mb-1">
-                Ou sélectionnez un fichier :
+                {t("import.altSelect.label")}
               </label>
               <input
                 type="file"
@@ -869,14 +865,14 @@ function SalesDemo() {
                 className="block"
               />
               <p className="text-sm text-gray-500 mt-2">
-                Colonnes requises:{" "}
+                {t("import.requiredCols.label")}{" "}
                 <code>date, order_id, product, qty, price, customer_id</code>
               </p>
             </div>
             <div className="flex flex-wrap gap-3 items-end">
               <div>
                 <label className="block text-xs text-gray-500">
-                  Lissage (jours)
+                  {t("filters.smooth")}
                 </label>
                 <input
                   type="number"
@@ -888,7 +884,9 @@ function SalesDemo() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500">Du</label>
+                <label className="block text-xs text-gray-500">
+                  {t("filters.from")}
+                </label>
                 <input
                   type="date"
                   value={dateFrom}
@@ -897,7 +895,9 @@ function SalesDemo() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-500">Au</label>
+                <label className="block text-xs text-gray-500">
+                  {t("filters.to")}
+                </label>
                 <input
                   type="date"
                   value={dateTo}
@@ -909,20 +909,20 @@ function SalesDemo() {
           </div>
         </Section>
 
-        {/* KPIs — micro-interactions hover for a "tech" feel */}
+        {/* KPIs */}
         <div className="grid md:grid-cols-3 gap-4 mt-4">
           <FadeIn immediate delay={0.02}>
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.18 }}>
               <Card>
                 <Stat
-                  label="CA 30 jours"
+                  label={t("kpi.ca30.label")}
                   value={`${formatNumber(kpis?.ca30 || 0, 0)} ${currency}`}
                   note={
                     change > 0
-                      ? `↗ +${formatNumber(change, 1)}%`
+                      ? t("kpi.changeUp", { v: formatNumber(change, 1) })
                       : change < 0
-                      ? `↘ ${formatNumber(change, 1)}%`
-                      : "Stable"
+                      ? t("kpi.changeDown", { v: formatNumber(change, 1) })
+                      : t("kpi.stable")
                   }
                 />
               </Card>
@@ -932,9 +932,9 @@ function SalesDemo() {
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.18 }}>
               <Card>
                 <Stat
-                  label="Panier moyen"
+                  label={t("kpi.basket.label")}
                   value={`${formatNumber(kpis?.basket || 0, 2)} ${currency}`}
-                  note="Sur les commandes"
+                  note={t("kpi.basket.note")}
                 />
               </Card>
             </motion.div>
@@ -943,9 +943,9 @@ function SalesDemo() {
             <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.18 }}>
               <Card>
                 <Stat
-                  label="Clients uniques"
+                  label={t("kpi.clients.label")}
                   value={formatNumber(kpis?.unique || 0, 0)}
-                  note="30 derniers jours"
+                  note={t("kpi.clients.note")}
                 />
               </Card>
             </motion.div>
@@ -953,7 +953,7 @@ function SalesDemo() {
         </div>
       </FadeIn>
 
-      {/* À partir d’ici : révélation au scroll (fiable + once) */}
+      {/* À partir d’ici : révélation au scroll */}
       {topActions.length > 0 && (
         <FadeIn>
           <Card className="border-emerald-200/60 bg-emerald-50/70 dark:bg-emerald-900/20 relative overflow-hidden">
@@ -973,22 +973,21 @@ function SalesDemo() {
             <div className="flex items-start justify-between gap-3 relative">
               <div>
                 <div className="text-sm font-semibold text-emerald-900 dark:text-emerald-200 mb-1">
-                  À faire cette semaine
+                  {t("actions.title")}
                 </div>
                 <ul className="space-y-1">
-                  {topActions.map((t, i) => (
+                  {topActions.map((tline, i) => (
                     <li
                       key={i}
                       className="flex items-start gap-2 text-sm text-emerald-900 dark:text-emerald-100"
                     >
                       <CheckCircle2 className="w-4 h-4 mt-0.5 flex-none" />
-                      <span>{t}</span>
+                      <span>{tline}</span>
                     </li>
                   ))}
                 </ul>
                 <div className="text-xs text-emerald-800/80 dark:text-emerald-200/70 mt-2">
-                  Basé sur vos données récentes (tendance, jours creux, top
-                  produits).
+                  {t("actions.subtitle")}
                 </div>
               </div>
               <div className="flex flex-col gap-2">
@@ -999,12 +998,12 @@ function SalesDemo() {
                       .map((a, idx) => `${idx + 1}. ${a}`)
                       .join("\n");
                     navigator.clipboard
-                      ?.writeText(`À faire cette semaine:\n${txt}`)
+                      ?.writeText(`${t("actions.clipboardTitle")}\n${txt}`)
                       .catch(() => {});
                   }}
                   className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs bg-white/80 dark:bg-emerald-900/40 hover:bg-white ring-1 ring-emerald-300/50 text-emerald-900 dark:text-emerald-100"
                 >
-                  <ClipboardCopy className="w-4 h-4" /> Copier
+                  <ClipboardCopy className="w-4 h-4" /> {t("common.copy")}
                 </button>
               </div>
             </div>
@@ -1014,7 +1013,7 @@ function SalesDemo() {
 
       <FadeIn>
         <Section
-          title="Historique & Prévision (30j)"
+          title={t("forecast.sectionTitle")}
           icon={<TrendingUp className="w-5 h-5" />}
           actions={
             <button
@@ -1022,22 +1021,23 @@ function SalesDemo() {
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm bg-gray-900 text-white hover:bg-black dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
             >
               <FileDown className="w-4 h-4" />
-              Exporter PDF (1 page)
+              {t("forecast.exportPdf")}
             </button>
           }
         >
           {/* Bandeau micro-métriques */}
           <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
-              <Sparkles className="w-3.5 h-3.5" /> Smart forecast
+              <Sparkles className="w-3.5 h-3.5" /> {t("forecast.badge.smart")}
             </span>
 
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
-              {quality?.icon} Qualité : {quality?.level}
+              {quality?.icon} {t("forecast.quality.prefix")} {quality?.level}
               {quality?.mape && isFinite(quality.mape) ? (
                 <span className="opacity-70">
                   {" "}
-                  · MAPE ≈ {formatNumber(quality.mape, 1)}%
+                  · {t("forecast.quality.mape")} {formatNumber(quality.mape, 1)}
+                  %
                 </span>
               ) : null}
             </span>
@@ -1053,14 +1053,14 @@ function SalesDemo() {
                       ? "bg-rose-100 text-rose-900 dark:bg-rose-900/20 dark:text-rose-200"
                       : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200")
                   }
-                  title="Croissance moyenne prévue vs 14 derniers jours"
+                  title={t("forecast.growthTitle")}
                 >
                   {forecastText.growth >= 0 ? "↗" : "↘"}{" "}
                   {formatNumber(forecastText.growth, 1)}%
                 </span>
                 <span
                   className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-200"
-                  title="Incertitude moyenne (±)"
+                  title={t("forecast.uncertaintyTitle")}
                 >
                   <AlertTriangle className="w-3.5 h-3.5" /> ±
                   {formatNumber(forecastText.uncertaintyPct, 0)}%
@@ -1096,27 +1096,31 @@ function SalesDemo() {
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
-                  formatter={(v, name) =>
-                    name === "Historique" ||
-                    name === forecastLabel ||
-                    name?.includes("Scénario") ||
-                    name?.includes("Borne 95%")
-                      ? `${formatNumber(v, 0)} ${currency}`
-                      : v
-                  }
+                  formatter={(v, name) => {
+                    const n = String(name || "");
+                    if (
+                      n === t("forecast.legend.historical") ||
+                      n === forecastLabel ||
+                      n.includes(t("forecast.legend.scenarioKeyword")) ||
+                      n.includes(t("forecast.legend.bandKeyword"))
+                    ) {
+                      return `${formatNumber(v, 0)} ${currency}`;
+                    }
+                    return v;
+                  }}
                 />
                 <Legend />
                 <Line
                   type="monotone"
                   dataKey="revenue"
-                  name="Historique"
+                  name={t("forecast.legend.historical")}
                   dot={false}
                   strokeWidth={2.5}
                 />
                 <Line
                   type="monotone"
                   dataKey="ci_lo"
-                  name="Borne 95% (basse)"
+                  name={t("forecast.legend.ciLo")}
                   dot={false}
                   strokeWidth={1}
                   strokeDasharray="2 4"
@@ -1125,7 +1129,7 @@ function SalesDemo() {
                 <Line
                   type="monotone"
                   dataKey="ci_hi"
-                  name="Borne 95% (haute)"
+                  name={t("forecast.legend.ciHi")}
                   dot={false}
                   strokeWidth={1}
                   strokeDasharray="2 4"
@@ -1134,7 +1138,7 @@ function SalesDemo() {
                 <Line
                   type="basis"
                   dataKey="forecast_lo"
-                  name="Scénario prudent"
+                  name={t("forecast.legend.scenarioPrudent")}
                   strokeDasharray="3 3"
                   dot={false}
                   strokeWidth={1.8}
@@ -1150,7 +1154,7 @@ function SalesDemo() {
                 <Line
                   type="basis"
                   dataKey="forecast_hi"
-                  name="Scénario optimiste"
+                  name={t("forecast.legend.scenarioOptimistic")}
                   strokeDasharray="3 3"
                   dot={false}
                   strokeWidth={1.8}
@@ -1167,16 +1171,16 @@ function SalesDemo() {
 
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-600 dark:text-gray-300 relative">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-900 dark:bg-blue-900/20 dark:text-blue-200">
-                ● Historique
+                ● {t("forecast.chips.historical")}
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-900 dark:bg-cyan-900/20 dark:text-cyan-200">
-                ● Prévision centrale
+                ● {t("forecast.chips.central")}
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-900 dark:bg-emerald-900/20 dark:text-emerald-200">
-                ● Scénario optimiste
+                ● {t("forecast.chips.optimistic")}
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-200">
-                ● Scénario prudent
+                ● {t("forecast.chips.prudent")}
               </span>
 
               {forecastText && (
@@ -1185,8 +1189,9 @@ function SalesDemo() {
                     {forecastText.growth >= 0 ? "↗" : "↘"}{" "}
                     {formatNumber(forecastText.growth, 1)}%
                   </span>{" "}
-                  sur 30 jours · Incertitude ±
-                  {formatNumber(forecastText.uncertaintyPct, 0)}%
+                  {t("forecast.summaryTail", {
+                    unc: formatNumber(forecastText.uncertaintyPct, 0),
+                  })}
                 </span>
               )}
             </div>
@@ -1195,32 +1200,32 @@ function SalesDemo() {
       </FadeIn>
 
       <FadeIn>
-        <Section
-          title="Top produits (CA)"
-          icon={<Settings className="w-5 h-5" />}
-        >
+        <Section title={t("top.title")} icon={<Settings className="w-5 h-5" />}>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={productsTop5}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip formatter={(v) => `${formatNumber(v, 0)} ${currency}`} />
-              <Bar dataKey="revenue" name="CA" />
+              <Bar dataKey="revenue" name={t("top.barName")} />
             </BarChart>
           </ResponsiveContainer>
         </Section>
       </FadeIn>
 
       <FadeIn>
-        <Section title="Conseiller" icon={<Brain className="w-5 h-5" />}>
+        <Section
+          title={t("advice.sectionTitle")}
+          icon={<Brain className="w-5 h-5" />}
+        >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
             <div className="flex items-center gap-2 text-sm">
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
                 <Sparkles className="w-3.5 h-3.5" />
-                Conseils actionnables
+                {t("advice.badge")}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Basé sur vos données récentes
+                {t("advice.basedOn")}
               </span>
             </div>
 
@@ -1235,7 +1240,7 @@ function SalesDemo() {
                     : "text-gray-500")
                 }
               >
-                Conseils locaux
+                {t("advice.toggle.local")}
               </button>
               <button
                 type="button"
@@ -1254,7 +1259,7 @@ function SalesDemo() {
                     : "text-gray-500")
                 }
               >
-                <Sparkles className="w-4 h-4" /> IA personnalisée
+                <Sparkles className="w-4 h-4" /> {t("advice.toggle.ai")}
               </button>
 
               <motion.span
@@ -1302,10 +1307,10 @@ function SalesDemo() {
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-indigo-500" />
                     <div className="text-sm font-medium">
-                      Conseils IA personnalisés
+                      {t("advice.ai.title")}
                     </div>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      à partir de vos KPI & prévisions
+                      {t("advice.ai.subtitle")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -1314,7 +1319,9 @@ function SalesDemo() {
                       disabled={aiLoading}
                       className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-60"
                     >
-                      {aiLoading ? "Analyse…" : "Regénérer"}
+                      {aiLoading
+                        ? t("advice.ai.loading")
+                        : t("advice.ai.regenerate")}
                     </button>
                     <button
                       onClick={async () => {
@@ -1325,7 +1332,7 @@ function SalesDemo() {
                       className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg bg-white/70 hover:bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
                     >
                       <ClipboardCopy className="w-3.5 h-3.5" />
-                      Copier
+                      {t("common.copy")}
                     </button>
                   </div>
                 </div>
@@ -1338,7 +1345,7 @@ function SalesDemo() {
                       <div className="h-3 rounded bg-gray-200/80 dark:bg-gray-700/60 w-10/12" />
                     </div>
                   ) : (
-                    aiText || "Activez l’IA puis cliquez sur « Regénérer »."
+                    aiText || t("advice.ai.hint")
                   )}
                 </div>
               </motion.div>
@@ -1353,7 +1360,7 @@ function SalesDemo() {
               >
                 {(Array.isArray(tips) && tips.length > 0
                   ? tips
-                  : ["Aucun conseil disponible"]
+                  : [t("advice.local.none")]
                 ).map((tip, i) => {
                   const isWarning = /alerte|risque|attention/i.test(tip);
                   return (
@@ -1388,16 +1395,14 @@ function SalesDemo() {
                           className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg bg-white/40 hover:bg-white/70 text-gray-900 dark:bg-black/30 dark:hover:bg-black/50 dark:text-white"
                         >
                           <ClipboardCopy className="w-3.5 h-3.5" />
-                          Copier
+                          {t("common.copy")}
                         </button>
                         <button
-                          onClick={() =>
-                            alert("Fonction “Partager” à connecter")
-                          }
+                          onClick={() => alert(t("common.shareAlert"))}
                           className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
                         >
                           <Share2 className="w-3.5 h-3.5" />
-                          Partager
+                          {t("common.share")}
                         </button>
                       </div>
                     </div>
@@ -1411,7 +1416,7 @@ function SalesDemo() {
 
       <FadeIn>
         <Section
-          title="Aperçu des données"
+          title={t("preview.title")}
           icon={<Sparkles className="w-5 h-5" />}
         >
           <TablePreview

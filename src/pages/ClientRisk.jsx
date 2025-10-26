@@ -1,3 +1,4 @@
+// ANCHOR: FILE_TOP ClientRisk.jsx
 import React from "react";
 import { motion } from "framer-motion";
 import {
@@ -13,6 +14,8 @@ import {
   FileSpreadsheet,
   CheckCircle2,
   XCircle,
+  CalendarDays,
+  ListChecks,
 } from "lucide-react";
 import Papa from "papaparse";
 import {
@@ -30,6 +33,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 /* =========================
    Helpers
@@ -80,6 +84,103 @@ function escapeHtml(s) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/\n/g, "\\n");
+}
+
+/* =========================
+   Smart Follow-Up Engine — core helpers
+========================= */
+const DAY_MS = 24 * 3600 * 1000;
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const startOfWeekISO = (d) => {
+  const dt = new Date(d);
+  const day = dt.getDay(); // 0=Sun
+  const diff = (day + 6) % 7; // make Monday start
+  const monday = new Date(dt.getTime() - diff * DAY_MS);
+  return monday.toISOString().slice(0, 10);
+};
+
+/** Deterministic ETA rule of thumb:
+ * - More overdue ⇒ sooner collection (if probability is decent).
+ * - Lower probability ⇒ later expected date.
+ * Result clamped to [3..90] days.
+ */
+function daysToExpectedPayment(c) {
+  const overdue = Math.max(0, Number(c.overdue) || 0);
+  const p = clamp01(c.probability_recovery);
+  const base = 35 * (1 - p) + Math.max(0, 60 - overdue) / 2; // 0..~65
+  const adj = base - Math.min(overdue, 45) / 3; // bring forward if very overdue
+  return Math.min(90, Math.max(3, Math.round(adj)));
+}
+
+function expectedDateISO(c) {
+  const d = daysToExpectedPayment(c);
+  return new Date(Date.now() + d * DAY_MS).toISOString().slice(0, 10);
+}
+
+/** Weekly bucket = put the expected recovery into the week of expectedDate. */
+function buildWeeklyRecoverySeries(clients, weeks = 8) {
+  const map = new Map();
+  const base = startOfWeekISO(new Date());
+  const baseDate = new Date(base);
+  for (let k = 0; k < weeks; k++) {
+    const wk = new Date(baseDate.getTime() + k * 7 * DAY_MS)
+      .toISOString()
+      .slice(0, 10);
+    map.set(wk, 0);
+  }
+  for (const c of clients) {
+    const rec = recoveryEstimate(c);
+    if (rec <= 0) continue;
+    const eta = expectedDateISO(c);
+    const wk = startOfWeekISO(eta);
+    if (!map.has(wk)) continue; // outside horizon
+    map.set(wk, (map.get(wk) || 0) + rec);
+  }
+  return Array.from(map.entries())
+    .map(([week, amount]) => ({ week, amount }))
+    .sort((a, b) => (a.week < b.week ? -1 : 1));
+}
+
+/** Suggested action = email if we have an email, else enrich contact. */
+function suggestedAction(c) {
+  const hasEmail = !!(c.email && String(c.email).includes("@"));
+  if (!hasEmail) return "complete_contact";
+  if ((Number(c.overdue) || 0) >= 60) return "call_then_email";
+  if (clamp01(c.probability_recovery) < 0.5) return "call_email_plan";
+  return "email_reminder";
+}
+
+/** Build Next-Actions CSV rows (top N by priority) */
+function buildNextActions(filteredClients, t, topN = 50) {
+  const rows = filteredClients.slice(0, topN).map((c) => {
+    const expDate = expectedDateISO(c);
+    const action = suggestedAction(c);
+    const subject = t("priority.email.subjectWithId", {
+      name: safeStr(c.name, t("priority.email.defaultClient")),
+      id: safeStr(c.id),
+    });
+    const body = t("priority.email.body", {
+      name: safeStr(c.name, t("priority.email.defaultGreeting")),
+      amount: eur(c.outstanding),
+      id: safeStr(c.id),
+      overdue: Number(c.overdue) || 0,
+    });
+    return {
+      id: c.id,
+      name: c.name,
+      email: c.email || "",
+      overdue: Number(c.overdue) || 0,
+      outstanding: Number(c.outstanding) || 0,
+      probability_recovery: clamp01(c.probability_recovery),
+      expected_recovery_eur: recoveryEstimate(c),
+      expected_date: expDate,
+      priority_score: c._priority ?? 0,
+      suggested_action: action,
+      email_subject: subject,
+      email_body: body,
+    };
+  });
+  return rows;
 }
 
 /* =========================
@@ -182,12 +283,12 @@ function useRiskyClientsData() {
 /* =========================
    Demo time-series (pour area chart)
 ========================= */
-function buildPie(totalOutstanding, weightedRecovery) {
+function buildPie(totalOutstanding, weightedRecovery, t) {
   const recovered = Math.max(0, Number(weightedRecovery) || 0);
   const unrecovered = Math.max(0, (Number(totalOutstanding) || 0) - recovered);
   return [
-    { name: "Potentiel récupérable", value: recovered },
-    { name: "Exposition restante", value: unrecovered },
+    { name: t("clientRisk:charts.pie.recoverable"), value: recovered },
+    { name: t("clientRisk:charts.pie.remainingExposure"), value: unrecovered },
   ];
 }
 function demoSeries(n = 18, base = 40000) {
@@ -273,6 +374,8 @@ function TechHeader() {
    Dashboard
 ========================= */
 function RiskDashboard({ clients }) {
+  const { t } = useTranslation("clientRisk");
+
   const totalOutstanding = React.useMemo(
     () => clients.reduce((s, c) => s + (Number(c.outstanding) || 0), 0),
     [clients]
@@ -299,8 +402,8 @@ function RiskDashboard({ clients }) {
     [clients]
   );
   const pieData = React.useMemo(
-    () => buildPie(totalOutstanding, weightedRecovery),
-    [totalOutstanding, weightedRecovery]
+    () => buildPie(totalOutstanding, weightedRecovery, t),
+    [totalOutstanding, weightedRecovery, t]
   );
 
   return (
@@ -308,21 +411,21 @@ function RiskDashboard({ clients }) {
       <TechHeader />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <StatCard
-          title="Exposition totale"
+          title={t("kpi.totalExposure.title")}
           value={eur(totalOutstanding)}
-          caption="Montant total en attente"
+          caption={t("kpi.totalExposure.caption")}
           Icon={BarChart2}
         />
         <StatCard
-          title="Potentiel recouvrement"
+          title={t("kpi.recoveryPotential.title")}
           value={eur(weightedRecovery)}
-          caption="Estimation pondérée"
+          caption={t("kpi.recoveryPotential.caption")}
           Icon={PieIcon}
         />
         <StatCard
-          title="Clients à risque"
+          title={t("kpi.riskyClients.title")}
           value={highRiskCount}
-          caption=">60j ou faible prob."
+          caption={t("kpi.riskyClients.caption")}
           Icon={AlertTriangle}
         />
       </div>
@@ -333,7 +436,7 @@ function RiskDashboard({ clients }) {
           className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
         >
           <h3 className="text-sm font-semibold mb-2">
-            Répartition du potentiel
+            {t("charts.pie.title")}
           </h3>
           <div style={{ width: "100%", height: 240 }}>
             <ResponsiveContainer>
@@ -362,7 +465,7 @@ function RiskDashboard({ clients }) {
           className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
         >
           <h3 className="text-sm font-semibold mb-2">
-            Top 5 — potentiel par client
+            {t("charts.top5.title")}
           </h3>
           <div style={{ width: "100%", height: 240 }}>
             <ResponsiveContainer>
@@ -371,7 +474,7 @@ function RiskDashboard({ clients }) {
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis />
                 <Tooltip formatter={(v) => eur(v)} />
-                <Bar dataKey="_recovery" name="Potentiel" />
+                <Bar dataKey="_recovery" name={t("charts.top5.barName")} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -383,7 +486,7 @@ function RiskDashboard({ clients }) {
         className="mt-6 bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
       >
         <h3 className="text-sm font-semibold mb-3">
-          Historique — exposition simulée
+          {t("charts.history.title")}
         </h3>
         <div style={{ width: "100%", height: 220 }}>
           <ResponsiveContainer>
@@ -422,31 +525,10 @@ function priorityScore(c) {
   const p = clamp01(c.probability_recovery);
   return Math.round(due * (1 - p) * (1 + overdue / 90));
 }
-function buildMailto(c) {
-  const subject = `Relance facture — ${safeStr(c.name, "Client")} (${safeStr(
-    c.id
-  )})`;
-  const body = [
-    `Bonjour ${safeStr(c.name, "Madame, Monsieur")},`,
-    "",
-    `Nous revenons vers vous concernant un impayé de ${eur(
-      c.outstanding
-    )} (facture ${safeStr(c.id)}).`,
-    `Ancienneté: ${Number(c.overdue) || 0} jours.`,
-    "",
-    `Nous pouvons convenir d'un échéancier si nécessaire.`,
-    "Merci de nous répondre sous 7 jours.",
-    "",
-    "Cordialement,",
-    "L’équipe Finance",
-  ].join("\n");
-  const to = encodeURIComponent(safeStr(c.email, ""));
-  return `mailto:${to}?subject=${encodeURIComponent(
-    subject
-  )}&body=${encodeURIComponent(body)}`;
-}
 
 function PriorityList({ clients, query, onQuery }) {
+  const { t } = useTranslation("clientRisk");
+
   const enriched = React.useMemo(
     () =>
       clients
@@ -479,51 +561,71 @@ function PriorityList({ clients, query, onQuery }) {
     return { count: filtered.length, totalDue, totalRec };
   }, [filtered]);
 
+  // i18n-aware mailto builder (keeps logic identical)
+  function buildMailtoI18n(c) {
+    const subject = t("priority.email.subjectWithId", {
+      name: safeStr(c.name, t("priority.email.defaultClient")),
+      id: safeStr(c.id),
+    });
+    const body = t("priority.email.body", {
+      name: safeStr(c.name, t("priority.email.defaultGreeting")),
+      amount: eur(c.outstanding),
+      id: safeStr(c.id),
+      overdue: Number(c.overdue) || 0,
+    });
+    const to = encodeURIComponent(safeStr(c.email, ""));
+    return `mailto:${to}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+  }
+
   function previewEmails() {
-    const lines = filtered
-      .slice(0, 50)
-      .map(
-        (c) =>
-          `To: ${c.email || "(manquant)"} — ${c.name} — Est. ${eur(
-            c._recovery
-          )}`
-      );
-    const example = filtered[0] || { name: "Client", outstanding: 0 };
-    const subject = `Relance facture — ${example.name}`;
-    const body = [
-      `Bonjour ${example.name},`,
-      "",
-      `Nous revenons vers vous concernant un impayé de ${eur(
-        example.outstanding
-      )}.`,
-      "Nous pouvons convenir d'un échéancier si besoin.",
-      "Merci de nous répondre sous 7 jours.",
-      "",
-      "Cordialement,",
-      "L'équipe Finance",
-    ].join("\n");
+    const lines = filtered.slice(0, 50).map((c) =>
+      t("priority.preview.toLine", {
+        email: c.email || t("priority.email.missing"),
+        name: c.name,
+        amount: eur(c._recovery),
+      })
+    );
+    const example = filtered[0] || {
+      name: "Client",
+      outstanding: 0,
+      id: "NA",
+      overdue: 0,
+    };
+    const subject = t("priority.preview.subject", { name: example.name });
+    const body = t("priority.email.body", {
+      name: example.name,
+      amount: eur(example.outstanding),
+      id: example.id,
+      overdue: Number(example.overdue) || 0,
+    });
     const w = window.open("", "_blank", "width=720,height=680");
-    if (!w) return alert("Autorisez les pop-ups pour prévisualiser.");
+    if (!w) return alert(t("priority.preview.allowPopups"));
     w.document.body.style.fontFamily =
       'Inter, ui-sans-serif, system-ui, "Helvetica Neue"';
-    w.document.title = "Prévisualisation emails — InsightMate";
+    w.document.title = t("priority.preview.windowTitle");
     w.document.body.innerHTML = `
       <div style="padding:18px;">
-        <h2>Prévisualisation des emails</h2>
-        <p style="color:#667085">Destinataires (max 50 — filtre appliqué)</p>
+        <h2>${escapeHtml(t("priority.preview.title"))}</h2>
+        <p style="color:#667085">${escapeHtml(
+          t("priority.preview.recipients")
+        )}</p>
         <pre style="background:#0f1724;padding:12px;border-radius:8px;color:#e6eef8">${escapeHtml(
           lines.join("\n")
         )}</pre>
-        <p style="color:#667085;margin-top:12px">Template</p>
+        <p style="color:#667085;margin-top:12px">${escapeHtml(
+          t("priority.preview.templateLabel")
+        )}</p>
         <pre style="background:#0f1724;padding:12px;border-radius:8px;color:#e6eef8">${escapeHtml(
-          `Subject: ${subject}\n\n${body}`
+          `${t("priority.preview.subjectLabel")}: ${subject}\n\n${body}`
         )}</pre>
       </div>`;
   }
 
   function exportPotential() {
     csvDownload(
-      "clients_priorites.csv",
+      t("csv.filenames.priorities"),
       filtered.map((c) => ({
         id: c.id,
         name: c.name,
@@ -537,6 +639,12 @@ function PriorityList({ clients, query, onQuery }) {
     );
   }
 
+  // NEW: Export Next-Actions (Smart Follow-Up)
+  function exportNextActions() {
+    const rows = buildNextActions(filtered, t, 50);
+    csvDownload(t("csv.filenames.nextActions"), rows);
+  }
+
   return (
     <motion.div
       variants={pop}
@@ -547,44 +655,53 @@ function PriorityList({ clients, query, onQuery }) {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
         <div>
           <h3 className="text-sm font-semibold flex items-center gap-2">
-            Priorités de relance{" "}
+            {t("priority.title")}{" "}
             <ArrowUpRight size={16} className="opacity-70" />
           </h3>
           <div className="text-xs text-slate-400">
-            Tri par score (montant, retard, prob. récup). Clients:{" "}
-            <b>{kpis.count}</b> • Dû total: <b>{eur(kpis.totalDue)}</b> •
-            Potentiel: <b>{eur(kpis.totalRec)}</b>
+            {t("priority.subtitle")} {t("priority.clientsLabel")}{" "}
+            <b>{kpis.count}</b> • {t("priority.totalDueLabel")}{" "}
+            <b>{eur(kpis.totalDue)}</b> • {t("priority.potentialLabel")}{" "}
+            <b>{eur(kpis.totalRec)}</b>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <input
             value={query}
             onChange={(e) => onQuery(e.target.value)}
-            placeholder="Rechercher client/ID/email"
+            placeholder={t("priority.searchPlaceholder")}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 text-sm"
           />
           <button
             onClick={previewEmails}
             className="px-3 py-2 rounded-xl bg-emerald-600/90 text-white hover:opacity-95 text-sm flex items-center gap-2"
           >
-            <Mail size={16} /> Prévisualiser
+            <Mail size={16} /> {t("priority.previewBtn")}
+          </button>
+          <button
+            onClick={exportNextActions}
+            className="px-3 py-2 rounded-xl bg-emerald-700/20 ring-1 ring-emerald-500/30 hover:bg-emerald-700/30 text-emerald-200 text-sm flex items-center gap-2"
+          >
+            <ListChecks size={16} /> {t("follow.exportNextActions")}
           </button>
           <button
             onClick={exportPotential}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm flex items-center gap-2"
           >
-            <Download size={16} /> Export CSV
+            <Download size={16} /> {t("priority.exportBtn")}
           </button>
         </div>
       </div>
 
       {/* Headers desktop */}
       <div className="hidden md:grid grid-cols-12 px-2 py-2 text-xs text-slate-400">
-        <div className="col-span-5">Client</div>
-        <div className="col-span-2">Retard (j)</div>
-        <div className="col-span-2">Dû</div>
-        <div className="col-span-2">Potentiel</div>
-        <div className="col-span-1 text-right">Action</div>
+        <div className="col-span-5">{t("priority.headers.client")}</div>
+        <div className="col-span-2">{t("priority.headers.overdue")}</div>
+        <div className="col-span-2">{t("priority.headers.due")}</div>
+        <div className="col-span-2">{t("priority.headers.potential")}</div>
+        <div className="col-span-1 text-right">
+          {t("priority.headers.action")}
+        </div>
       </div>
 
       <div className="space-y-2 max-h-[520px] overflow-auto">
@@ -603,35 +720,37 @@ function PriorityList({ clients, query, onQuery }) {
                 <span className="text-xs text-slate-400">• {c.id}</span>
               </div>
               <div className="text-xs text-slate-400 flex items-center gap-1">
-                {c.email || "(email manquant)"}{" "}
+                {c.email || t("priority.email.missing")}{" "}
                 {(!c.email || !String(c.email).includes("@")) && (
                   <span className="inline-flex items-center gap-1 text-amber-300">
-                    <AlertTriangle size={12} /> email à compléter
+                    <AlertTriangle size={12} />{" "}
+                    {t("priority.email.completeHint")}
                   </span>
                 )}
               </div>
               <div className="text-[11px] text-slate-400 mt-1">
-                Score priorité: <b>{c._priority.toLocaleString("fr-FR")}</b> —
-                Prob. récup:{" "}
+                {t("priority.scoreLabel")}:{" "}
+                <b>{c._priority.toLocaleString("fr-FR")}</b> —{" "}
+                {t("priority.probAbbr")}{" "}
                 {(clamp01(c.probability_recovery) * 100).toFixed(0)}%
               </div>
             </div>
             <div className="col-span-2 text-sm">{Number(c.overdue) || 0}</div>
             <div className="col-span-2 text-sm">{eur(c.outstanding)}</div>
-            <div className="col-span-2 text-sm">{eur(c._recovery)}</div>
+            <div className="col-span-2 text-sm">{eur(recoveryEstimate(c))}</div>
             <div className="col-span-1 flex justify-end">
               <a
-                href={buildMailto(c)}
+                href={buildMailtoI18n(c)}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-600/90 text-white hover:opacity-95"
               >
-                <Mail size={14} /> Relancer
+                <Mail size={14} /> {t("priority.remindBtn")}
               </a>
             </div>
           </motion.div>
         ))}
         {!filtered.length && (
           <div className="text-xs text-slate-400 px-2 py-3">
-            Aucun client ne correspond au filtre.
+            {t("priority.noMatch")}
           </div>
         )}
       </div>
@@ -644,6 +763,7 @@ function PriorityList({ clients, query, onQuery }) {
    -> onRows(rows) est appelé et écrase le dataset courant
 ========================= */
 function CSVUploadCard({ onRows }) {
+  const { t } = useTranslation("clientRisk");
   const fileRef = React.useRef(null);
   const dropRef = React.useRef(null);
   const [status, setStatus] = React.useState({ state: "idle", msg: "" }); // idle | parsing | ok | error
@@ -674,7 +794,7 @@ function CSVUploadCard({ onRows }) {
   }
 
   function parseFile(file) {
-    setStatus({ state: "parsing", msg: "Parsing du CSV…" });
+    setStatus({ state: "parsing", msg: t("csv.status.parsing") });
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
@@ -684,22 +804,20 @@ function CSVUploadCard({ onRows }) {
           const data = Array.isArray(res.data) ? res.data : [];
           const rows = normalizeRows(data);
           if (!rows.length) {
-            setStatus({
-              state: "error",
-              msg: "Aucune ligne valide trouvée (vérifie les colonnes).",
-            });
+            setStatus({ state: "error", msg: t("csv.status.noValidRows") });
             return;
           }
           onRows(rows); // <<< ÉCRASE le dataset courant
           setStatus({
             state: "ok",
-            msg: `Import réussi — ${rows.length} lignes`,
+            msg: t("csv.status.ok", { count: rows.length }),
           });
         } catch (e) {
-          setStatus({ state: "error", msg: "Erreur lors du mapping du CSV." });
+          setStatus({ state: "error", msg: t("csv.status.error.map") });
         }
       },
-      error: () => setStatus({ state: "error", msg: "Erreur de parsing CSV." }),
+      error: () =>
+        setStatus({ state: "error", msg: t("csv.status.error.parse") }),
     });
   }
 
@@ -758,7 +876,7 @@ function CSVUploadCard({ onRows }) {
         probability_recovery: 0.35,
       },
     ];
-    csvDownload("modele_clients_risque.csv", template);
+    csvDownload(t("csv.filename.template"), template);
   }
 
   return (
@@ -772,17 +890,21 @@ function CSVUploadCard({ onRows }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold flex items-center gap-2">
-            <Upload size={16} /> Ajoute ton CSV
+            <Upload size={16} /> {t("csv.card.title")}
           </h3>
-          <p className="text-xs text-slate-300 mt-1">
-            Colonnes supportées : <code>id</code>, <code>name</code>,{" "}
-            <code>email</code>, <code>outstanding</code>, <code>overdue</code>,{" "}
-            <code>probability_recovery</code> (0–1).
-          </p>
+          <p
+            className="text-xs text-slate-300 mt-1"
+            dangerouslySetInnerHTML={{
+              __html: t("csv.card.supportedColsHtml"),
+            }}
+          />
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-            <Info size={14} /> Minimum requis : <code>id</code>,{" "}
-            <code>name</code>, <code>outstanding</code>. Idéal : ajouter{" "}
-            <code>email</code> + <code>overdue</code>.
+            <Info size={14} />{" "}
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t("csv.card.minimumColsHtml"),
+              }}
+            />
           </p>
           {/* Status */}
           {status.state === "parsing" && (
@@ -807,13 +929,13 @@ function CSVUploadCard({ onRows }) {
             onClick={downloadTemplate}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm flex items-center gap-2"
           >
-            <Download size={14} /> Modèle
+            <Download size={14} /> {t("csv.btn.template")}
           </button>
           <button
             onClick={() => fileRef.current?.click()}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm"
           >
-            Choisir un fichier
+            {t("csv.btn.chooseFile")}
           </button>
           <input
             ref={fileRef}
@@ -825,7 +947,134 @@ function CSVUploadCard({ onRows }) {
         </div>
       </div>
       <div className="mt-3 text-[11px] text-slate-400">
-        Astuce : glisse-dépose ton fichier CSV ici.
+        {t("csv.hint.dropHere")}
+      </div>
+    </motion.div>
+  );
+}
+
+/* =========================
+   Smart Follow-Up Engine — UI block (weekly forecast + exports)
+========================= */
+function FollowUpEngine({ clients }) {
+  const { t } = useTranslation("clientRisk");
+
+  const enriched = React.useMemo(
+    () =>
+      clients
+        .map((c) => ({
+          ...c,
+          _recovery: recoveryEstimate(c),
+          _priority: priorityScore(c),
+        }))
+        .sort((a, b) => b._priority - a._priority),
+    [clients]
+  );
+
+  const weeks = 8;
+  const weekly = React.useMemo(
+    () => buildWeeklyRecoverySeries(enriched, weeks),
+    [enriched]
+  );
+  const next7 = React.useMemo(() => {
+    const limit = new Date(Date.now() + 7 * DAY_MS).toISOString().slice(0, 10);
+    return enriched
+      .filter((c) => expectedDateISO(c) <= limit)
+      .reduce((s, c) => s + recoveryEstimate(c), 0);
+  }, [enriched]);
+  const next30 = React.useMemo(() => {
+    const limit = new Date(Date.now() + 30 * DAY_MS).toISOString().slice(0, 10);
+    return enriched
+      .filter((c) => expectedDateISO(c) <= limit)
+      .reduce((s, c) => s + recoveryEstimate(c), 0);
+  }, [enriched]);
+
+  function exportWeeklyForecast() {
+    csvDownload(
+      t("csv.filenames.weeklyForecast"),
+      weekly.map((r) => ({
+        week_start: r.week,
+        expected_cash_in: Math.round(r.amount),
+      }))
+    );
+  }
+
+  function exportNextActions() {
+    const rows = buildNextActions(enriched, t, 50);
+    csvDownload(t("csv.filenames.nextActions"), rows);
+  }
+
+  return (
+    <motion.div
+      variants={pop}
+      initial="initial"
+      animate="animate"
+      className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <CalendarDays size={16} />
+          <h3 className="text-sm font-semibold">
+            {t("follow.title", "Prévision d'encaissement (Smart Follow-Up)")}
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportNextActions}
+            className="px-3 py-2 rounded-xl bg-emerald-700/20 ring-1 ring-emerald-500/30 hover:bg-emerald-700/30 text-emerald-200 text-sm flex items-center gap-2"
+          >
+            <ListChecks size={16} />{" "}
+            {t("follow.exportNextActions", "Exporter actions (top 50)")}
+          </button>
+          <button
+            onClick={exportWeeklyForecast}
+            className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm flex items-center gap-2"
+          >
+            <Download size={16} />{" "}
+            {t("follow.exportWeekly", "Exporter prévision hebdo")}
+          </button>
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+        <StatCard
+          title={t("follow.kpi.next7", "Encaissement 7j")}
+          value={eur(next7)}
+          caption={t("follow.kpi.next7.caption", "attendu (EV)")}
+        />
+        <StatCard
+          title={t("follow.kpi.next30", "Encaissement 30j")}
+          value={eur(next30)}
+          caption={t("follow.kpi.next30.caption", "attendu (EV)")}
+        />
+        <StatCard
+          title={t("follow.kpi.horizon", "Horizon")}
+          value={`${weeks} ${t("follow.kpi.weeks", "sem.")}`}
+          caption={t("follow.kpi.horizon.caption", "regroupement par semaine")}
+        />
+      </div>
+
+      {/* Weekly forecast chart */}
+      <div style={{ width: "100%", height: 220 }}>
+        <ResponsiveContainer>
+          <BarChart data={weekly}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="week" tick={{ fontSize: 12 }} />
+            <YAxis />
+            <Tooltip formatter={(v) => eur(v)} />
+            <Bar
+              dataKey="amount"
+              name={t("follow.chart.barName", "Encaissement attendu")}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="mt-2 text-[11px] text-slate-400">
+        {t(
+          "follow.note",
+          "Hypothèses simples et déterministes: date attendue = f(probabilité, retard). Ajustez votre CSV pour mettre à jour la prévision."
+        )}
       </div>
     </motion.div>
   );
@@ -835,6 +1084,8 @@ function CSVUploadCard({ onRows }) {
    Liste clients (vue complémentaire)
 ========================= */
 function ClientsList({ clients, query, onQuery }) {
+  const { t } = useTranslation("clientRisk");
+
   const filtered = React.useMemo(() => {
     const q = (query || "").toLowerCase().trim();
     if (!q) return clients;
@@ -851,16 +1102,16 @@ function ClientsList({ clients, query, onQuery }) {
       className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
     >
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold">Clients signalés</h3>
+        <h3 className="text-sm font-semibold">{t("clientsList.title")}</h3>
         <div className="flex items-center gap-2">
           <div className="text-xs text-slate-400">
-            {filtered.length} trouvés
+            {t("clientsList.found", { count: filtered.length })}
           </div>
           <button
-            onClick={() => csvDownload("clients_list.csv", filtered)}
+            onClick={() => csvDownload(t("csv.filenames.clients"), filtered)}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm flex items-center gap-2"
           >
-            <Download size={16} /> Export
+            <Download size={16} /> {t("clientsList.export")}
           </button>
         </div>
       </div>
@@ -869,7 +1120,7 @@ function ClientsList({ clients, query, onQuery }) {
         <input
           value={query}
           onChange={(e) => onQuery(e.target.value)}
-          placeholder="Rechercher client/ID/email"
+          placeholder={t("clientsList.searchPlaceholder")}
           className="w-full px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15"
         />
       </div>
@@ -889,14 +1140,15 @@ function ClientsList({ clients, query, onQuery }) {
                 <span className="text-xs text-slate-400">• {c.id}</span>
               </div>
               <div className="text-xs text-slate-400">
-                {c.email || "(email manquant)"} • {Number(c.overdue) || 0}j
-                retard
+                {c.email || t("priority.email.missing")} •{" "}
+                {t("clientsList.delayLabel", { days: Number(c.overdue) || 0 })}
               </div>
             </div>
             <div className="text-right">
               <div className="text-sm font-semibold">{eur(c.outstanding)}</div>
               <div className="text-xs text-slate-400">
-                Potentiel {eur(recoveryEstimate(c))}
+                {t("clientsList.potentialPrefix")}
+                {eur(recoveryEstimate(c))}
               </div>
             </div>
           </motion.div>
@@ -910,6 +1162,7 @@ function ClientsList({ clients, query, onQuery }) {
    Page wrapper (FULL — CSV import remplace la démo)
 ========================= */
 export default function ClientRisk() {
+  const { t } = useTranslation("clientRisk");
   const baseClients = useRiskyClientsData();
   const [uploaded, setUploaded] = React.useState(null); // <<< quand défini, remplace la démo
   const [query, setQuery] = React.useState(""); // filtre partagé
@@ -922,8 +1175,8 @@ export default function ClientRisk() {
 
   // info source
   const sourceLabel = uploaded?.length
-    ? `CSV importé (${uploaded.length} lignes)`
-    : "Démo / LocalStorage";
+    ? t("page.dataSource.csv", { count: uploaded.length })
+    : t("page.dataSource.demo");
   const sourceTone = uploaded?.length ? "text-emerald-300" : "text-slate-400";
 
   function resetDataset() {
@@ -940,24 +1193,19 @@ export default function ClientRisk() {
       >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">
-              Trésorerie — Clients à risque
-            </h1>
-            <p className="text-sm text-slate-400 mt-1">
-              KPIs + charts, liste priorisée (emails cliquables) & import CSV —
-              rendu pro, tech & animé.
-            </p>
+            <h1 className="text-2xl font-bold">{t("page.title")}</h1>
+            <p className="text-sm text-slate-400 mt-1">{t("page.tagline")}</p>
             <div
               className={`mt-2 text-xs inline-flex items-center gap-2 ${sourceTone}`}
             >
-              <FileSpreadsheet size={14} /> Source des données :{" "}
+              <FileSpreadsheet size={14} /> {t("page.dataSourceLabel")}{" "}
               <b>{sourceLabel}</b>
               {uploaded?.length ? (
                 <button
                   onClick={resetDataset}
                   className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 ring-1 ring-white/15 hover:bg-white/15 ml-2"
                 >
-                  <RefreshCw size={12} /> Réinitialiser
+                  <RefreshCw size={12} /> {t("page.btn.reset")}
                 </button>
               ) : null}
             </div>
@@ -973,9 +1221,16 @@ export default function ClientRisk() {
         <div className="col-span-12">
           <RiskDashboard clients={clients} />
         </div>
+
+        {/* NEW: Smart Follow-Up Engine block */}
+        <div className="col-span-12">
+          <FollowUpEngine clients={clients} />
+        </div>
+
         <div className="col-span-12">
           <PriorityList clients={clients} query={query} onQuery={setQuery} />
         </div>
+
         <div className="col-span-12">
           <ClientsList clients={clients} query={query} onQuery={setQuery} />
         </div>

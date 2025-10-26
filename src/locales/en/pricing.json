@@ -1,0 +1,133 @@
+{
+  "title": "Pricing Optimizer",
+  "subtitle": "Compute a <b>Recommended Price (P*)</b> per item, with <b>guardrails</b>, <b>elasticity</b>, <b>KVI competition</b>, and <b>stock risks</b>. Apply line-by-line or in bulk.",
+  "globalSettings": "Global settings",
+  "objectiveTitle": "Multi-criteria score objective",
+  "objective": {
+    "balanced": "Balanced",
+    "margin": "Margin priority",
+    "revenue": "Revenue priority"
+  },
+  "aggressiveness": "Aggressiveness",
+  "importCsv": "Import CSV",
+  "exportPlan": "Export plan",
+  "guardrailsLabel": "Guardrails",
+  "deltaMax": "Δ max",
+  "kviCap": "KVI cap",
+  "minMargin": "Min margin",
+  "charm99": ".99",
+  "portfolioPerformance": "Portfolio performance",
+  "revenue": "Revenue",
+  "optimalAdjustment": "Optimal adjustment θ*",
+  "optimalAdjustmentHint": "Global shift based on the objective",
+  "dataQualityIndex": "Data quality index",
+  "health": {
+    "knownCompetition": "Known competition",
+    "kvi": "KVI",
+    "lowElasticity": "Low elasticity / weak data",
+    "ok": "OK"
+  },
+  "dataQuality": "Data quality",
+  "categoryAttention": "Categories to watch",
+  "category": {
+    "overstock": "Overstock",
+    "stockout": "Stockout"
+  },
+  "searchPlaceholder": "Search SKU/name…",
+  "sort": {
+    "priorityDesc": "Sort: priority",
+    "deltaMarginDesc": "Sort: Δ margin",
+    "deltaRevDesc": "Sort: Δ revenue",
+    "elasticityAsc": "Sort: |elasticity|"
+  },
+  "onlyActionables": "Only actionables",
+  "loadExample": "Load example",
+  "portfolioCurve": {
+    "title": "Portfolio curve (θ)",
+    "subtitle": "Global price variation (θ) bounded by aggressiveness. The optimal position depends on the objective."
+  },
+  "bestTheta": "Best θ",
+  "ca": "Revenue",
+  "margin": "Margin",
+  "kpi": {
+    "caAtBest": "Revenue at best θ",
+    "marginAtBest": "Margin at best θ",
+    "deltaCaVsZero": "Δ Revenue vs θ = 0%",
+    "deltaMarginVsZero": "Δ Margin vs θ = 0%"
+  },
+  "productsGeneral": "Products (overview)",
+  "product": "Product",
+  "categoryCol": "Category",
+  "price": "Price",
+  "cost": "Cost",
+  "qty90d": "Qty 90d",
+  "compShort": "Comp.",
+  "stockDays": "Stock days",
+  "advancedAnalysis": "Advanced analysis",
+  "mcRuns": "MC iterations",
+  "profitWithBands": "Profit with uncertainty bands",
+  "profitP10": "Profit P10",
+  "profitP50": "Profit P50",
+  "profitP90": "Profit P90",
+  "p0": "P0",
+  "pStar": "P*",
+  "revenueVsPriceMedian": "Revenue vs price (median)",
+  "revenueP50": "Revenue P50",
+  "marginVsPriceMedian": "Margin vs price (median)",
+  "marginP50": "Margin P50",
+  "optimizePortfolio": "Optimize portfolio",
+  "optimizePortfolioHint": "Micro-steps toward P* to reach a margin target.",
+  "marginTargetEuro": "Margin target (€)",
+  "launch": "Run",
+  "currentAggressiveness": "Current aggressiveness",
+  "currentObjective": "Current objective",
+  "replenishmentPlan": "Replenishment plan",
+  "replenishmentHint": "Cover lead time + safety stock at P*.",
+  "safetyStockDays": "Safety days",
+  "exportReplenishmentCsvTitle": "Export replenishment CSV",
+  "exportCsv": "Export CSV",
+  "experimentation": "Experimentation",
+  "experimentationHint": "Plan a price test on a SKU.",
+  "deltaPricePct": "Δ price (%)",
+  "durationDays": "Duration (days)",
+  "scheduleTest": "Schedule test",
+  "scheduledTests": "Scheduled tests",
+  "start": "Start",
+  "end": "End",
+  "status": "Status",
+  "auditLog": "Audit log",
+  "recentActions": "Recent actions",
+  "noEventsYet": "No events yet.",
+  "timestamp": "Timestamp",
+  "event": "Event",
+  "detail": "Detail",
+
+  "priceStory": "Rules applied to price",
+  "story": {
+    "costFloor": "Margin floor (c × (1 + min margin))",
+    "maxDown": "Max allowed decrease",
+    "maxUp": "Max allowed increase",
+    "kviCap": "KVI increase cap",
+    "compCap": "Competition cap",
+    "charm99": ".99 psychological ending"
+  },
+
+  "table": {
+    "sku": "SKU",
+    "kvi": "KVI"
+  },
+  "deltaPctShort": "Δ%",
+  "labels": {
+    "sku": "SKU"
+  },
+  "status.scheduled": "Scheduled",
+
+  "events": {
+    "nudge_price": "Manual price nudge",
+    "apply_suggested": "Suggested price applied",
+    "export_plan_csv": "Plan exported (CSV)",
+    "portfolio_optimize": "Portfolio optimization",
+    "replenishment_export": "Replenishment export (CSV)",
+    "experiment_schedule": "Test scheduled"
+  }
+}
