@@ -157,20 +157,20 @@
       },
       "2": {
         "q": "Which connectors are prioritized?",
-        "a": "Stripe + Bank (Bridge/Powens) first, then Shopify/Presta/Woo, then Pennylane/Sage."
+        "a": "Stripe + Bank (Bridge/Powens) first, then Shopify/PrestaShop, then Pennylane/Sage."
       },
       "3": {
-        "q": "Is the data secure?",
-        "a": "Yes. Read-only by default, encrypted in transit, with good access practices."
+        "q": "Are the data secure?",
+        "a": "Yes. Read-only first, encrypted in transit, with clear access controls."
       },
       "4": {
-        "q": "What does the training cover?",
-        "a": "Reading KPIs, scenarios, best practices (imports, light cleaning, reminders)."
+        "q": "What does the training include?",
+        "a": "KPIs walk-through, scenarios, and an operating playbook for your team."
       }
     }
   },
   "creator": {
-    "byPrefix": "Guidance by",
+    "title": "Creator",
     "subtitle": "Data & Risk — HMM/SV-HMM — InsightMate. We turn data into decisions.",
     "buttons": {
       "contact": "Contact",
@@ -179,5 +179,15 @@
   },
   "footer": {
     "createdBy": "Created by"
+  },
+  "beta": {
+    "badge": "BETA",
+    "title": "InsightMate is in Private Beta",
+    "alreadyIn": "Already in beta",
+    "text": "This is an early version of InsightMate. We’re shipping fast, listening to feedback, and polishing. Join the beta to connect your data, get KPIs live in days, and lock a discounted Founder price for early adopters.",
+    "cta": {
+      "lock": "Lock my Founder price"
+    },
+    "disclaimer": "Limited seats. Founder price is kept while subscribed. Cancel anytime."
   }
 }
