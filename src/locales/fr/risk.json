@@ -1,133 +1,151 @@
 {
-  "page": {
-    "title": "Risque clients",
-    "tagline": "Priorisez les relances, estimez les récupérations et passez à l’action.",
-    "dataSourceLabel": "Source de données :",
-    "dataSource": {
-      "csv": "CSV ({{count}} lignes)",
-      "demo": "Données de démonstration"
-    },
-    "btn": {
-      "reset": "Réinitialiser"
-    }
+  "topbar": {
+    "title": "Données ventes / commandes",
+    "csvExpected": "CSV attendu :",
+    "downloadSample": "Télécharger l’exemple",
+    "uploadCsv": "Charger un CSV"
+  },
+  "header": {
+    "title": "Risque",
+    "subtitle": "CFaR / ES, fan-chart, stress tests et concentration.",
+    "modeDemo": "Mode : Démo"
+  },
+
+  "tooltip": {
+    "p95": "p95",
+    "median": "Médiane",
+    "mc": "Monte Carlo",
+    "p5": "p5",
+    "note": "Bandes = incertitude de trésorerie simulée (AR(1), 3k–8k chemins)."
   },
   "kpi": {
-    "totalExposure": {
-      "title": "Exposition totale",
-      "caption": "Solde impayé actuel"
+    "cfar": "Cash à Risque p{{alphaPct}} ({{horizon}} j)",
+    "es": "Perte moyenne en cas de stress",
+    "probOverdraft": "Probabilité de découvert sur la période",
+    "runway": "Runway",
+    "hhi": "Concentration clients"
+  },
+  "chart": {
+    "title": "Trésorerie — Fan-chart",
+    "subtitle": "Horizon {{horizon}} j • α={{alphaPct}} • Sim={{nSim}}",
+    "cfar": "Cash à risque :",
+    "es": "Perte moyenne en cas de stress :"
+  },
+  "legend": {
+    "p95Optimistic": "p95 (optimiste)",
+    "median": "Médiane",
+    "p5Conservative": "p5 (prudent)",
+    "mc": "Monte Carlo",
+    "mcOuterPlus": "MC + externe",
+    "mcInnerPlus": "MC + interne",
+    "mcOuterMinus": "MC − externe",
+    "mcInnerMinus": "MC − interne",
+    "stress": "Stress",
+    "optimistic": "Optimiste"
+  },
+  "block": {
+    "stressSim": {
+      "title": "Stress et simulation",
+      "subtitle": "Ajuster et recalculer"
     },
-    "recoveryPotential": {
-      "title": "Potentiel de récupération",
-      "caption": "Valeur attendue récupérable"
-    },
-    "riskyClients": {
-      "title": "Clients à risque",
-      "caption": "> 60 j ou prob. < 50 %"
+    "advisor": {
+      "title": "Conseiller IA (Risque)",
+      "subtitle": "Problème → Cause → Solution (+ ROI)"
     }
   },
-  "charts": {
-    "pie": { "title": "Récupérable vs exposition restante" },
-    "top5": {
-      "title": "Top 5 par récupération attendue",
-      "barName": "Récupération estimée"
-    },
-    "history": { "title": "Évolution de l’exposition (démo)" }
+  "radar": {
+    "title": "Revenue Leakage Radar",
+    "subtitle": "Faible coût • Marge cible • Remises excessives • Transport",
+    "tip": "Astuce : chargez l’exemple ou importez votre CSV pour visualiser instantanément les fuites (€)."
   },
-  "priority": {
-    "title": "Priorités de relance",
-    "subtitle": "Ordonnez les actions par impact attendu.",
-    "clientsLabel": "clients",
-    "totalDueLabel": "En retard",
-    "potentialLabel": "Potentiel",
-    "searchPlaceholder": "Rechercher nom, ID ou email…",
-    "previewBtn": "Prévisualiser emails",
-    "exportBtn": "Exporter la liste",
-    "headers": {
-      "client": "Client",
-      "overdue": "Retard (j)",
-      "due": "Impayé",
-      "potential": "Récup. estimée",
-      "action": "Action"
-    },
-    "email": {
-      "missing": "email manquant",
-      "completeHint": "ajoutez un email pour contacter",
-      "defaultClient": "Client",
-      "defaultGreeting": "Bonjour",
-      "subjectWithId": "Facture en retard — {{name}} ({{id}})",
-      "body": "Bonjour {{name}},\n\nNous revenons vers vous au sujet de la facture {{id}} qui présente un retard de {{overdue}} jours. Le solde restant est de {{amount}}.\n\nPouvez-vous nous indiquer l’état du paiement ou une date estimée ? Si besoin, nous pouvons proposer un plan d’échelonnement.\n\nMerci d’avance."
-    },
-    "preview": {
-      "windowTitle": "Prévisualisation d’emails",
-      "title": "Aperçu",
-      "recipients": "Destinataires (50 premiers) :",
-      "templateLabel": "Modèle de message",
-      "subjectLabel": "Objet",
-      "subject": "Rappel — {{name}}",
-      "toLine": "{{name}} <{{email}}> — {{amount}}",
-      "allowPopups": "Autorisez les pop-ups pour voir la prévisualisation."
-    },
-    "scoreLabel": "Score",
-    "probAbbr": "Prob.",
-    "remindBtn": "Relancer par email",
-    "noMatch": "Aucun résultat pour ce filtre."
-  },
-  "clientsList": {
-    "title": "Liste des clients",
-    "found": "Trouvés : {{count}}",
-    "searchPlaceholder": "Rechercher nom, ID ou email…",
-    "export": "Exporter",
-    "delayLabel": "Retard : {{days}} jours",
-    "potentialPrefix": "Potentiel : "
+  "clients": {
+    "title": "Concentration de clients",
+    "none": "Aucun client identifié."
   },
   "csv": {
-    "card": {
-      "title": "Importer un CSV",
-      "supportedColsHtml": "Colonnes supportées : <code>id</code>, <code>name</code>, <code>email</code>, <code>outstanding</code>, <code>overdue</code>, <code>probability_recovery</code> (optionnel).",
-      "minimumColsHtml": "Minimum requis : <b>outstanding</b> et <b>overdue</b> (alias courants acceptés)."
+    "invalidRows": "Aucune ligne valide détectée.",
+    "invalid": "CSV invalide. Vérifiez l’en-tête et les colonnes attendues (voir note).",
+    "parseError": "Erreur d’analyse du CSV."
+  },
+
+  "leakage": {
+    "header": {
+      "title": "Revenue Leakage Radar",
+      "subtitle": "Importez un CSV de ventes pour détecter et quantifier les fuites de revenus/marge.",
+      "fullscreenEnter": "Plein écran",
+      "fullscreenExit": "Quitter le plein écran"
     },
-    "status": {
-      "parsing": "Analyse du CSV…",
-      "ok": "{{count}} lignes importées.",
-      "noValidRows": "Aucune ligne valide trouvée.",
-      "error": {
-        "map": "Erreur de mapping des colonnes.",
-        "parse": "Erreur de lecture du CSV."
-      }
+    "controls": {
+      "title": "Paramètres",
+      "targetMargin": "Marge cible (%)",
+      "priceDrift": "Dérive de prix (%)",
+      "recompute": "Recalculer",
+      "importCsv": "Importer ventes (CSV UTF-8)",
+      "loadSample": "Charger l’exemple",
+      "downloadTemplate": "Télécharger le modèle CSV"
     },
-    "btn": {
-      "template": "Télécharger le modèle",
-      "chooseFile": "Choisir un fichier"
+    "fileHelp": {
+      "title": "Format de fichier attendu",
+      "csvNote": "Fichier CSV (UTF-8), séparateur \",\" ou \";\".",
+      "decimalsNote": "Décimales : \".\" ou \",\" acceptées (ex. 12.90 ou 12,90).",
+      "rowNote": "Une ligne = un article de commande (SKU).",
+      "headersTitle": "En-têtes requis :",
+      "headersList": "date,order_id,sku,name,qty,unit_price,unit_cost,discount,shipping_fee,shipping_cost",
+      "exampleRow": "Exemple : 2025-10-01,A-1001,SKU-A,Café grain 1kg,3,12.9,9.5,4.5,3.9,4.5"
     },
-    "hint": { "dropHere": "Ou déposez votre CSV ici." },
-    "filename": { "template": "modele_clients.csv" },
-    "filenames": {
-      "clients": "clients_export.csv",
-      "priorities": "priorites_clients.csv",
-      "nextActions": "actions_suivantes.csv",
-      "weeklyForecast": "prevision_hebdo.csv"
+    "kpi": {
+      "underCost": "Sous le coût",
+      "erosion": "Sous la marge cible",
+      "discount": "Remises/Dérive",
+      "shipping": "Transport",
+      "total": "Fuite totale"
+    },
+    "charts": {
+      "splitTitle": "Décomposition des fuites (€)",
+      "topLeaksTitle": "Principales fuites par produit (total €)",
+      "timeseriesTitle": "Fuites dans le temps (€/jour)",
+      "barLeakName": "Fuite (€)"
+    },
+    "empty": {
+      "prompt": "Importez un CSV (ou chargez l’exemple) pour voir les fuites de revenus/marge.",
+      "loading": "Analyse…"
     }
   },
-  "follow": {
-    "title": "Prévision d’encaissement (Smart Follow-Up)",
-    "exportNextActions": "Exporter actions (top 50)",
-    "exportWeekly": "Exporter prévision hebdo",
-    "kpi": {
-      "next7": {
-        "label": "Encaissement 7 j",
-        "caption": "valeur attendue (EV)"
+  "glossary": {
+    "title": "Comment c’est calculé ?",
+    "items": {
+      "increments": {
+        "label": "Incréments de trésorerie",
+        "text": "Série quotidienne de trésorerie nette ≈ marge sur ventes + encaissements (payments) + flux bancaires."
       },
-      "next30": {
-        "label": "Encaissement 30 j",
-        "caption": "valeur attendue (EV)"
+      "model": {
+        "label": "Modèle",
+        "text": "AR(1) sur les incréments (μ, φ, σ estimés) → 3 000–8 000 trajectoires simulées sur 30–180 jours."
       },
-      "horizon": {
-        "label": "Horizon",
-        "caption": "agrégation hebdomadaire"
+      "fan": {
+        "label": "Fan-chart",
+        "text": "Les courbes montrent les quantiles p5, p50 (médiane) et p95 des trajectoires simulées."
       },
-      "weeks": "sem."
-    },
-    "chart": { "barName": "Encaissement attendu" },
-    "note": "Hypothèses déterministes : la date attendue dépend de la probabilité et du retard. Mettez à jour le CSV pour recalculer."
+      "cfar": {
+        "label": "CFaR / ES",
+        "text": "Cash-flow-at-Risk et Expected Shortfall au quantile α : pertes potentielles de ΔTrésorerie à l’horizon."
+      },
+      "prob": {
+        "label": "Prob(Découvert)",
+        "text": "Proportion de trajectoires passant sous 0 € au moins une fois avant l’horizon."
+      },
+      "runway": {
+        "label": "Runway P5",
+        "text": "Percentile 5 du nombre de jours jusqu’à 0 € (si aucune trajectoire ne croise 0 → ∞)."
+      },
+      "hhi": {
+        "label": "HHI (clients)",
+        "text": "Indice de concentration calculé avec les parts de chiffre d’affaires par client (0 = très diversifié, > 0,2 = élevé)."
+      },
+      "stress": {
+        "label": "Tests de stress",
+        "text": "Δ% ventes (mise à l’échelle), Δ% coûts (réduit la marge), + jours DSO (retarde les encaissements)."
+      }
+    }
   }
 }
