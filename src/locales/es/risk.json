@@ -3,14 +3,13 @@
     "title": "Datos de ventas / pedidos",
     "csvExpected": "CSV esperado:",
     "downloadSample": "Descargar ejemplo",
-    "uploadCsv": "Cargar CSV"
+    "uploadCsv": "Subir CSV"
   },
   "header": {
     "title": "Riesgo",
-    "subtitle": "CFaR / ES, gráfico de abanico, pruebas de estrés y concentración.",
+    "subtitle": "CFaR / ES, gráfico abanico, pruebas de estrés y concentración.",
     "modeDemo": "Modo: Demo"
   },
-
   "tooltip": {
     "p95": "p95",
     "median": "Mediana",
@@ -19,17 +18,17 @@
     "note": "Bandas = incertidumbre de caja simulada (AR(1), 3k–8k trayectorias)."
   },
   "kpi": {
-    "cfar": "Efectivo en Riesgo p{{alphaPct}} ({{horizon}} d)",
-    "es": "Pérdida media bajo estrés",
+    "cfar": "Cash en Riesgo p{{alphaPct}} ({{horizon}} d)",
+    "es": "Pérdida media en estrés",
     "probOverdraft": "Probabilidad de descubierto en el período",
     "runway": "Runway",
     "hhi": "Concentración de clientes"
   },
   "chart": {
-    "title": "Caja — Gráfico de abanico",
+    "title": "Caja — Gráfico abanico",
     "subtitle": "Horizonte {{horizon}} d • α={{alphaPct}} • Sim={{nSim}}",
-    "cfar": "Efectivo en riesgo:",
-    "es": "Pérdida media bajo estrés:"
+    "cfar": "Cash en riesgo:",
+    "es": "Pérdida esperada (ES):"
   },
   "legend": {
     "p95Optimistic": "p95 (optimista)",
@@ -38,36 +37,121 @@
     "mc": "Monte Carlo",
     "mcOuterPlus": "MC + externo",
     "mcInnerPlus": "MC + interno",
-    "mcOuterMinus": "MC - externo",
-    "mcInnerMinus": "MC - interno",
+    "mcOuterMinus": "MC − externo",
+    "mcInnerMinus": "MC − interno",
     "stress": "Estrés",
     "optimistic": "Optimista"
   },
   "block": {
     "stressSim": {
       "title": "Estrés y simulación",
-      "subtitle": "Ajusta y vuelve a calcular"
+      "subtitle": "Ajustar y recalcular"
     },
     "advisor": {
       "title": "Asesor IA (Riesgo)",
       "subtitle": "Problema → Causa → Solución (+ ROI)"
     }
   },
+  "panel": {
+    "sectionTitle": "Parámetros y pruebas de estrés",
+    "salesDelta": "Ventas (Δ%)",
+    "costsDelta": "Costes (Δ%)",
+    "dsoDays": "DSO (+ días)",
+    "horizon": "Horizonte (días)",
+    "alpha": "Alpha (VaR/ES)",
+    "sims": "Simulaciones",
+    "recalc": "Recalcular"
+  },
+  "advisor": {
+    "impact": "Impacto estimado",
+    "effort": "Esfuerzo",
+    "confidence": "Confianza",
+    "ctaEmail": "Copiar email de seguimiento",
+    "ctaEmailCopied": "¡Email copiado!",
+    "ctaCall": "Guion de llamada",
+    "pb": "Problema",
+    "cause": "Causa",
+    "solution": "Solución",
+    "roi": "ROI",
+
+    "ok": {
+      "title": "Perfil de riesgo controlado",
+      "pbText": "Sin urgencia — perfil sano.",
+      "causeText": "Runway cómodo, baja Prob(OD), concentración moderada.",
+      "solutionText": "Configurar alertas semanales + backtesting de excepciones VaR.",
+      "roiText": "Preservación del margen y del tiempo de gestión.",
+      "email": {
+        "subject": "Confirmación de rituales de riesgo semanales",
+        "body": "Implantamos un resumen de riesgo semanal y seguimiento de excepciones VaR para asegurar la trayectoria."
+      },
+      "call": { "body": "Validar con dirección un ritual semanal + umbrales de alerta." }
+    },
+
+    "runway": {
+      "title": "Runway ajustado (P5 {{runwayP5}} d) — Prob(OD) {{prob}}%",
+      "pbText": "Caja frágil a {{horizon}} días.",
+      "causeText": "Cobros tardíos (DSO) + margen neto comprimido.",
+      "solutionText": "Descuento −1% a los 5 mayores clientes por pago <15d + recordatorios D+3/D+10.",
+      "roiText": "Runway +15–25 d, Prob(OD) −5 a −12 pts.",
+      "email": {
+        "subject": "Opción de descuento por pronto pago",
+        "body": "Ofrecemos un 1% de descuento por pagos dentro de 15 días en las próximas facturas. Garantiza continuidad de suministro y prioridad de tratamiento."
+      },
+      "call": { "body": "Proponer 1% por pronto pago <15d + recordatorios estructurados (D+3/D+10)." }
+    },
+
+    "cfar": {
+      "title": "Cash en riesgo p{{alphaPct}} a {{horizon}}d = {{cfar}} • ES = {{es}}",
+      "pbText": "Pérdida potencial significativa en el horizonte.",
+      "causeText": "Volatilidad de flujos + presión de margen en SKUs no KVI.",
+      "solutionText": "Subida dirigida +3–4% en no-KVI + paquete “eco” a margen estable.",
+      "roiText": "Reducción CFaR esperada 20–40% (~{{cfar20}}–{{cfar40}}).",
+      "email": {
+        "subject": "Actualización de precios dirigida (servicio sin cambios)",
+        "body": "Ajustamos +3–4% en referencias no KVI e introducimos un paquete “eco” a margen estable. La oferta y los plazos se mantienen."
+      },
+      "call": { "body": "Anunciar +3–4% dirigido en no-KVI + alternativa eco." }
+    },
+
+    "conc": {
+      "title": "Alta concentración — HHI {{hhi}}",
+      "pbText": "Dependencia de pocas cuentas clave.",
+      "causeText": "Cuota de ventas concentrada (HHI > 0.2).",
+      "solutionText": "Campaña de canal directo (código −5%) para 50 compradores recurrentes.",
+      "roiText": "Ventas directas +8–15% / 60d, HHI → 0.15–0.18.",
+      "email": {
+        "subject": "Canal directo −5% (acceso prioritario)",
+        "body": "Lanzamos un código −5% en canal directo para compras recurrentes. Objetivo: plazos cortos, prioridad logística y relación directa."
+      },
+      "call": { "body": "Presentar el código −5% de canal directo a 50 compradores recurrentes." }
+    },
+
+    "email": {
+      "subjectPrefix": "Asunto:",
+      "greeting": "Hola,",
+      "closing": "Gracias de antemano — nos ayuda a asegurar la continuidad del servicio y plazos cortos.\n\nUn saludo,"
+    },
+    "call": {
+      "pitchHeader": "Guion de llamada (90s):",
+      "intro": "llamo para agilizar los plazos de pago y proponer una opción sencilla.",
+      "close": "Envío ahora el email de confirmación, ¿de acuerdo?"
+    }
+  },
+
   "radar": {
     "title": "Revenue Leakage Radar",
-    "subtitle": "Bajo coste • Margen objetivo • Descuentos excesivos • Transporte",
+    "subtitle": "Bajo coste • Margen objetivo • Descuentos excesivos • Envíos",
     "tip": "Consejo: carga el ejemplo o importa tu CSV para visualizar al instante las fugas (€)."
   },
   "clients": {
     "title": "Concentración de clientes",
-    "none": "No hay clientes identificados."
+    "none": "Ningún cliente identificado."
   },
   "csv": {
-    "invalidRows": "No se detectaron filas válidas.",
-    "invalid": "CSV no válido. Verifica el encabezado y las columnas esperadas (ver nota).",
+    "invalidRows": "No se han detectado filas válidas.",
+    "invalid": "CSV no válido. Comprueba cabecera y columnas esperadas (ver nota).",
     "parseError": "Error al analizar el CSV."
   },
-
   "leakage": {
     "header": {
       "title": "Revenue Leakage Radar",
@@ -76,9 +160,9 @@
       "fullscreenExit": "Salir de pantalla completa"
     },
     "controls": {
-      "title": "Parámetros",
+      "title": "Ajustes",
       "targetMargin": "Margen objetivo (%)",
-      "priceDrift": "Deriva de precio (%)",
+      "priceDrift": "Deriva de precios (%)",
       "recompute": "Recalcular",
       "importCsv": "Importar ventas (CSV UTF-8)",
       "loadSample": "Cargar ejemplo",
@@ -88,16 +172,16 @@
       "title": "Formato de archivo esperado",
       "csvNote": "Archivo CSV (UTF-8), separador \",\" o \";\".",
       "decimalsNote": "Decimales: \".\" o \",\" aceptados (p. ej., 12.90 o 12,90).",
-      "rowNote": "Una línea = un artículo de pedido (SKU).",
-      "headersTitle": "Cabeceras requeridas:",
+      "rowNote": "Una fila = una línea de pedido (SKU).",
+      "headersTitle": "Encabezados requeridos:",
       "headersList": "date,order_id,sku,name,qty,unit_price,unit_cost,discount,shipping_fee,shipping_cost",
-      "exampleRow": "Ejemplo: 2025-10-01,A-1001,SKU-A,Café grain 1kg,3,12.9,9.5,4.5,3.9,4.5"
+      "exampleRow": "Ejemplo: 2025-10-01,A-1001,SKU-A,Café en grano 1kg,3,12.9,9.5,4.5,3.9,4.5"
     },
     "kpi": {
       "underCost": "Bajo coste",
       "erosion": "Bajo margen objetivo",
       "discount": "Descuentos/Deriva",
-      "shipping": "Transporte",
+      "shipping": "Envíos",
       "total": "Fuga total"
     },
     "charts": {
@@ -116,19 +200,19 @@
     "items": {
       "increments": {
         "label": "Incrementos de caja",
-        "text": "Serie diaria de caja neta ≈ margen sobre ventas + cobros (payments) + flujos bancarios."
+        "text": "Serie diaria de caja neta ≈ margen de ventas + cobros + flujos bancarios."
       },
       "model": {
         "label": "Modelo",
-        "text": "AR(1) sobre los incrementos (μ, φ, σ estimados) → 3.000–8.000 trayectorias simuladas en 30–180 días."
+        "text": "AR(1) sobre incrementos (μ, φ, σ estimados) → 3.000–8.000 trayectorias simuladas en 30–180 días."
       },
       "fan": {
-        "label": "Fan chart",
-        "text": "Las curvas muestran los cuantiles p5, p50 (mediana) y p95 de las trayectorias simuladas."
+        "label": "Gráfico abanico",
+        "text": "Curvas con cuantiles p5, p50 (mediana) y p95 de trayectorias simuladas."
       },
       "cfar": {
         "label": "CFaR / ES",
-        "text": "Cash-flow-at-Risk y Expected Shortfall al cuantil α: pérdidas potenciales en ΔCaja en el horizonte."
+        "text": "Cash-flow-at-Risk y Expected Shortfall al cuantil α: pérdidas potenciales de ΔCaja al horizonte."
       },
       "prob": {
         "label": "Prob(Descubierto)",
@@ -136,15 +220,15 @@
       },
       "runway": {
         "label": "Runway P5",
-        "text": "Percentil 5 del número de días hasta 0 € (si ninguna trayectoria cruza 0 → ∞)."
+        "text": "Percentil 5 de días hasta 0 € (∞ si ninguna trayectoria cruza 0)."
       },
       "hhi": {
         "label": "HHI (clientes)",
-        "text": "Índice de concentración calculado con las cuotas de facturación por cliente (0 = muy diversificado, > 0,2 = elevado)."
+        "text": "Índice de concentración con cuotas de ventas por cliente (0 = diversificado, > 0,2 = alto)."
       },
       "stress": {
         "label": "Pruebas de estrés",
-        "text": "Δ% ventas (escalado), Δ% costes (reduce margen), + días DSO (retrasa cobros)."
+        "text": "Δ% ventas (escala), Δ% costes (presiona margen), + días DSO (retrasa cobros)."
       }
     }
   }
