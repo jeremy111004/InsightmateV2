@@ -1,4 +1,3 @@
-```jsx
 // src/pages/HomePage.jsx
 import React from "react";
 import {
@@ -67,9 +66,9 @@ function FadeInOnView({ delay = 0, children, className = "" }) {
   return (
     <div
       ref={ref}
-      className={`transition-all duration-500 ease-out ${className}`}
+      className={"transition-all duration-500 ease-out " + (className || "")}
       style={{
-        transitionDelay: `${delay}s`,
+        transitionDelay: (delay || 0) + "s",
         transform: seen ? "none" : "translateY(12px)",
         opacity: seen ? 1 : 0,
       }}
@@ -595,4 +594,3 @@ export default function HomePage({ goTo = () => {} }) {
     </div>
   );
 }
-```
