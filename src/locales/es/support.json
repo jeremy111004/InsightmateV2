@@ -15,7 +15,8 @@
       "audit": "Auditoría gratuita de 15 min",
       "csvTitle": "Descargar el CSV de ejemplo",
       "csv": "CSV de ejemplo",
-      "video": "Vídeo de 90 s"
+      "video": "Vídeo de 90 s",
+      "beta": "Bloquear mi precio de fundador"
     },
     "checks": {
       "fastDeploy": "Despliegue rápido",
@@ -170,6 +171,7 @@
     }
   },
   "creator": {
+    "byPrefix": "Por",
     "title": "Creador",
     "subtitle": "Data y Riesgo — HMM/SV-HMM — InsightMate. Convertimos datos en decisiones.",
     "buttons": {
