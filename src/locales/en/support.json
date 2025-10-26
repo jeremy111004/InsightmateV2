@@ -1,9 +1,9 @@
 {
   "top": {
-    "notice": "Support & Onboarding — turnkey setup, data connected, team trained."
+    "notice": "Support & Onboarding — turnkey setup, connected data, trained team."
   },
   "hero": {
-    "badge": "Onboarded in < 7 days • KPIs ready • No broken Excel",
+    "badge": "Deployed in < 7 days • KPIs ready • No broken Excel",
     "title": {
       "pre": "Need a",
       "highlight": "turnkey setup",
@@ -13,7 +13,7 @@
     "text": "We connect your data (bank, sales, accounting), configure your KPIs, and train your team. You keep InsightMate’s simplicity with a professional, fast deployment.",
     "cta": {
       "audit": "Free 15-min audit",
-      "csvTitle": "Download the sample CSV",
+      "csvTitle": "Download sample CSV",
       "csv": "Sample CSV",
       "video": "90s video",
       "beta": "Lock my Founder price"
@@ -61,7 +61,7 @@
         "bullets": {
           "0": "30-day revenue forecast",
           "1": "Stock-outs avoided",
-          "2": "Clarified payments"
+          "2": "Payments clarified"
         },
         "stat": "+12 h saved / month"
       },
@@ -81,7 +81,7 @@
           "1": "Cash runway",
           "2": "Client risks"
         },
-        "stat": "Payment delay −9d"
+        "stat": "Payment delay −9 d"
       }
     }
   },
@@ -133,7 +133,12 @@
     "buttons": {
       "contact": "Contact us",
       "call": "Call"
-    }
+    },
+    "toggle": {
+      "show": "Show details",
+      "hide": "Hide details"
+    },
+    "betaNote": "Beta feature: onboarding support available on request."
   },
   "metrics": {
     "setup": { "label": "Setup time", "value": "< 7 days" },
@@ -146,7 +151,7 @@
     "soon": "Coming soon"
   },
   "faq": {
-    "title": "FAQ (5 answers max)",
+    "title": "FAQ (max 5 answers)",
     "items": {
       "0": {
         "q": "How long to be operational?",
@@ -154,19 +159,19 @@
       },
       "1": {
         "q": "Can we use it self-service?",
-        "a": "Yes. The sample CSV + video are enough to get started. The service speeds up go-live."
+        "a": "Yes. The sample CSV + video are enough to get started. The onboarding speeds up go-live."
       },
       "2": {
         "q": "Which connectors are prioritized?",
         "a": "Stripe + Bank (Bridge/Powens) first, then Shopify/PrestaShop, then Pennylane/Sage."
       },
       "3": {
-        "q": "Are the data secure?",
-        "a": "Yes. Read-only first, encrypted in transit, with clear access controls."
+        "q": "Is the data secure?",
+        "a": "Yes. Read-only by default, encrypted in transit, with good access practices."
       },
       "4": {
-        "q": "What does the training include?",
-        "a": "KPIs walk-through, scenarios, and an operating playbook for your team."
+        "q": "What does the training cover?",
+        "a": "Reading KPIs, scenarios, and team best practices."
       }
     }
   },
@@ -184,12 +189,12 @@
   },
   "beta": {
     "badge": "BETA",
-    "title": "InsightMate is in Private Beta",
+    "title": "InsightMate private beta",
     "alreadyIn": "Already in beta",
-    "text": "This is an early version of InsightMate. We’re shipping fast, listening to feedback, and polishing. Join the beta to connect your data, get KPIs live in days, and lock a discounted Founder price for early adopters.",
+    "text": "This is a beta version of InsightMate. We ship fast, collect your feedback, and refine. Join the beta to connect your data, get KPIs in days, and lock a preferential Founder price.",
     "cta": {
       "lock": "Lock my Founder price"
     },
-    "disclaimer": "Limited seats. Founder price is kept while subscribed. Cancel anytime."
+    "disclaimer": "Limited seats. Founder price stays active while subscription is active. Cancel anytime."
   }
 }
