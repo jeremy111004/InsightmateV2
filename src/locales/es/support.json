@@ -1,38 +1,38 @@
 {
   "top": {
-    "notice": "Soporte y Onboarding — configuración llave en mano, datos conectados, equipo formado."
+    "notice": "Soporte e Implantación — puesta en marcha llave en mano, datos conectados, equipo formado."
   },
   "hero": {
-    "badge": "Onboarding en < 7 días • KPIs listos • Sin Excel roto",
+    "badge": "Puesta en marcha en < 7 días • KPI listos • Sin Excel roto",
     "title": {
-      "pre": "¿Necesitas una configuración",
-      "highlight": "llave en mano",
+      "pre": "¿Necesitas una",
+      "highlight": "implantación llave en mano",
       "qmark": "?",
-      "line2": "Nos encargamos. Tú ejecutas; nosotros industrializamos."
+      "line2": "Nos encargamos. Tú ejecutas, nosotros industrializamos."
     },
-    "text": "Conectamos tus datos (banco, ventas, contabilidad), configuramos tus KPIs y formamos al equipo. Mantienes la simplicidad de InsightMate con un despliegue profesional y rápido.",
+    "text": "Conectamos tus datos (banco, ventas, contabilidad), configuramos tus KPI y formamos a tu equipo. Mantienes la sencillez de InsightMate con un despliegue profesional y rápido.",
     "cta": {
-      "audit": "Auditoría gratuita 15 min",
+      "audit": "Auditoría gratuita de 15 min",
       "csvTitle": "Descargar el CSV de ejemplo",
       "csv": "CSV de ejemplo",
-      "video": "Vídeo 90s"
+      "video": "Vídeo de 90 s"
     },
     "checks": {
       "fastDeploy": "Despliegue rápido",
       "secureData": "Datos seguros",
-      "noCode": "Sin código requerido"
+      "noCode": "Sin código"
     },
     "kpi": {
-      "headerLeft": "Vista previa de KPIs",
-      "headerRight": "Tiempo real",
+      "headerLeft": "Vista previa de KPI",
+      "headerRight": "En tiempo real",
       "ca30": "Ingresos 30d",
       "basket": "Ticket medio",
-      "runway": "Runway"
+      "runway": "Runway de caja"
     }
   },
   "quick": {
     "title": "Inicio rápido (3 pasos)",
-    "subtitle": "Puedes usarlo en autoservicio. Pero los clientes van 3× más rápido con el onboarding.",
+    "subtitle": "Se puede usar en autoservicio. Pero los clientes avanzan 3× más rápido con onboarding.",
     "cards": {
       "1": {
         "title": "1) Importar",
@@ -45,9 +45,9 @@
         "pill": "Plug & play"
       },
       "3": {
-        "title": "3) Go Live",
-        "desc": "Tus KPIs se actualizan. Te formamos (30–60 min).",
-        "pill": "< 7 d"
+        "title": "3) Ir a producción",
+        "desc": "Tus KPI se actualizan. Te formamos (30–60 min).",
+        "pill": "< 7 días"
       },
       "csvButton": "CSV de ejemplo"
     }
@@ -58,20 +58,20 @@
       "cafe": {
         "title": "Cafetería / Punto de venta",
         "bullets": {
-          "0": "Previsión de ingresos 30d",
-          "1": "Roturas evitadas",
-          "2": "Cobros aclarados"
+          "0": "Previsión de ingresos a 30 días",
+          "1": "Faltas de stock evitadas",
+          "2": "Pagos conciliados"
         },
         "stat": "+12 h ahorradas/mes"
       },
       "ecom": {
         "title": "E-commerce",
         "bullets": {
-          "0": "Productos top",
+          "0": "Productos más vendidos",
           "1": "Cohortes de clientes",
-          "2": "Forecast + escenarios"
+          "2": "Previsión + escenarios"
         },
-        "stat": "-18% errores de Excel"
+        "stat": "-18 % errores de Excel"
       },
       "b2b": {
         "title": "B2B / Servicios",
@@ -80,7 +80,7 @@
           "1": "Runway de caja",
           "2": "Riesgos de clientes"
         },
-        "stat": "Plazo de pago −9d"
+        "stat": "Retraso de pago −9 días"
       }
     }
   },
@@ -91,37 +91,37 @@
       "or": "o"
     },
     "modes": {
-      "dfy": "Done-For-You",
-      "dwy": "Done-With-You",
-      "self": "Self-serve + Soporte"
+      "dfy": "Hecho por nosotros",
+      "dwy": "Hecho contigo",
+      "self": "Autoservicio + Soporte"
     },
     "packages": {
       "dfy": {
-        "name": "Done-For-You",
+        "name": "Hecho por nosotros",
         "tagline": "Lo hacemos todo por ti",
-        "price": "desde 990€",
+        "price": "desde 990 €",
         "points": {
-          "0": "Auditoría y setup completos",
+          "0": "Auditoría y puesta en marcha completas",
           "1": "Conectores y mapeo",
-          "2": "Panel a medida + formación"
+          "2": "Cuadro de mando a medida + formación"
         }
       },
       "dwy": {
-        "name": "Done-With-You",
-        "tagline": "Configuramos contigo",
-        "price": "desde 590€",
+        "name": "Hecho contigo",
+        "tagline": "Configuramos juntos",
+        "price": "desde 590 €",
         "points": {
-          "0": "Taller 2×60 min",
-          "1": "Importación CSV y QA",
-          "2": "Playbook de operación"
+          "0": "Talleres de 2×60 min",
+          "1": "Importación de CSV y QA",
+          "2": "Manual operativo"
         }
       },
       "self": {
-        "name": "Self-serve + Soporte",
+        "name": "Autoservicio + Soporte",
         "tagline": "Autonomía guiada",
-        "price": "desde 0€",
+        "price": "desde 0 €",
         "points": {
-          "0": "CSV de ejemplo y mini-vídeo",
+          "0": "CSV de ejemplo + mini-vídeo",
           "1": "FAQ breve",
           "2": "Soporte por email (48 h)"
         }
@@ -130,54 +130,64 @@
     "recommended": "Recomendado",
     "priceLabel": "Precio",
     "buttons": {
-      "contact": "Contactar",
+      "contact": "Contáctanos",
       "call": "Llamar"
     }
   },
   "metrics": {
-    "setup": { "label": "Puesta en marcha", "value": "< 7 días" },
+    "setup": { "label": "Tiempo de configuración", "value": "< 7 días" },
     "gain": { "label": "Ganancia media", "value": "+12 h/mes" },
-    "errors": { "label": "Reducción de errores", "value": "-18%" }
+    "errors": { "label": "Reducción de errores", "value": "-18 %" }
   },
   "demo": {
-    "title": "Vídeo 90s — Importación y KPIs",
-    "soonTitle": "Próximamente",
+    "title": "Vídeo de 90 s — Importación y KPI",
+    "soonTitle": "Muy pronto",
     "soon": "Próximamente"
   },
   "faq": {
     "title": "FAQ (máx. 5 respuestas)",
     "items": {
       "0": {
-        "q": "¿Cuánto tiempo para estar operativo?",
-        "a": "Menos de una semana en el 80% de los casos. Depende del volumen y la calidad de los datos."
+        "q": "¿Cuánto tiempo para estar operativos?",
+        "a": "Menos de una semana en el 80 % de los casos. Depende del volumen y la calidad de los datos."
       },
       "1": {
-        "q": "¿Se puede usar en modo autoservicio?",
-        "a": "Sí. El CSV de ejemplo + el vídeo bastan para empezar. El servicio acelera el go-live."
+        "q": "¿Podemos usarlo en autoservicio?",
+        "a": "Sí. El CSV de ejemplo + el vídeo bastan para empezar. El acompañamiento acelera el go-live."
       },
       "2": {
-        "q": "¿Qué conectores son prioritarios?",
-        "a": "Primero Stripe + Banco (Bridge/Powens), luego Shopify/Presta/Woo y después Pennylane/Sage."
+        "q": "¿Qué conectores tienen prioridad?",
+        "a": "Primero Stripe + Banco (Bridge/Powens), luego Shopify/PrestaShop y después Pennylane/Sage."
       },
       "3": {
         "q": "¿Los datos están seguros?",
-        "a": "Sí. Solo lectura por defecto, cifrado en tránsito y buenas prácticas de acceso."
+        "a": "Sí. Lectura solo al principio, cifrado en tránsito y controles de acceso claros."
       },
       "4": {
-        "q": "¿Qué cubre la formación?",
-        "a": "Lectura de KPIs, escenarios y buenas prácticas (importaciones, limpieza ligera, recordatorios)."
+        "q": "¿Qué incluye la formación?",
+        "a": "Recorrido por los KPI, escenarios y un manual operativo para tu equipo."
       }
     }
   },
   "creator": {
-    "byPrefix": "Acompañamiento por",
-    "subtitle": "Datos y Riesgo — HMM/SV-HMM — InsightMate. Convertimos datos en decisiones.",
+    "title": "Creador",
+    "subtitle": "Data y Riesgo — HMM/SV-HMM — InsightMate. Convertimos datos en decisiones.",
     "buttons": {
-      "contact": "Contactar",
+      "contact": "Contacto",
       "call": "Llamar"
     }
   },
   "footer": {
     "createdBy": "Creado por"
+  },
+  "beta": {
+    "badge": "BETA",
+    "title": "InsightMate en beta privada",
+    "alreadyIn": "Ya estás en la beta",
+    "text": "Esta es una versión beta de InsightMate. Iteramos rápido, escuchamos tus comentarios y pulimos la experiencia. Únete para conectar tus datos, tener KPI en días y bloquear un precio de fundador con descuento.",
+    "cta": {
+      "lock": "Bloquear mi precio de fundador"
+    },
+    "disclaimer": "Plazas limitadas. Mantienes el precio de fundador mientras sigas suscrito. Cancelación en cualquier momento."
   }
 }
