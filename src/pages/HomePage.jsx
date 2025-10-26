@@ -1,6 +1,3 @@
-Tes fichiers sont à la racine de **/public**, donc il faut des chemins **sans `/videos/`**. Voilà le fichier complet corrigé (mapping racine + fix du template string + remount vidéo + sync langue) :
-
-```jsx
 // src/pages/HomePage.jsx
 import React from "react";
 import {
