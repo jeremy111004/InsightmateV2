@@ -9,10 +9,9 @@ import {
   Mail,
   Phone,
   Clock,
-  ClipboardCopy,
-  ClipboardCheck,
   Sparkles,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function euro(x) {
   const v = Math.round(x || 0);
@@ -88,6 +87,8 @@ function AdviceBubble({
   callScript,
 }) {
   const [copyState, setCopyState] = useState(null);
+  const { t } = useTranslation("risk");
+
   const tones = {
     ok: {
       ring: "ring-emerald-300/60",
@@ -108,14 +109,14 @@ function AdviceBubble({
       icon: <TrendingUp size={16} />,
     },
   };
-  const t = tones[tone] || tones.ok;
+  const tt = tones[tone] || tones.ok;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className={`p-0.5 rounded-2xl bg-gradient-to-br ${t.from} ${t.to} ${t.ring}`}
+      className={`p-0.5 rounded-2xl bg-gradient-to-br ${tt.from} ${tt.to} ${tt.ring}`}
       style={{
         boxShadow: "0 1px 0 rgba(16,24,40,.02), 0 1px 2px rgba(16,24,40,.06)",
       }}
@@ -127,7 +128,7 @@ function AdviceBubble({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-              {t.icon}
+              {tt.icon}
               <span className="font-semibold">{title}</span>
             </div>
 
@@ -144,17 +145,18 @@ function AdviceBubble({
               <div className="flex items-center gap-2">
                 <Sparkles size={16} />
                 <Pill>
-                  Impact estimé :{" "}
+                  {t("advisor.impact")} :{" "}
                   <span className="font-semibold">{impact}%</span>
                 </Pill>
               </div>
               <div className="flex items-center gap-2">
                 <Clock size={16} />
                 <Pill>
-                  Effort : <span className="font-semibold">{effortH}h</span>
+                  {t("advisor.effort")} :{" "}
+                  <span className="font-semibold">{effortH}h</span>
                 </Pill>
               </div>
-              <Meter label="Confiance" value={confidence} />
+              <Meter label={t("advisor.confidence")} value={confidence} />
             </div>
 
             {/* Actions */}
@@ -163,14 +165,14 @@ function AdviceBubble({
                 icon={<Mail size={16} />}
                 label={
                   copyState === "copied"
-                    ? "Email copié !"
-                    : "Copier email de relance"
+                    ? t("advisor.ctaEmailCopied")
+                    : t("advisor.ctaEmail")
                 }
                 onClick={() => copy(email, setCopyState)}
               />
               <ActionButton
                 icon={<Phone size={16} />}
-                label="Script d’appel"
+                label={t("advisor.ctaCall")}
                 onClick={() => copy(callScript, setCopyState)}
               />
             </div>
@@ -183,162 +185,136 @@ function AdviceBubble({
 
 // ---------- Main component
 export default function RiskAdvisor({ metrics }) {
+  const { t } = useTranslation("risk");
+
   const items = useMemo(() => {
     const alphaPct = Math.round((metrics.alpha || 0.95) * 100);
     const horizon = metrics.horizon || 60;
 
     const baseEmail = (subject, body) =>
-      `Objet : ${subject}
+      `${t("advisor.email.subjectPrefix")} ${subject}
 
-Bonjour,
+${t("advisor.email.greeting")}
 
-Je vous propose une mise au point rapide sur nos conditions de paiement afin d'accélérer les règlements. 
 ${body}
 
-Merci d’avance — cela nous permet d'assurer la continuité de service et des délais courts.
-
-Bien cordialement,`;
+${t("advisor.email.closing")}`;
 
     const baseCall = (body) =>
-      `Pitch appel (90s):
-- Intro: je vous appelle pour fluidifier nos délais de paiement et vous proposer une option simple.
+      `${t("advisor.call.pitchHeader")}
+- ${t("advisor.call.intro")}
 - ${body}
-- Clôture: je vous envoie l'email de confirmation maintenant, ok ?`;
+- ${t("advisor.call.close")}`;
 
     const out = [];
 
-    // 1) Risque d'OD / runway tendu
+    // 1) Runway tight / overdraft risk
     if (metrics.runwayP5 < 30 || metrics.probOverdraft > 0.2) {
       const prob = Math.round(metrics.probOverdraft * 100);
       out.push({
         tone: "warn",
-        title: `Runway tendu (P5 ${
-          isFinite(metrics.runwayP5) ? Math.round(metrics.runwayP5) : "∞"
-        } j) — Prob(OD) ${prob}%`,
+        title: t("advisor.runway.title", {
+          runwayP5: isFinite(metrics.runwayP5)
+            ? Math.round(metrics.runwayP5)
+            : "∞",
+          prob,
+        }),
         lines: [
-          { k: "PB:", v: `Trésorerie fragile sur ${horizon}j.` },
-          {
-            k: "Cause:",
-            v: "Encaissements tardifs (DSO) + marge nette comprimée.",
-          },
-          {
-            k: "Solution:",
-            v: "Escompte -1% aux 5 plus gros clients pour paiement <15j + relances J+3/J+10.",
-          },
-          { k: "ROI:", v: "Runway +15–25 j, Prob(OD) -5 à -12 pts." },
+          { k: t("advisor.pb"), v: t("advisor.runway.pbText", { horizon }) },
+          { k: t("advisor.cause"), v: t("advisor.runway.causeText") },
+          { k: t("advisor.solution"), v: t("advisor.runway.solutionText") },
+          { k: t("advisor.roi"), v: t("advisor.runway.roiText") }
         ],
         impact: 90,
         effortH: 4,
         confidence: 80,
         email: baseEmail(
-          "Option d’escompte pour règlement anticipé",
-          "Nous proposons une remise de 1% pour tout règlement sous 15 jours sur les prochaines factures. Cela vous garantit une continuité d’approvisionnement et un traitement prioritaire."
+          t("advisor.runway.email.subject"),
+          t("advisor.runway.email.body")
         ),
-        callScript: baseCall(
-          "Proposition d’escompte 1% pour règlement <15j + plan de relances cadré (J+3/J+10)."
-        ),
+        callScript: baseCall(t("advisor.runway.call.body")),
       });
     }
 
-    // 2) CFaR/ES élevés
+    // 2) High CFaR / ES
     if (metrics.cfar > 0) {
       out.push({
         tone: "risk",
-        title: `Cash à risque${alphaPct} à ${horizon}j = ${euro(
-          metrics.cfar
-        )} • ES = ${euro(metrics.es)}`,
+        title: t("advisor.cfar.title", {
+          alphaPct,
+          horizon,
+          cfar: euro(metrics.cfar),
+          es: euro(metrics.es)
+        }),
         lines: [
+          { k: t("advisor.pb"), v: t("advisor.cfar.pbText") },
+          { k: t("advisor.cause"), v: t("advisor.cfar.causeText") },
+          { k: t("advisor.solution"), v: t("advisor.cfar.solutionText") },
           {
-            k: "PB:",
-            v: "Perte potentielle significative sur le cash à l’horizon.",
-          },
-          {
-            k: "Cause:",
-            v: "Volatilité des flux + marge en baisse sur SKUs non KVI.",
-          },
-          {
-            k: "Solution:",
-            v: "Hausse ciblée +3–4% sur non-KVI + pack 'éco' à marge stable.",
-          },
-          {
-            k: "ROI:",
-            v: `Réduction CFaR attendue 20–40% (~${euro(
-              metrics.cfar * 0.2
-            )}–${euro(metrics.cfar * 0.4)}).`,
-          },
+            k: t("advisor.roi"),
+            v: t("advisor.cfar.roiText", {
+              cfar20: euro(metrics.cfar * 0.2),
+              cfar40: euro(metrics.cfar * 0.4)
+            })
+          }
         ],
         impact: 75,
         effortH: 6,
         confidence: 72,
         email: baseEmail(
-          "Mise à jour tarifaire ciblée (qualité de service inchangée)",
-          "Nous ajustons de 3–4% les prix des références non KVI, tout en introduisant un pack 'éco' à marge stable. Votre offre et nos délais restent inchangés."
+          t("advisor.cfar.email.subject"),
+          t("advisor.cfar.email.body")
         ),
-        callScript: baseCall(
-          "Annoncer hausse ciblée (3–4%) sur non-KVI + alternative 'éco'."
-        ),
+        callScript: baseCall(t("advisor.cfar.call.body")),
       });
     }
 
-    // 3) Concentration clients
+    // 3) Customer concentration
     if (metrics.hhi > 0.2) {
       out.push({
         tone: "warn",
-        title: `Concentration élevée — HHI ${metrics.hhi.toFixed(2)}`,
+        title: t("advisor.conc.title", { hhi: metrics.hhi.toFixed(2) }),
         lines: [
-          { k: "PB:", v: "Dépendance à quelques comptes clés." },
-          { k: "Cause:", v: "Part de CA concentrée (>0.2 HHI)." },
-          {
-            k: "Solution:",
-            v: "Campagne canal direct (code -5%) ciblant 50 acheteurs récurrents.",
-          },
-          { k: "ROI:", v: "CA direct +8–15% / 60j, HHI → 0.15–0.18." },
+          { k: t("advisor.pb"), v: t("advisor.conc.pbText") },
+          { k: t("advisor.cause"), v: t("advisor.conc.causeText") },
+          { k: t("advisor.solution"), v: t("advisor.conc.solutionText") },
+          { k: t("advisor.roi"), v: t("advisor.conc.roiText") }
         ],
         impact: 68,
         effortH: 8,
         confidence: 70,
         email: baseEmail(
-          "Offre canal direct -5% (accès prioritaire)",
-          "Nous lançons un code -5% sur le canal direct pour vos achats récurrents. Objectif : délai court, priorisation logistique et relation directe."
+          t("advisor.conc.email.subject"),
+          t("advisor.conc.email.body")
         ),
-        callScript: baseCall(
-          "Présenter le code -5% canal direct à la cible de 50 acheteurs récurrents."
-        ),
+        callScript: baseCall(t("advisor.conc.call.body")),
       });
     }
 
-    // 4) Cas serein
+    // 4) Calm case
     if (!out.length) {
       out.push({
         tone: "ok",
-        title: "Profil de risque maîtrisé",
+        title: t("advisor.ok.title"),
         lines: [
-          { k: "PB:", v: "Rien d’urgent — profil sain." },
-          {
-            k: "Cause:",
-            v: "Runway confortable, faible Prob(OD), concentration modérée.",
-          },
-          {
-            k: "Solution:",
-            v: "Mettre en place alertes hebdo + backtesting exceptions VaR.",
-          },
-          { k: "ROI:", v: "Préservation marge et temps de pilotage." },
+          { k: t("advisor.pb"), v: t("advisor.ok.pbText") },
+          { k: t("advisor.cause"), v: t("advisor.ok.causeText") },
+          { k: t("advisor.solution"), v: t("advisor.ok.solutionText") },
+          { k: t("advisor.roi"), v: t("advisor.ok.roiText") }
         ],
         impact: 50,
         effortH: 2,
         confidence: 85,
         email: baseEmail(
-          "Confirmation rituels de pilotage hebdo",
-          "Nous mettons en place une synthèse risque hebdomadaire et un suivi des exceptions VaR pour sécuriser la trajectoire."
+          t("advisor.ok.email.subject"),
+          t("advisor.ok.email.body")
         ),
-        callScript: baseCall(
-          "Valider avec le dirigeant un rituel hebdo + seuils d’alerte."
-        ),
+        callScript: baseCall(t("advisor.ok.call.body")),
       });
     }
 
     return out.slice(0, 3);
-  }, [metrics]);
+  }, [metrics, t]);
 
   return (
     <div className="space-y-4">
