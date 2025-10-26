@@ -15,7 +15,8 @@
       "audit": "Free 15-min audit",
       "csvTitle": "Download the sample CSV",
       "csv": "Sample CSV",
-      "video": "90s video"
+      "video": "90s video",
+      "beta": "Lock my Founder price"
     },
     "checks": {
       "fastDeploy": "Fast deployment",
@@ -170,6 +171,7 @@
     }
   },
   "creator": {
+    "byPrefix": "By",
     "title": "Creator",
     "subtitle": "Data & Risk — HMM/SV-HMM — InsightMate. We turn data into decisions.",
     "buttons": {
