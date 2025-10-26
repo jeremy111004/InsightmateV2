@@ -1,6 +1,7 @@
 // ANCHOR: FILE_TOP ScenarioPanel
 import React from "react";
 import { SlidersHorizontal, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ScenarioPanel({
   stress,
@@ -9,18 +10,20 @@ export default function ScenarioPanel({
   setParams,
   onRun,
 }) {
+  const { t } = useTranslation("risk");
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
         <SlidersHorizontal size={16} />
-        <span>Paramètres & Stress tests</span>
+        <span>{t("panel.sectionTitle")}</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Stress */}
         <div className="rounded-xl p-4 ring-1 ring-gray-200 dark:ring-gray-800 bg-white/60 dark:bg-gray-900/60">
           <ChipRange
-            label="Ventes (Δ%)"
+            label={t("panel.salesDelta")}
             min={-40}
             max={+40}
             step={1}
@@ -28,7 +31,7 @@ export default function ScenarioPanel({
             onChange={(v) => setStress((s) => ({ ...s, salesPct: v }))}
           />
           <ChipRange
-            label="Coûts (Δ%)"
+            label={t("panel.costsDelta")}
             min={0}
             max={+40}
             step={1}
@@ -36,7 +39,7 @@ export default function ScenarioPanel({
             onChange={(v) => setStress((s) => ({ ...s, costPct: v }))}
           />
           <ChipRange
-            label="DSO (+ jours)"
+            label={t("panel.dsoDays")}
             min={0}
             max={30}
             step={1}
@@ -48,7 +51,7 @@ export default function ScenarioPanel({
         {/* Simulation */}
         <div className="rounded-xl p-4 ring-1 ring-gray-200 dark:ring-gray-800 bg-white/60 dark:bg-gray-900/60">
           <ChipRange
-            label="Horizon (jours)"
+            label={t("panel.horizon")}
             min={30}
             max={180}
             step={5}
@@ -56,7 +59,7 @@ export default function ScenarioPanel({
             onChange={(v) => setParams((p) => ({ ...p, horizon: v }))}
           />
           <ChipRange
-            label="Alpha (VaR/ES)"
+            label={t("panel.alpha")}
             min={90}
             max={99}
             step={1}
@@ -64,7 +67,7 @@ export default function ScenarioPanel({
             onChange={(v) => setParams((p) => ({ ...p, alpha: v / 100 }))}
           />
           <ChipRange
-            label="Simulations"
+            label={t("panel.sims")}
             min={1000}
             max={8000}
             step={500}
@@ -79,7 +82,7 @@ export default function ScenarioPanel({
         onClick={() => onRun?.()}
       >
         <RefreshCw size={16} />
-        Recalculer
+        {t("panel.recalc")}
       </button>
     </div>
   );
