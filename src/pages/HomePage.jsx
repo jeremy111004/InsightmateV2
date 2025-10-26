@@ -1,3 +1,4 @@
+```jsx
 // src/pages/HomePage.jsx
 import React from "react";
 import {
@@ -90,10 +91,16 @@ export default function HomePage({ goTo = () => {} }) {
     ["fr", "en", "es"].includes(initialLang) ? initialLang : "en"
   );
 
+  // Sync quand la langue i18n change (ex: ?lng=es)
+  React.useEffect(() => {
+    const code = (i18n.language || "fr").slice(0, 2);
+    if (["fr", "en", "es"].includes(code)) setVideoLang(code);
+  }, [i18n.language]);
+
   const videoSrc = React.useMemo(() => {
     const map = {
       fr: "/videos/introfr.mp4",
-      en: "/videos/intro.mp4",
+      en: "/videos/introen.mp4",
       es: "/videos/introes.mp4",
     };
     // fallback EN si le code n'est pas couvert
@@ -536,6 +543,7 @@ export default function HomePage({ goTo = () => {} }) {
               >
                 <div className="relative aspect-video w-full rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900">
                   <video
+                    key={videoSrc}
                     className="absolute inset-0 h-full w-full object-cover rounded-2xl"
                     src={videoSrc}
                     poster="/videos/intro-poster.jpg"
@@ -587,3 +595,4 @@ export default function HomePage({ goTo = () => {} }) {
     </div>
   );
 }
+```
