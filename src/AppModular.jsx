@@ -4,6 +4,7 @@ import "./index.css";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./components/LanguageSwitcher.jsx";
+import FloatingLangSwitch from "./components/FloatingLangSwitch.jsx";
 
 // Pages (code-splitting)
 const HomePage = React.lazy(() => import("./pages/HomePage.jsx"));
@@ -26,6 +27,7 @@ const TAB_KEYS = new Set([
   "pricing",
   "risk",
   "pro",
+  "connectors", // ✅ manquait, nécessaire pour goTo/hash
 ]);
 
 export default function AppModular() {
@@ -50,6 +52,7 @@ export default function AppModular() {
     { key: "pro", label: t("nav.help"), Comp: AccessProPage },
     { key: "connectors", label: t("nav.connectors"), Comp: Connecteurs },
   ];
+
   // init: hash > localStorage > default
   const initial = React.useMemo(() => {
     const fromHash = (window.location.hash || "").replace(/^#/, "");
@@ -88,7 +91,7 @@ export default function AppModular() {
 
   return (
     <div className="w-full min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-      {/* Navigation with switcher on the right */}
+      {/* Navigation with desktop switcher on the right */}
       <nav className="sticky top-0 z-[60] nav-glass">
         <div
           className="max-w-7xl mx-auto w-full px-4 md:px-6 py-3 flex items-center justify-between gap-3"
@@ -122,8 +125,8 @@ export default function AppModular() {
             })}
           </div>
 
-          {/* Right: language switcher */}
-          <div className="shrink-0">
+          {/* Right: language switcher (desktop only) */}
+          <div className="shrink-0 hidden md:block">
             <LanguageSwitcher />
           </div>
         </div>
@@ -153,6 +156,9 @@ export default function AppModular() {
           </section>
         </ErrorBoundary>
       </main>
+
+      {/* Mobile floating language switcher */}
+      <FloatingLangSwitch />
     </div>
   );
 }
