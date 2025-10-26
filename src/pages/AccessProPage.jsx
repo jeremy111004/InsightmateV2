@@ -107,7 +107,7 @@ export default function SupportOnboarding() {
 
               <div className="mt-5 flex flex-wrap items-center gap-3">
                 <a
-                  href="mailto:contact@insightmate.app?subject=Audit%20gratuit%2015%20min&body=Bonjour%2C%20je%20souhaite%20planifier%20un%20audit%20gratuit%20de%2015%20minutes."
+                  href="mailto:analyticsbyjeremy@gmail.com?subject=Audit%20gratuit%2015%20min&body=Bonjour%2C%20je%20souhaite%20planifier%20un%20audit%20gratuit%20de%2015%20minutes."
                   className="inline-flex items-center gap-2 rounded-xl bg-white text-slate-900 px-4 py-2 text-sm font-semibold hover:bg-white/90 transition shadow"
                 >
                   <CalendarClock className="h-4 w-4" />
@@ -266,7 +266,7 @@ export default function SupportOnboarding() {
 
               <div className="mt-3 flex flex-wrap gap-2">
                 <a
-                  href="mailto:contact@insightmate.app?subject=Prix%20fondateur&body=Bonjour%2C%20je%20souhaite%20verrouiller%20le%20prix%20fondateur."
+                  href="mailto:analyticsbyjeremy@gmail.com?subject=Prix%20fondateur&body=Bonjour%2C%20je%20souhaite%20verrouiller%20le%20prix%20fondateur."
                   className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs hover:bg-white/10 transition"
                 >
                   <CreditCard className="h-3.5 w-3.5" /> {t("beta.cta.lock")}
@@ -439,13 +439,13 @@ export default function SupportOnboarding() {
                   </ul>
                   <div className="mt-4 flex gap-2">
                     <a
-                      href="mailto:contact@insightmate.app?subject=Onboarding&body=Bonjour%2C%20je%20souhaite%20d%C3%A9marrer%20l%E2%80%99onboarding%20InsightMate."
+                      href="mailto:analyticsbyjeremy@gmail.com?subject=Onboarding&body=Bonjour%2C%20je%20souhaite%20d%C3%A9marrer%20l%E2%80%99onboarding%20InsightMate."
                       className="inline-flex items-center gap-2 rounded-lg bg-white text-slate-900 px-3 py-1.5 text-xs font-semibold hover:bg-white/90 transition shadow"
                     >
                       <Mail className="h-3.5 w-3.5" /> {t("services.buttons.contact")}
                     </a>
                     <a
-                      href="tel:+33000000000"
+                      href="tel:+33604535573"
                       className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs hover:bg-white/10 transition"
                     >
                       <Phone className="h-3.5 w-3.5" /> {t("services.buttons.call")}
@@ -497,13 +497,13 @@ export default function SupportOnboarding() {
             </div>
             <div className="flex gap-2">
               <a
-                href="mailto:contact@insightmate.app?subject=Onboarding"
+                href="mailto:analyticsbyjeremy@gmail.com?subject=Onboarding"
                 className="inline-flex items-center gap-2 rounded-lg bg-white text-slate-900 px-3 py-1.5 text-xs font-semibold hover:bg-white/90 transition shadow"
               >
                 <Mail className="h-3.5 w-3.5" /> {t("creator.buttons.contact")}
               </a>
               <a
-                href="tel:+33000000000"
+                href="tel:+33604535573"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs hover:bg-white/10 transition"
               >
                 <Phone className="h-3.5 w-3.5" /> {t("creator.buttons.call")}
