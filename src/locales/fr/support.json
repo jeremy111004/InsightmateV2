@@ -133,7 +133,12 @@
     "buttons": {
       "contact": "Contactez-nous",
       "call": "Appeler"
-    }
+    },
+    "toggle": {
+      "show": "Afficher le détail",
+      "hide": "Masquer le détail"
+    },
+    "betaNote": "Fonctionnalité en bêta : l’accompagnement est disponible sur demande."
   },
   "metrics": {
     "setup": { "label": "Temps de mise en place", "value": "< 7 jours" },
