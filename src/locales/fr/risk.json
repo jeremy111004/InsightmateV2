@@ -10,7 +10,6 @@
     "subtitle": "CFaR / ES, fan-chart, stress tests et concentration.",
     "modeDemo": "Mode : Démo"
   },
-
   "tooltip": {
     "p95": "p95",
     "median": "Médiane",
@@ -53,6 +52,92 @@
       "subtitle": "Problème → Cause → Solution (+ ROI)"
     }
   },
+  "panel": {
+    "sectionTitle": "Paramètres & Stress tests",
+    "salesDelta": "Ventes (Δ%)",
+    "costsDelta": "Coûts (Δ%)",
+    "dsoDays": "DSO (+ jours)",
+    "horizon": "Horizon (jours)",
+    "alpha": "Alpha (VaR/ES)",
+    "sims": "Simulations",
+    "recalc": "Recalculer"
+  },
+  "advisor": {
+    "impact": "Impact estimé",
+    "effort": "Effort",
+    "confidence": "Confiance",
+    "ctaEmail": "Copier email de relance",
+    "ctaEmailCopied": "Email copié !",
+    "ctaCall": "Script d’appel",
+    "pb": "PB",
+    "cause": "Cause",
+    "solution": "Solution",
+    "roi": "ROI",
+
+    "ok": {
+      "title": "Profil de risque maîtrisé",
+      "pbText": "Rien d’urgent — profil sain.",
+      "causeText": "Runway confortable, faible Prob(OD), concentration modérée.",
+      "solutionText": "Mettre en place alertes hebdo + backtesting exceptions VaR.",
+      "roiText": "Préservation marge et temps de pilotage.",
+      "email": {
+        "subject": "Confirmation rituels de pilotage hebdo",
+        "body": "Nous mettons en place une synthèse risque hebdomadaire et un suivi des exceptions VaR pour sécuriser la trajectoire."
+      },
+      "call": { "body": "Valider avec le dirigeant un rituel hebdo + seuils d’alerte." }
+    },
+
+    "runway": {
+      "title": "Runway tendu (P5 {{runwayP5}} j) — Prob(OD) {{prob}}%",
+      "pbText": "Trésorerie fragile sur {{horizon}}j.",
+      "causeText": "Encaissements tardifs (DSO) + marge nette comprimée.",
+      "solutionText": "Escompte -1% aux 5 plus gros clients pour paiement <15j + relances J+3/J+10.",
+      "roiText": "Runway +15–25 j, Prob(OD) -5 à -12 pts.",
+      "email": {
+        "subject": "Option d’escompte pour règlement anticipé",
+        "body": "Nous proposons une remise de 1% pour tout règlement sous 15 jours sur les prochaines factures. Cela vous garantit une continuité d’approvisionnement et un traitement prioritaire."
+      },
+      "call": { "body": "Proposition d’escompte 1% pour règlement <15j + plan de relances cadré (J+3/J+10)." }
+    },
+
+    "cfar": {
+      "title": "Cash à risque p{{alphaPct}} à {{horizon}}j = {{cfar}} • ES = {{es}}",
+      "pbText": "Perte potentielle significative sur le cash à l’horizon.",
+      "causeText": "Volatilité des flux + marge en baisse sur SKUs non KVI.",
+      "solutionText": "Hausse ciblée +3–4% sur non-KVI + pack \"éco\" à marge stable.",
+      "roiText": "Réduction CFaR attendue 20–40% (~{{cfar20}}–{{cfar40}}).",
+      "email": {
+        "subject": "Mise à jour tarifaire ciblée (qualité de service inchangée)",
+        "body": "Nous ajustons de 3–4% les prix des références non KVI, tout en introduisant un pack \"éco\" à marge stable. Votre offre et nos délais restent inchangés."
+      },
+      "call": { "body": "Annoncer hausse ciblée (3–4%) sur non-KVI + alternative \"éco\"." }
+    },
+
+    "conc": {
+      "title": "Concentration élevée — HHI {{hhi}}",
+      "pbText": "Dépendance à quelques comptes clés.",
+      "causeText": "Part de CA concentrée (>0.2 HHI).",
+      "solutionText": "Campagne canal direct (code -5%) ciblant 50 acheteurs récurrents.",
+      "roiText": "CA direct +8–15% / 60j, HHI → 0.15–0.18.",
+      "email": {
+        "subject": "Offre canal direct -5% (accès prioritaire)",
+        "body": "Nous lançons un code -5% sur le canal direct pour vos achats récurrents. Objectif : délai court, priorisation logistique et relation directe."
+      },
+      "call": { "body": "Présenter le code -5% canal direct à la cible de 50 acheteurs récurrents." }
+    },
+
+    "email": {
+      "subjectPrefix": "Objet :",
+      "greeting": "Bonjour,",
+      "closing": "Merci d’avance — cela nous permet d'assurer la continuité de service et des délais courts.\n\nBien cordialement,"
+    },
+    "call": {
+      "pitchHeader": "Pitch appel (90s):",
+      "intro": "je vous appelle pour fluidifier nos délais de paiement et vous proposer une option simple.",
+      "close": "je vous envoie l'email de confirmation maintenant, ok ?"
+    }
+  },
+
   "radar": {
     "title": "Revenue Leakage Radar",
     "subtitle": "Faible coût • Marge cible • Remises excessives • Transport",
@@ -67,7 +152,6 @@
     "invalid": "CSV invalide. Vérifiez l’en-tête et les colonnes attendues (voir note).",
     "parseError": "Erreur d’analyse du CSV."
   },
-
   "leakage": {
     "header": {
       "title": "Revenue Leakage Radar",
