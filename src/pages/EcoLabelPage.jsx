@@ -140,6 +140,24 @@ function useResizeRerender(ref) {
   return nonce;
 }
 
+/* FIX: mobile render — detect reduced-motion / small viewports to avoid animating chart containers */
+function useReduceMotionForCharts() {
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    const m1 = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const m2 = window.matchMedia?.("(max-width: 640px)"); // treat phones as reduced for chart containers
+    const update = () => setReduce(Boolean(m1?.matches || m2?.matches));
+    update();
+    m1?.addEventListener?.("change", update);
+    m2?.addEventListener?.("change", update);
+    return () => {
+      m1?.removeEventListener?.("change", update);
+      m2?.removeEventListener?.("change", update);
+    };
+  }, []);
+  return reduce;
+}
+
 function ConfidencePill({ value = 0, t }) {
   const v = Math.max(0, Math.min(100, Math.round(value)));
   const tone =
@@ -490,6 +508,7 @@ function ExecutiveSummarySection({
 }) {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
+  const reduceMotionCharts = useReduceMotionForCharts(); // FIX: mobile render
 
   const hasInt = Number.isFinite(intensity) && sectorMedian > 0;
 
@@ -579,10 +598,11 @@ function ExecutiveSummarySection({
       <div className="grid lg:grid-cols-12 gap-5 auto-rows-min items-start min-h-0">
         {/* Ce mois-ci */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
+          key={`kpi-${chartNonce}`} // FIX: mobile render
+          initial={reduceMotionCharts ? false : { y: 8, opacity: 0 }} // FIX
+          animate={reduceMotionCharts ? undefined : { y: 0, opacity: 1 }} // FIX
+          whileHover={reduceMotionCharts ? undefined : { y: -2 }} // FIX
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-visible md:overflow-hidden min-w-0 min-h-0"
         >
           <motion.div
             aria-hidden={true}
@@ -610,11 +630,11 @@ function ExecutiveSummarySection({
 
         {/* Intensité & jauge */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.03 }}
-          whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 min-w-0 min-h-0 md:overflow-hidden"
+          key={`gauge-${chartNonce}`} // FIX: mobile render
+          initial={reduceMotionCharts ? false : { y: 8, opacity: 0 }} // FIX
+          animate={reduceMotionCharts ? undefined : { y: 0, opacity: 1 }} // FIX
+          whileHover={reduceMotionCharts ? undefined : { y: -2 }} // FIX
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 min-w-0 min-h-0 overflow-visible md:overflow-hidden"
         >
           <div className="text-sm text-slate-600">
             {t("summary.currentIntensity")}
@@ -629,6 +649,7 @@ function ExecutiveSummarySection({
                 key={`radial-${chartNonce}`}
                 width="100%"
                 height="100%"
+                debounce={50} // FIX: mobile render
               >
                 <RadialBarChart
                   innerRadius="65%"
@@ -668,11 +689,11 @@ function ExecutiveSummarySection({
 
         {/* Donut composition */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.06 }}
-          whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
+          key={`donut-${chartNonce}`} // FIX: mobile render
+          initial={reduceMotionCharts ? false : { y: 8, opacity: 0 }} // FIX
+          animate={reduceMotionCharts ? undefined : { y: 0, opacity: 1 }} // FIX
+          whileHover={reduceMotionCharts ? undefined : { y: -2 }} // FIX
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-visible md:overflow-hidden min-w-0 min-h-0"
         >
           <motion.div
             aria-hidden={true}
@@ -696,6 +717,7 @@ function ExecutiveSummarySection({
                   key={`pie-${chartNonce}`}
                   width="100%"
                   height="100%"
+                  debounce={50} // FIX: mobile render
                 >
                   <PieChart>
                     <Pie
@@ -747,9 +769,10 @@ function ExecutiveSummarySection({
       <div className="mt-5 grid xl:grid-cols-12 gap-5 auto-rows-min items-start min-h-0">
         {/* Courbe */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
+          key={`area-${chartNonce}`} // FIX: mobile render
+          initial={reduceMotionCharts ? false : { y: 8, opacity: 0 }} // FIX
+          animate={reduceMotionCharts ? undefined : { y: 0, opacity: 1 }} // FIX
+          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-visible md:overflow-hidden min-w-0 min-h-0"
         >
           <motion.div
             aria-hidden={true}
@@ -775,9 +798,10 @@ function ExecutiveSummarySection({
             <div className="h-56 min-h-[14rem] w-full">
               {isClient ? (
                 <ResponsiveContainer
-                  key={`area-${chartNonce}`}
+                  key={`area-cont-${chartNonce}`}
                   width="100%"
                   height="100%"
+                  debounce={50} // FIX: mobile render
                 >
                   <AreaChart data={chartData}>
                     <defs>
@@ -1516,6 +1540,7 @@ export default function EcoLabelPage() {
             key={`stack-${chartNonce}`}
             width="100%"
             height={280}
+            debounce={50} // FIX: mobile render
           >
             <ComposedChart data={dailyComp30}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
