@@ -1,4 +1,4 @@
-okay i'm send u the home page and send it back edited based on ur beta cheklist stuff : // src/pages/HomePage.jsx
+
 import React from "react";
 import {
   ArrowRight,
