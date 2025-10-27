@@ -2,7 +2,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  Mail,
   Download,
   AlertTriangle,
   BarChart2,
@@ -77,13 +76,6 @@ function csvDownload(filename, rows) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
-}
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\n/g, "\\n");
 }
 
 /* =========================
@@ -561,68 +553,6 @@ function PriorityList({ clients, query, onQuery }) {
     return { count: filtered.length, totalDue, totalRec };
   }, [filtered]);
 
-  // i18n-aware mailto builder (keeps logic identical)
-  function buildMailtoI18n(c) {
-    const subject = t("priority.email.subjectWithId", {
-      name: safeStr(c.name, t("priority.email.defaultClient")),
-      id: safeStr(c.id),
-    });
-    const body = t("priority.email.body", {
-      name: safeStr(c.name, t("priority.email.defaultGreeting")),
-      amount: eur(c.outstanding),
-      id: safeStr(c.id),
-      overdue: Number(c.overdue) || 0,
-    });
-    const to = encodeURIComponent(safeStr(c.email, ""));
-    return `mailto:${to}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
-  }
-
-  function previewEmails() {
-    const lines = filtered.slice(0, 50).map((c) =>
-      t("priority.preview.toLine", {
-        email: c.email || t("priority.email.missing"),
-        name: c.name,
-        amount: eur(c._recovery),
-      })
-    );
-    const example = filtered[0] || {
-      name: "Client",
-      outstanding: 0,
-      id: "NA",
-      overdue: 0,
-    };
-    const subject = t("priority.preview.subject", { name: example.name });
-    const body = t("priority.email.body", {
-      name: example.name,
-      amount: eur(example.outstanding),
-      id: example.id,
-      overdue: Number(example.overdue) || 0,
-    });
-    const w = window.open("", "_blank", "width=720,height=680");
-    if (!w) return alert(t("priority.preview.allowPopups"));
-    w.document.body.style.fontFamily =
-      'Inter, ui-sans-serif, system-ui, "Helvetica Neue"';
-    w.document.title = t("priority.preview.windowTitle");
-    w.document.body.innerHTML = `
-      <div style="padding:18px;">
-        <h2>${escapeHtml(t("priority.preview.title"))}</h2>
-        <p style="color:#667085">${escapeHtml(
-          t("priority.preview.recipients")
-        )}</p>
-        <pre style="background:#0f1724;padding:12px;border-radius:8px;color:#e6eef8">${escapeHtml(
-          lines.join("\n")
-        )}</pre>
-        <p style="color:#667085;margin-top:12px">${escapeHtml(
-          t("priority.preview.templateLabel")
-        )}</p>
-        <pre style="background:#0f1724;padding:12px;border-radius:8px;color:#e6eef8">${escapeHtml(
-          `${t("priority.preview.subjectLabel")}: ${subject}\n\n${body}`
-        )}</pre>
-      </div>`;
-  }
-
   function exportPotential() {
     csvDownload(
       t("csv.filenames.priorities"),
@@ -639,7 +569,7 @@ function PriorityList({ clients, query, onQuery }) {
     );
   }
 
-  // NEW: Export Next-Actions (Smart Follow-Up)
+  // Export Next-Actions (Smart Follow-Up) — CSV only
   function exportNextActions() {
     const rows = buildNextActions(filtered, t, 50);
     csvDownload(t("csv.filenames.nextActions"), rows);
@@ -672,12 +602,6 @@ function PriorityList({ clients, query, onQuery }) {
             placeholder={t("priority.searchPlaceholder")}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 text-sm"
           />
-          <button
-            onClick={previewEmails}
-            className="px-3 py-2 rounded-xl bg-emerald-600/90 text-white hover:opacity-95 text-sm flex items-center gap-2"
-          >
-            <Mail size={16} /> {t("priority.previewBtn")}
-          </button>
           <button
             onClick={exportNextActions}
             className="px-3 py-2 rounded-xl bg-emerald-700/20 ring-1 ring-emerald-500/30 hover:bg-emerald-700/30 text-emerald-200 text-sm flex items-center gap-2"
@@ -739,12 +663,7 @@ function PriorityList({ clients, query, onQuery }) {
             <div className="col-span-2 text-sm">{eur(c.outstanding)}</div>
             <div className="col-span-2 text-sm">{eur(recoveryEstimate(c))}</div>
             <div className="col-span-1 flex justify-end">
-              <a
-                href={buildMailtoI18n(c)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-600/90 text-white hover:opacity-95"
-              >
-                <Mail size={14} /> {t("priority.remindBtn")}
-              </a>
+              {/* CSV-only page: no per-row email button */}
             </div>
           </motion.div>
         ))}
