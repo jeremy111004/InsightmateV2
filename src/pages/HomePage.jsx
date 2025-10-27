@@ -346,53 +346,52 @@ export default function HomePage({ goTo = () => {} }) {
           <div className="mt-8 grid md:grid-cols-12 gap-5">
             {/* Ventes */}
             <button
-  onClick={() => goTo("sales")}
-  className="relative group md:col-span-5 text-left rounded-3xl p-7 md:p-8 bg-gradient-to-br from-white/8 via-white/5 to-transparent backdrop-blur-md border border-white/10 hover:border-indigo-400/30 shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)] transition-all duration-300 overflow-hidden"
->
-  {/* subtle animated gradient overlay */}
-  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              onClick={() => goTo("sales")}
+              className="relative group md:col-span-5 text-left rounded-3xl p-7 md:p-8 bg-gradient-to-br from-white/8 via-white/5 to-transparent backdrop-blur-md border border-white/10 hover:border-indigo-400/30 shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)] transition-all duration-300 overflow-hidden"
+            >
+              {/* subtle animated gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-  {/* HEADER */}
-  <div className="relative flex items-start justify-between gap-4">
-    <div>
-      <div className="text-white/70 text-sm font-medium tracking-wide uppercase">
-        {t("cta.sales.overline")}
-      </div>
-      <div className="mt-1 text-2xl md:text-3xl font-bold text-white leading-snug">
-        {t("cta.sales.title")}
-      </div>
-    </div>
-    <div className="chip bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm">
-      {t("cta.sales.chip")}
-    </div>
-  </div>
+              {/* HEADER */}
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-white/70 text-sm font-medium tracking-wide uppercase">
+                    {t("cta.sales.overline")}
+                  </div>
+                  <div className="mt-1 text-2xl md:text-3xl font-bold text-white leading-snug">
+                    {t("cta.sales.title")}
+                  </div>
+                </div>
+                <div className="chip bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm">
+                  {t("cta.sales.chip")}
+                </div>
+              </div>
 
-  {/* CONTENT LIST */}
-  <ul className="mt-5 space-y-2 text-sm text-white/80">
-    <li className="flex items-center gap-2">
-      <span className="text-indigo-400">•</span>
-      {t("cta.sales.items.0")}
-    </li>
-    <li className="flex items-center gap-2">
-      <span className="text-indigo-400">•</span>
-      {t("cta.sales.items.1")}
-    </li>
-    <li className="flex items-center gap-2">
-      <span className="text-indigo-400">•</span>
-      {t("cta.sales.items.2")}
-    </li>
-  </ul>
+              {/* CONTENT LIST */}
+              <ul className="mt-5 space-y-2 text-sm text-white/80">
+                <li className="flex items-center gap-2">
+                  <span className="text-indigo-400">•</span>
+                  {t("cta.sales.items.0")}
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-indigo-400">•</span>
+                  {t("cta.sales.items.1")}
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-indigo-400">•</span>
+                  {t("cta.sales.items.2")}
+                </li>
+              </ul>
 
-  {/* CTA LINK */}
-  <div className="relative mt-6 inline-flex items-center gap-2 text-indigo-300 font-medium group-hover:text-indigo-200 transition">
-    {t("cta.sales.link")}
-    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-  </div>
+              {/* CTA LINK */}
+              <div className="relative mt-6 inline-flex items-center gap-2 text-indigo-300 font-medium group-hover:text-indigo-200 transition">
+                {t("cta.sales.link")}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
 
-  {/* Decorative pulse ring */}
-  <div className="absolute -right-10 -bottom-10 w-32 h-32 rounded-full bg-indigo-500/10 blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700" />
-</button>
-
+              {/* Decorative pulse ring */}
+              <div className="absolute -right-10 -bottom-10 w-32 h-32 rounded-full bg-indigo-500/10 blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700" />
+            </button>
 
             {/* Raccourcis */}
             <div className="md:col-span-7 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -523,107 +522,103 @@ export default function HomePage({ goTo = () => {} }) {
       {/* À PROPOS + VIDÉO */}
       <section className="relative py-14 md:py-20">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Colonne texte */}
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            {/* Colonne texte + TESTIMONIAL (sous le titre “InsightMate par Jérémy Duriez”) */}
             <FadeInOnView>
-              <div className="rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-6">
-                <div className="inline-flex items-center gap-2 text-white/80 text-xs">
-                  <span className="inline-grid place-items-center w-7 h-7 rounded-md bg-white/10 ring-1 ring-white/15">
-                    <User className="w-4 h-4" />
-                  </span>
-                  <span>{t("about.overline")}</span>
+              <div className="space-y-4">
+                <div className="rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-6">
+                  <div className="inline-flex items-center gap-2 text-white/80 text-xs">
+                    <span className="inline-grid place-items-center w-7 h-7 rounded-md bg-white/10 ring-1 ring-white/15">
+                      <User className="w-4 h-4" />
+                    </span>
+                    <span>{t("about.overline")}</span>
+                  </div>
+                  <h3 className="mt-3 text-2xl md:text-3xl font-semibold">
+                    {t("about.titlePrefix")}{" "}
+                    <span className="bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-indigo-300 bg-clip-text text-transparent">
+                      Jérémy Duriez
+                    </span>
+                  </h3>
+                  <p className="mt-3 text-white/80 text-sm leading-relaxed">
+                    {t("about.text")}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <a
+                      href="#about-video"
+                      className="inline-flex items-center gap-2 rounded-full px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition text-sm"
+                    >
+                      <PlayCircle className="w-4 h-4" />
+                      {t("about.watch")}
+                    </a>
+                  </div>
                 </div>
-                <h3 className="mt-3 text-2xl md:text-3xl font-semibold">
-                  {t("about.titlePrefix")}{" "}
-                  <span className="bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-indigo-300 bg-clip-text text-transparent">
-                    Jérémy Duriez
-                  </span>
-                </h3>
-                <p className="mt-3 text-white/80 text-sm leading-relaxed">
-                  {t("about.text")}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <a
-                    href="#about-video"
-                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition text-sm"
-                  >
-                    <PlayCircle className="w-4 h-4" />
-                    {t("about.watch")}
-                  </a>
-                </div>
-              </div>
-            </FadeInOnView>
 
-            {/* Colonne vidéo + AVIS CLIENT */}
-            <FadeInOnView delay={0.08}>
-              <div>
-                {/* Testimonial tile (just above the video) */}
-                <div className="mb-4 rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-4">
+                {/* TÉMOIGNAGE — KEYED */}
+                <div className="rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-4">
                   <div className="flex items-start gap-3">
                     <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15 text-white/80">
                       <MessageSquareQuote className="w-4 h-4" />
                     </span>
                     <div className="text-sm text-white/80">
-                      <p className="leading-relaxed">
-                        “InsightMate gave us much better clarity on margins and
-                        cash. We stopped guessing and started deciding.”
-                      </p>
+                      <p className="leading-relaxed">{t("testimonial.quote")}</p>
                       <div className="mt-2 text-white/60 text-xs">
-                        — Boiler installation company
+                        — {t("testimonial.company")}
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </FadeInOnView>
 
-                {/* Bloc vidéo */}
-                <div
-                  id="about-video"
-                  className="relative rounded-3xl overflow-hidden border border-white/12 bg-white/6 backdrop-blur p-3"
-                >
-                  <div className="relative aspect-video w-full rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900">
-                    <video
-                      key={videoSrc}
-                      className="absolute inset-0 h-full w-full object-cover rounded-2xl"
-                      src={videoSrc}
-                      // poster="/intro-poster.jpg"
-                      controls
-                      autoPlay
-                      muted
-                      playsInline
-                      loop
-                      preload="metadata"
-                      onError={onVideoError}
-                      onLoadedData={() => console.log("VIDEO LOADED", videoSrc)}
+            {/* Colonne vidéo */}
+            <FadeInOnView delay={0.08}>
+              <div
+                id="about-video"
+                className="relative rounded-3xl overflow-hidden border border-white/12 bg-white/6 backdrop-blur p-3"
+              >
+                <div className="relative aspect-video w-full rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900">
+                  <video
+                    key={videoSrc}
+                    className="absolute inset-0 h-full w-full object-cover rounded-2xl"
+                    src={videoSrc}
+                    // poster="/intro-poster.jpg"
+                    controls
+                    autoPlay
+                    muted
+                    playsInline
+                    loop
+                    preload="metadata"
+                    onError={onVideoError}
+                    onLoadedData={() => console.log("VIDEO LOADED", videoSrc)}
+                  >
+                    <source src={videoSrc} type="video/mp4" />
+                    Votre navigateur ne peut pas lire cette vidéo.
+                  </video>
+                </div>
+
+                {/* Barre sous la vidéo : durée + sélecteur de langue */}
+                <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-white/70">
+                  <span className="text-white/60">&lt; 1 min</span>
+
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="video-lang" className="text-white/70">
+                      {t("about.video.lang.label")}
+                    </label>
+                    <select
+                      id="video-lang"
+                      value={videoLang}
+                      onChange={(e) => setVideoLang(e.target.value)}
+                      className="rounded-md bg-white/10 border border-white/15 px-2 py-1 text-white/90"
+                      aria-label={t("about.video.lang.label")}
+                      title={t("about.video.lang.label")}
                     >
-                      <source src={videoSrc} type="video/mp4" />
-                      Votre navigateur ne peut pas lire cette vidéo.
-                    </video>
-                  </div>
-
-                  {/* Barre sous la vidéo : durée + sélecteur de langue */}
-                  <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-white/70">
-                    <span className="text-white/60">&lt; 1 min</span>
-
-                    <div className="flex items-center gap-2">
-                      <label htmlFor="video-lang" className="text-white/70">
-                        {t("about.video.lang.label")}
-                      </label>
-                      <select
-                        id="video-lang"
-                        value={videoLang}
-                        onChange={(e) => setVideoLang(e.target.value)}
-                        className="rounded-md bg-white/10 border border-white/15 px-2 py-1 text-white/90"
-                        aria-label={t("about.video.lang.label")}
-                        title={t("about.video.lang.label")}
-                      >
-                        <option value="fr">{t("about.video.lang.fr")}</option>
-                        <option value="en">{t("about.video.lang.en")}</option>
-                        <option value="es">{t("about.video.lang.es")}</option>
-                      </select>
-                      <span className="text-white/50">
-                        {t("about.video.lang.help")}
-                      </span>
-                    </div>
+                      <option value="fr">{t("about.video.lang.fr")}</option>
+                      <option value="en">{t("about.video.lang.en")}</option>
+                      <option value="es">{t("about.video.lang.es")}</option>
+                    </select>
+                    <span className="text-white/50">
+                      {t("about.video.lang.help")}
+                    </span>
                   </div>
                 </div>
               </div>
