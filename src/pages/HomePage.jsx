@@ -9,6 +9,7 @@ import {
   Plug,
   Headphones,
   MessageSquareQuote,
+  Star,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -79,6 +80,17 @@ function FadeInOnView({ delay = 0, children, className = "" }) {
     </div>
   );
 }
+function FiveStars() {
+  const base = "w-4 h-4 fill-yellow-300 stroke-yellow-300 drop-shadow-[0_0_8px_rgba(250,204,21,0.7)]";
+  return (
+    <div className="flex items-center gap-1" aria-label="5 out of 5 stars">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} className={base} />
+      ))}
+    </div>
+  );
+}
+
 
 export default function HomePage({ goTo = () => {} }) {
   const { t, i18n } = useTranslation("home");
@@ -555,18 +567,24 @@ export default function HomePage({ goTo = () => {} }) {
 
                 {/* TÉMOIGNAGE — KEYED */}
                 <div className="rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15 text-white/80">
-                      <MessageSquareQuote className="w-4 h-4" />
-                    </span>
-                    <div className="text-sm text-white/80">
-                      <p className="leading-relaxed">{t("testimonial.quote")}</p>
-                      <div className="mt-2 text-white/60 text-xs">
-                        — {t("testimonial.company")}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+  <div className="flex items-start gap-3">
+    <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15 text-white/80">
+      <MessageSquareQuote className="w-4 h-4" />
+    </span>
+
+    <div className="flex-1">
+      {/* Stars row */}
+      <div className="mb-1 flex items-center gap-2">
+        <FiveStars />
+        <span className="text-[11px] text-white/60">5.0</span>
+      </div>
+
+      <p className="text-sm text-white/80 leading-relaxed">{t("testimonial.quote")}</p>
+      <div className="mt-2 text-white/60 text-xs">— {t("testimonial.company")}</div>
+    </div>
+  </div>
+</div>
+
               </div>
             </FadeInOnView>
 
