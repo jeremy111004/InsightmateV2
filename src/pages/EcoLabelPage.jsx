@@ -192,7 +192,7 @@ function IAAdvisorLandscape({ actions = [], t }) {
     <motion.div
       initial={{ y: 8, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden"
+      className="rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-h-0"
     >
       <motion.div
         aria-hidden={true}
@@ -213,7 +213,7 @@ function IAAdvisorLandscape({ actions = [], t }) {
         <div className="text-xs text-slate-500">{t("advisor.subhead")}</div>
       </div>
 
-      <div className="mt-3 grid md:grid-cols-3 gap-3 auto-rows-min">
+      <div className="mt-3 grid md:grid-cols-3 gap-3 auto-rows-min min-h-0">
         {list.map((a, idx) => (
           <motion.div
             initial={false}
@@ -303,14 +303,14 @@ function getFavicon(url) {
 function PressBox({ items = PRESS_SELECTION, t }) {
   return (
     <Section title={t("press.title")} icon={<Newspaper className="w-5 h-5" />}>
-      <div className="grid md:grid-cols-3 gap-3 auto-rows-min">
+      <div className="grid md:grid-cols-3 gap-3 auto-rows-min min-h-0">
         {items.map((it, i) => (
           <a
             key={i}
             href={it.url}
             target="_blank"
             rel="noreferrer"
-            className="group flex items-start gap-3 rounded-2xl border p-3 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-black/5 hover:ring-2 hover:ring-emerald-500 transition relative overflow-hidden"
+            className="group flex items-start gap-3 rounded-2xl border p-3 bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl ring-1 ring-black/5 hover:ring-2 hover:ring-emerald-500 transition relative md:overflow-hidden"
           >
             <motion.div
               aria-hidden={true}
@@ -426,14 +426,14 @@ function SubsidyBox({ totalKg, electricityDeltaKwhMonth = 0, tCO2eYear, t }) {
           tCO2: fmt(tCO2eYear, 2),
         })}
       </div>
-      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3 auto-rows-min">
+      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3 auto-rows-min min-h-0">
         {programs.map((p) => (
           <a
             key={p.key}
             href={p.link}
             target="_blank"
             rel="noreferrer"
-            className="rounded-2xl border p-3 bg-white/70 dark:bg-slate-900/60 hover:ring-2 hover:ring-emerald-500 transition relative overflow-hidden"
+            className="rounded-2xl border p-3 bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl hover:ring-2 hover:ring-emerald-500 transition relative md:overflow-hidden"
           >
             <motion.div
               aria-hidden={true}
@@ -576,13 +576,13 @@ function ExecutiveSummarySection({
       }
     >
       {/* ligne 1 : 3 tuiles compactes */}
-      <div className="grid lg:grid-cols-12 gap-5 auto-rows-min items-start">
+      <div className="grid lg:grid-cols-12 gap-5 auto-rows-min items-start min-h-0">
         {/* Ce mois-ci */}
         <motion.div
           initial={{ y: 8, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
         >
           <motion.div
             aria-hidden={true}
@@ -603,7 +603,7 @@ function ExecutiveSummarySection({
           <div className="mt-1 text-[11px] text-slate-500 relative">
             {t("summary.confidence", { value: fmt(displayConf) })}
           </div>
-          <div className="mt-3 h-14 relative">
+          <div className="mt-3 h-14 relative min-h-[3.5rem]">
             <MiniSparkline data={spark} />
           </div>
         </motion.div>
@@ -614,7 +614,7 @@ function ExecutiveSummarySection({
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.03 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 min-w-0"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 min-w-0 min-h-0 md:overflow-hidden"
         >
           <div className="text-sm text-slate-600">
             {t("summary.currentIntensity")}
@@ -623,7 +623,7 @@ function ExecutiveSummarySection({
             {hasInt ? fmt(intensity, 2) : "—"}{" "}
             <span className="text-base">{t("summary.intensityUnit")}</span>
           </div>
-          <div className="w-full h-[220px] min-w-0">
+          <div className="w-full h-[220px] min-h-[220px] min-w-0">
             {isClient ? (
               <ResponsiveContainer
                 key={`radial-${chartNonce}`}
@@ -672,7 +672,7 @@ function ExecutiveSummarySection({
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.06 }}
           whileHover={{ y: -2 }}
-          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
+          className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
         >
           <motion.div
             aria-hidden={true}
@@ -689,8 +689,8 @@ function ExecutiveSummarySection({
           <div className="text-sm text-slate-600">
             {t("summary.compositionTitle")}
           </div>
-          <div className="mt-2 grid grid-cols-2 gap-2 relative">
-            <div className="h-[220px] min-w-0">
+          <div className="mt-2 grid grid-cols-2 gap-2 relative min-h-0">
+            <div className="h-[220px] min-h-[220px] min-w-0">
               {isClient ? (
                 <ResponsiveContainer
                   key={`pie-${chartNonce}`}
@@ -744,12 +744,12 @@ function ExecutiveSummarySection({
       </div>
 
       {/* ligne 2 : courbe + conseiller */}
-      <div className="mt-5 grid xl:grid-cols-12 gap-5 auto-rows-min items-start">
+      <div className="mt-5 grid xl:grid-cols-12 gap-5 auto-rows-min items-start min-h-0">
         {/* Courbe */}
         <motion.div
           initial={{ y: 8, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative overflow-hidden min-w-0"
+          className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
         >
           <motion.div
             aria-hidden={true}
@@ -771,107 +771,115 @@ function ExecutiveSummarySection({
               {t("summary.intensityUnit")}
             </div>
           </div>
-          <div className="mt-2 h-56 relative min-w-0">
-            {isClient ? (
-              <ResponsiveContainer
-                key={`area-${chartNonce}`}
-                width="100%"
-                height="100%"
-              >
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="gBase" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="0%"
-                        stopColor="#0f172a"
-                        stopOpacity={0.28}
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor="#0f172a"
-                        stopOpacity={0.05}
-                      />
-                    </linearGradient>
-                    <linearGradient id="gForecast" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={ACCENT} stopOpacity={0.35} />
-                      <stop
-                        offset="100%"
-                        stopColor={ACCENT}
-                        stopOpacity={0.06}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.22} />
-                  <XAxis
-                    dataKey="i"
-                    tick={false}
-                    domain={["dataMin", "dataMax"]}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 10 }}
-                    tickFormatter={(v) => Number(v).toFixed(2)}
-                  />
-                  {Number.isFinite(sectorMedian) && sectorMedian > 0 && (
-                    <ReferenceLine
-                      y={sectorMedian}
-                      stroke="#64748b"
-                      strokeDasharray="3 3"
-                      label={{
-                        value: t("summary.ref.median"),
-                        position: "right",
-                        fill: "#64748b",
-                        fontSize: 10,
-                      }}
+          <div className="mt-2 relative min-w-0">
+            <div className="h-56 min-h-[14rem] w-full">
+              {isClient ? (
+                <ResponsiveContainer
+                  key={`area-${chartNonce}`}
+                  width="100%"
+                  height="100%"
+                >
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="gBase" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="0%"
+                          stopColor="#0f172a"
+                          stopOpacity={0.28}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#0f172a"
+                          stopOpacity={0.05}
+                        />
+                      </linearGradient>
+                      <linearGradient id="gForecast" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="0%"
+                          stopColor={ACCENT}
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor={ACCENT}
+                          stopOpacity={0.06}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.22} />
+                    <XAxis
+                      dataKey="i"
+                      tick={false}
+                      domain={["dataMin", "dataMax"]}
                     />
-                  )}
-                  {Number.isFinite(targetIntensity) && (
-                    <ReferenceLine
-                      y={targetIntensity}
+                    <YAxis
+                      tick={{ fontSize: 10 }}
+                      tickFormatter={(v) => Number(v).toFixed(2)}
+                    />
+                    {Number.isFinite(sectorMedian) && sectorMedian > 0 && (
+                      <ReferenceLine
+                        y={sectorMedian}
+                        stroke="#64748b"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: t("summary.ref.median"),
+                          position: "right",
+                          fill: "#64748b",
+                          fontSize: 10,
+                        }}
+                      />
+                    )}
+                    {Number.isFinite(targetIntensity) && (
+                      <ReferenceLine
+                        y={targetIntensity}
+                        stroke={ACCENT_DARK}
+                        strokeDasharray="4 2"
+                        label={{
+                          value: t("summary.ref.target"),
+                          position: "right",
+                          fill: ACCENT_DARK,
+                          fontSize: 10,
+                        }}
+                      />
+                    )}
+                    <Area
+                      type="monotone"
+                      dataKey="baseline"
+                      stroke="#0f172a"
+                      fill="url(#gBase)"
+                      dot={false}
+                      connectNulls={false}
+                      name={t("summary.legend.baseline")}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="forecast"
                       stroke={ACCENT_DARK}
-                      strokeDasharray="4 2"
-                      label={{
-                        value: t("summary.ref.target"),
-                        position: "right",
-                        fill: ACCENT_DARK,
-                        fontSize: 10,
-                      }}
+                      strokeDasharray="6 4"
+                      fill="url(#gForecast)"
+                      dot={false}
+                      connectNulls={false}
+                      name={t("summary.legend.forecast")}
                     />
-                  )}
-                  <Area
-                    type="monotone"
-                    dataKey="baseline"
-                    stroke="#0f172a"
-                    fill="url(#gBase)"
-                    dot={false}
-                    connectNulls={false}
-                    name={t("summary.legend.baseline")}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="forecast"
-                    stroke={ACCENT_DARK}
-                    strokeDasharray="6 4"
-                    fill="url(#gForecast)"
-                    dot={false}
-                    connectNulls={false}
-                    name={t("summary.legend.forecast")}
-                  />
-                  <Tooltip
-                    formatter={(v, n) => [
-                      `${Number(v).toFixed(3)} ${t("summary.intensityUnit")}`,
-                      n,
-                    ]}
-                    labelFormatter={(l) =>
-                      l < baseLen
-                        ? t("summary.dayMinus", { n: baseLen - l })
-                        : t("summary.dayPlus", { n: l - baseLen + 1 })
-                    }
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full w-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
-            )}
+                    <Tooltip
+                      formatter={(v, n) => [
+                        `${Number(v).toFixed(3)} ${t(
+                          "summary.intensityUnit"
+                        )}`,
+                        n,
+                      ]}
+                      labelFormatter={(l) =>
+                        l < baseLen
+                          ? t("summary.dayMinus", { n: baseLen - l })
+                          : t("summary.dayPlus", { n: l - baseLen + 1 })
+                      }
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              )}
+            </div>
           </div>
           <div className="mt-2 text-[11px] text-slate-500">
             {t("summary.assumptions")}
@@ -879,7 +887,7 @@ function ExecutiveSummarySection({
         </motion.div>
 
         {/* Conseiller IA paysage */}
-        <div className="xl:col-span-5 min-w-0">
+        <div className="xl:col-span-5 min-w-0 min-h-0">
           <IAAdvisorLandscape actions={aiPlan} t={t} />
         </div>
       </div>
@@ -892,7 +900,7 @@ function TablePreview({ rows = [], title, max = 25, t }) {
   const cols = rows.length ? Object.keys(rows[0]) : [];
   const _title = title || t("table.titleDefault");
   return (
-    <div className="rounded-2xl border bg-white/60 dark:bg-slate-900/60 backdrop-blur p-3">
+    <div className="rounded-2xl border bg-white/60 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur p-3">
       <div className="text-sm font-medium mb-2">{_title}</div>
       <div className="overflow-auto rounded-xl border min-h-[200px]">
         <table className="min-w-full text-sm table-auto">
@@ -1275,7 +1283,10 @@ export default function EcoLabelPage() {
   }, [intensitySeries]);
 
   return (
-    <div ref={rootRef} className="p-6 max-w-7xl mx-auto w-full relative">
+    <div
+      ref={rootRef}
+      className="p-6 max-w-7xl mx-auto w-full relative min-h-0 overflow-visible"
+    >
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: 8 }}
@@ -1283,7 +1294,7 @@ export default function EcoLabelPage() {
         transition={{ duration: 0.35 }}
         className="mb-6"
       >
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between min-h-0">
           <div>
             <h1 className="text-2xl font-bold">{t("page.title")}</h1>
             <p className="text-sm text-slate-500 mt-1">{t("page.tagline")}</p>
@@ -1365,12 +1376,12 @@ export default function EcoLabelPage() {
       </motion.header>
 
       {/* Bandeau + connectivité */}
-      <div className="flex items-start gap-4 mb-4">
+      <div className="flex items-start gap-4 mb-4 min-h-0">
         <motion.div
           initial={{ scale: 0.97, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.2 }}
-          className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${gradeColor} text-2xl font-bold shadow relative overflow-hidden`}
+          className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${gradeColor} text-2xl font-bold shadow relative md:overflow-hidden`}
         >
           <motion.div
             aria-hidden={true}
@@ -1384,7 +1395,7 @@ export default function EcoLabelPage() {
           />
           {gradeLetter}
         </motion.div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 min-h-0">
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <div className="text-lg font-semibold">{t("panel.brandTitle")}</div>
             <ConfidencePill value={displayConf} t={t} />
@@ -1500,7 +1511,7 @@ export default function EcoLabelPage() {
           <div className="text-xs text-slate-500">{t("decomp.actions")}</div>
         }
       >
-        <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-4 min-w-0">
+        <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-4 min-w-0 min-h-0 md:overflow-hidden">
           <ResponsiveContainer
             key={`stack-${chartNonce}`}
             width="100%"
