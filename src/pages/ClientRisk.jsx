@@ -67,13 +67,22 @@ function recoveryEstimate(c) {
     (Number(c.outstanding) || 0) * clamp01(c.probability_recovery)
   );
 }
+
+/** Robust CSV download with Excel-friendly BOM and fallback filename */
 function csvDownload(filename, rows) {
-  const csv = Papa.unparse(rows);
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const safeName =
+    (filename && String(filename).trim()) || "export.csv";
+  const data = Array.isArray(rows) ? rows : [];
+  // Ensure at least headers if empty (prevents “blank” file feeling)
+  const payload = data.length ? data : [{ notice: "no_rows" }];
+  const csv = Papa.unparse(payload);
+  const blob = new Blob(["\ufeff" + csv], {
+    type: "text/csv;charset=utf-8",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = filename;
+  a.download = safeName.endsWith(".csv") ? safeName : `${safeName}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -91,16 +100,12 @@ const startOfWeekISO = (d) => {
   return monday.toISOString().slice(0, 10);
 };
 
-/** Deterministic ETA rule of thumb:
- * - More overdue ⇒ sooner collection (if probability is decent).
- * - Lower probability ⇒ later expected date.
- * Result clamped to [3..90] days.
- */
+/** Deterministic ETA rule of thumb (clamped 3..90 days) */
 function daysToExpectedPayment(c) {
   const overdue = Math.max(0, Number(c.overdue) || 0);
   const p = clamp01(c.probability_recovery);
-  const base = 35 * (1 - p) + Math.max(0, 60 - overdue) / 2; // 0..~65
-  const adj = base - Math.min(overdue, 45) / 3; // bring forward if very overdue
+  const base = 35 * (1 - p) + Math.max(0, 60 - overdue) / 2;
+  const adj = base - Math.min(overdue, 45) / 3;
   return Math.min(90, Math.max(3, Math.round(adj)));
 }
 
@@ -133,7 +138,7 @@ function buildWeeklyRecoverySeries(clients, weeks = 8) {
     .sort((a, b) => (a.week < b.week ? -1 : 1));
 }
 
-/** Suggested action = email if we have an email, else enrich contact. */
+/** Suggested action label for CSV */
 function suggestedAction(c) {
   const hasEmail = !!(c.email && String(c.email).includes("@"));
   if (!hasEmail) return "complete_contact";
@@ -177,7 +182,6 @@ function buildNextActions(filteredClients, t, topN = 50) {
 
 /* =========================
    Data — adapter localStorage -> clients
-   Attendu: { id, name, email, overdue, outstanding, probability_recovery }
 ========================= */
 const SAMPLE_CLIENTS = [
   {
@@ -336,15 +340,11 @@ function StatCard({ title, value, caption, Icon }) {
     >
       <div className="absolute inset-0 opacity-10 pointer-events-none bg-gradient-to-br from-cyan-400/30 via-purple-400/30 to-fuchsia-400/30" />
       <div className="flex items-start gap-3 relative">
-        <div className="p-2 bg-white/10 rounded-xl">
-          {Icon && <Icon size={18} />}
-        </div>
+        <div className="p-2 bg-white/10 rounded-xl">{Icon && <Icon size={18} />}</div>
         <div>
           <div className="text-xs text-slate-300">{title}</div>
           <div className="text-xl font-semibold mt-1">{value}</div>
-          {caption && (
-            <div className="text-xs text-slate-400 mt-1">{caption}</div>
-          )}
+          {caption && <div className="text-xs text-slate-400 mt-1">{caption}</div>}
         </div>
       </div>
     </motion.div>
@@ -423,13 +423,8 @@ function RiskDashboard({ clients }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <motion.div
-          variants={pop}
-          className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
-        >
-          <h3 className="text-sm font-semibold mb-2">
-            {t("charts.pie.title")}
-          </h3>
+        <motion.div variants={pop} className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10">
+          <h3 className="text-sm font-semibold mb-2">{t("charts.pie.title")}</h3>
           <div style={{ width: "100%", height: 240 }}>
             <ResponsiveContainer>
               <RPieChart>
@@ -438,9 +433,7 @@ function RiskDashboard({ clients }) {
                   innerRadius={52}
                   outerRadius={90}
                   dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} (${Math.round(percent * 100)}%)`
-                  }
+                  label={({ name, percent }) => `${name} (${Math.round(percent * 100)}%)`}
                 >
                   {pieData.map((_, i) => (
                     <Cell key={i} />
@@ -452,13 +445,8 @@ function RiskDashboard({ clients }) {
           </div>
         </motion.div>
 
-        <motion.div
-          variants={pop}
-          className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
-        >
-          <h3 className="text-sm font-semibold mb-2">
-            {t("charts.top5.title")}
-          </h3>
+        <motion.div variants={pop} className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10">
+          <h3 className="text-sm font-semibold mb-2">{t("charts.top5.title")}</h3>
           <div style={{ width: "100%", height: 240 }}>
             <ResponsiveContainer>
               <BarChart data={top5Data}>
@@ -473,13 +461,8 @@ function RiskDashboard({ clients }) {
         </motion.div>
       </div>
 
-      <motion.div
-        variants={pop}
-        className="mt-6 bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
-      >
-        <h3 className="text-sm font-semibold mb-3">
-          {t("charts.history.title")}
-        </h3>
+      <motion.div variants={pop} className="mt-6 bg-white/5 p-4 rounded-2xl ring-1 ring-white/10">
+        <h3 className="text-sm font-semibold mb-3">{t("charts.history.title")}</h3>
         <div style={{ width: "100%", height: 220 }}>
           <ResponsiveContainer>
             <AreaChart data={demoSeries(18, Math.max(20000, totalOutstanding))}>
@@ -493,13 +476,7 @@ function RiskDashboard({ clients }) {
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip formatter={(v) => eur(v)} />
-              <Area
-                type="monotone"
-                dataKey="exposure"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#g1)"
-              />
+              <Area type="monotone" dataKey="exposure" strokeWidth={2} fillOpacity={1} fill="url(#g1)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -542,57 +519,41 @@ function PriorityList({ clients, query, onQuery }) {
   }, [enriched, query]);
 
   const kpis = React.useMemo(() => {
-    const totalDue = filtered.reduce(
-      (s, c) => s + (Number(c.outstanding) || 0),
-      0
-    );
-    const totalRec = filtered.reduce(
-      (s, c) => s + (Number(c._recovery) || 0),
-      0
-    );
+    const totalDue = filtered.reduce((s, c) => s + (Number(c.outstanding) || 0), 0);
+    const totalRec = filtered.reduce((s, c) => s + (Number(c._recovery) || 0), 0);
     return { count: filtered.length, totalDue, totalRec };
   }, [filtered]);
 
   function exportPotential() {
-    csvDownload(
-      t("csv.filenames.priorities"),
-      filtered.map((c) => ({
-        id: c.id,
-        name: c.name,
-        email: c.email,
-        overdue: c.overdue,
-        outstanding: c.outstanding,
-        probability_recovery: c.probability_recovery,
-        recovery_est: c._recovery,
-        priority_score: c._priority,
-      }))
-    );
+    const name = t("csv.filenames.priorities", "priorities.csv");
+    csvDownload(name, filtered.map((c) => ({
+      id: c.id,
+      name: c.name,
+      email: c.email,
+      overdue: c.overdue,
+      outstanding: c.outstanding,
+      probability_recovery: c.probability_recovery,
+      recovery_est: c._recovery,
+      priority_score: c._priority,
+    })));
   }
 
-  // Export Next-Actions (Smart Follow-Up) — CSV only
   function exportNextActions() {
     const rows = buildNextActions(filtered, t, 50);
-    csvDownload(t("csv.filenames.nextActions"), rows);
+    const name = t("csv.filenames.nextActions", "next_actions.csv");
+    csvDownload(name, rows);
   }
 
   return (
-    <motion.div
-      variants={pop}
-      initial="initial"
-      animate="animate"
-      className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
-    >
+    <motion.div variants={pop} initial="initial" animate="animate" className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
         <div>
           <h3 className="text-sm font-semibold flex items-center gap-2">
-            {t("priority.title")}{" "}
-            <ArrowUpRight size={16} className="opacity-70" />
+            {t("priority.title")} <ArrowUpRight size={16} className="opacity-70" />
           </h3>
           <div className="text-xs text-slate-400">
-            {t("priority.subtitle")} {t("priority.clientsLabel")}{" "}
-            <b>{kpis.count}</b> • {t("priority.totalDueLabel")}{" "}
-            <b>{eur(kpis.totalDue)}</b> • {t("priority.potentialLabel")}{" "}
-            <b>{eur(kpis.totalRec)}</b>
+            {t("priority.subtitle")} {t("priority.clientsLabel")} <b>{kpis.count}</b> • {t("priority.totalDueLabel")}{" "}
+            <b>{eur(kpis.totalDue)}</b> • {t("priority.potentialLabel")} <b>{eur(kpis.totalRec)}</b>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -606,13 +567,13 @@ function PriorityList({ clients, query, onQuery }) {
             onClick={exportNextActions}
             className="px-3 py-2 rounded-xl bg-emerald-700/20 ring-1 ring-emerald-500/30 hover:bg-emerald-700/30 text-emerald-200 text-sm flex items-center gap-2"
           >
-            <ListChecks size={16} /> {t("follow.exportNextActions")}
+            <ListChecks size={16} /> {t("follow.exportNextActions", "Exporter actions (top 50)")}
           </button>
           <button
             onClick={exportPotential}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm flex items-center gap-2"
           >
-            <Download size={16} /> {t("priority.exportBtn")}
+            <Download size={16} /> {t("priority.exportBtn", "Exporter priorités")}
           </button>
         </div>
       </div>
@@ -623,9 +584,7 @@ function PriorityList({ clients, query, onQuery }) {
         <div className="col-span-2">{t("priority.headers.overdue")}</div>
         <div className="col-span-2">{t("priority.headers.due")}</div>
         <div className="col-span-2">{t("priority.headers.potential")}</div>
-        <div className="col-span-1 text-right">
-          {t("priority.headers.action")}
-        </div>
+        <div className="col-span-1 text-right">{t("priority.headers.action")}</div>
       </div>
 
       <div className="space-y-2 max-h-[520px] overflow-auto">
@@ -640,38 +599,28 @@ function PriorityList({ clients, query, onQuery }) {
           >
             <div className="col-span-5">
               <div className="font-semibold">
-                {c.name}{" "}
-                <span className="text-xs text-slate-400">• {c.id}</span>
+                {c.name} <span className="text-xs text-slate-400">• {c.id}</span>
               </div>
               <div className="text-xs text-slate-400 flex items-center gap-1">
                 {c.email || t("priority.email.missing")}{" "}
                 {(!c.email || !String(c.email).includes("@")) && (
                   <span className="inline-flex items-center gap-1 text-amber-300">
-                    <AlertTriangle size={12} />{" "}
-                    {t("priority.email.completeHint")}
+                    <AlertTriangle size={12} /> {t("priority.email.completeHint")}
                   </span>
                 )}
               </div>
               <div className="text-[11px] text-slate-400 mt-1">
-                {t("priority.scoreLabel")}:{" "}
-                <b>{c._priority.toLocaleString("fr-FR")}</b> —{" "}
-                {t("priority.probAbbr")}{" "}
+                {t("priority.scoreLabel")}: <b>{c._priority.toLocaleString("fr-FR")}</b> — {t("priority.probAbbr")}{" "}
                 {(clamp01(c.probability_recovery) * 100).toFixed(0)}%
               </div>
             </div>
             <div className="col-span-2 text-sm">{Number(c.overdue) || 0}</div>
             <div className="col-span-2 text-sm">{eur(c.outstanding)}</div>
             <div className="col-span-2 text-sm">{eur(recoveryEstimate(c))}</div>
-            <div className="col-span-1 flex justify-end">
-              {/* CSV-only page: no per-row email button */}
-            </div>
+            <div className="col-span-1 flex justify-end">{/* CSV-only page: no per-row email button */}</div>
           </motion.div>
         ))}
-        {!filtered.length && (
-          <div className="text-xs text-slate-400 px-2 py-3">
-            {t("priority.noMatch")}
-          </div>
-        )}
+        {!filtered.length && <div className="text-xs text-slate-400 px-2 py-3">{t("priority.noMatch")}</div>}
       </div>
     </motion.div>
   );
@@ -679,7 +628,6 @@ function PriorityList({ clients, query, onQuery }) {
 
 /* =========================
    CSV Upload — CONNECTÉ (bouton + drag&drop) 
-   -> onRows(rows) est appelé et écrase le dataset courant
 ========================= */
 function CSVUploadCard({ onRows }) {
   const { t } = useTranslation("clientRisk");
@@ -795,7 +743,8 @@ function CSVUploadCard({ onRows }) {
         probability_recovery: 0.35,
       },
     ];
-    csvDownload(t("csv.filename.template"), template);
+    const name = t("csv.filename.template", "client_risk_template.csv");
+    csvDownload(name, template);
   }
 
   return (
@@ -813,23 +762,16 @@ function CSVUploadCard({ onRows }) {
           </h3>
           <p
             className="text-xs text-slate-300 mt-1"
-            dangerouslySetInnerHTML={{
-              __html: t("csv.card.supportedColsHtml"),
-            }}
+            dangerouslySetInnerHTML={{ __html: t("csv.card.supportedColsHtml") }}
           />
           <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
             <Info size={14} />{" "}
-            <span
-              dangerouslySetInnerHTML={{
-                __html: t("csv.card.minimumColsHtml"),
-              }}
-            />
+            <span dangerouslySetInnerHTML={{ __html: t("csv.card.minimumColsHtml") }} />
           </p>
           {/* Status */}
           {status.state === "parsing" && (
             <div className="mt-2 inline-flex items-center gap-2 text-xs text-cyan-300">
-              <FileSpreadsheet size={14} className="animate-pulse" />{" "}
-              {status.msg}
+              <FileSpreadsheet size={14} className="animate-pulse" /> {status.msg}
             </div>
           )}
           {status.state === "ok" && (
@@ -865,9 +807,7 @@ function CSVUploadCard({ onRows }) {
           />
         </div>
       </div>
-      <div className="mt-3 text-[11px] text-slate-400">
-        {t("csv.hint.dropHere")}
-      </div>
+      <div className="mt-3 text-[11px] text-slate-400">{t("csv.hint.dropHere")}</div>
     </motion.div>
   );
 }
@@ -891,10 +831,7 @@ function FollowUpEngine({ clients }) {
   );
 
   const weeks = 8;
-  const weekly = React.useMemo(
-    () => buildWeeklyRecoverySeries(enriched, weeks),
-    [enriched]
-  );
+  const weekly = React.useMemo(() => buildWeeklyRecoverySeries(enriched, weeks), [enriched]);
   const next7 = React.useMemo(() => {
     const limit = new Date(Date.now() + 7 * DAY_MS).toISOString().slice(0, 10);
     return enriched
@@ -909,8 +846,9 @@ function FollowUpEngine({ clients }) {
   }, [enriched]);
 
   function exportWeeklyForecast() {
+    const name = t("csv.filenames.weeklyForecast", "weekly_forecast.csv");
     csvDownload(
-      t("csv.filenames.weeklyForecast"),
+      name,
       weekly.map((r) => ({
         week_start: r.week,
         expected_cash_in: Math.round(r.amount),
@@ -920,16 +858,12 @@ function FollowUpEngine({ clients }) {
 
   function exportNextActions() {
     const rows = buildNextActions(enriched, t, 50);
-    csvDownload(t("csv.filenames.nextActions"), rows);
+    const name = t("csv.filenames.nextActions", "next_actions.csv");
+    csvDownload(name, rows);
   }
 
   return (
-    <motion.div
-      variants={pop}
-      initial="initial"
-      animate="animate"
-      className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
-    >
+    <motion.div variants={pop} initial="initial" animate="animate" className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <CalendarDays size={16} />
@@ -942,15 +876,13 @@ function FollowUpEngine({ clients }) {
             onClick={exportNextActions}
             className="px-3 py-2 rounded-xl bg-emerald-700/20 ring-1 ring-emerald-500/30 hover:bg-emerald-700/30 text-emerald-200 text-sm flex items-center gap-2"
           >
-            <ListChecks size={16} />{" "}
-            {t("follow.exportNextActions", "Exporter actions (top 50)")}
+            <ListChecks size={16} /> {t("follow.exportNextActions", "Exporter actions (top 50)")}
           </button>
           <button
             onClick={exportWeeklyForecast}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm flex items-center gap-2"
           >
-            <Download size={16} />{" "}
-            {t("follow.exportWeekly", "Exporter prévision hebdo")}
+            <Download size={16} /> {t("follow.exportWeekly", "Exporter prévision hebdo")}
           </button>
         </div>
       </div>
@@ -982,10 +914,7 @@ function FollowUpEngine({ clients }) {
             <XAxis dataKey="week" tick={{ fontSize: 12 }} />
             <YAxis />
             <Tooltip formatter={(v) => eur(v)} />
-            <Bar
-              dataKey="amount"
-              name={t("follow.chart.barName", "Encaissement attendu")}
-            />
+            <Bar dataKey="amount" name={t("follow.chart.barName", "Encaissement attendu")} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -1014,23 +943,16 @@ function ClientsList({ clients, query, onQuery }) {
   }, [clients, query]);
 
   return (
-    <motion.div
-      variants={pop}
-      initial="initial"
-      animate="animate"
-      className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10"
-    >
+    <motion.div variants={pop} initial="initial" animate="animate" className="bg-white/5 p-4 rounded-2xl ring-1 ring-white/10">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold">{t("clientsList.title")}</h3>
         <div className="flex items-center gap-2">
-          <div className="text-xs text-slate-400">
-            {t("clientsList.found", { count: filtered.length })}
-          </div>
+          <div className="text-xs text-slate-400">{t("clientsList.found", { count: filtered.length })}</div>
           <button
-            onClick={() => csvDownload(t("csv.filenames.clients"), filtered)}
+            onClick={() => csvDownload(t("csv.filenames.clients", "clients.csv"), filtered)}
             className="px-3 py-2 rounded-xl bg-white/10 ring-1 ring-white/15 hover:bg-white/15 text-sm flex items-center gap-2"
           >
-            <Download size={16} /> {t("clientsList.export")}
+            <Download size={16} /> {t("clientsList.export", "Exporter CSV")}
           </button>
         </div>
       </div>
@@ -1055,12 +977,10 @@ function ClientsList({ clients, query, onQuery }) {
           >
             <div>
               <div className="font-semibold">
-                {c.name}{" "}
-                <span className="text-xs text-slate-400">• {c.id}</span>
+                {c.name} <span className="text-xs text-slate-400">• {c.id}</span>
               </div>
               <div className="text-xs text-slate-400">
-                {c.email || t("priority.email.missing")} •{" "}
-                {t("clientsList.delayLabel", { days: Number(c.overdue) || 0 })}
+                {c.email || t("priority.email.missing")} • {t("clientsList.delayLabel", { days: Number(c.overdue) || 0 })}
               </div>
             </div>
             <div className="text-right">
@@ -1104,21 +1024,13 @@ export default function ClientRisk() {
 
   return (
     <div className="p-6">
-      <motion.header
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="mb-6"
-      >
+      <motion.header initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-2xl font-bold">{t("page.title")}</h1>
             <p className="text-sm text-slate-400 mt-1">{t("page.tagline")}</p>
-            <div
-              className={`mt-2 text-xs inline-flex items-center gap-2 ${sourceTone}`}
-            >
-              <FileSpreadsheet size={14} /> {t("page.dataSourceLabel")}{" "}
-              <b>{sourceLabel}</b>
+            <div className={`mt-2 text-xs inline-flex items-center gap-2 ${sourceTone}`}>
+              <FileSpreadsheet size={14} /> {t("page.dataSourceLabel")} <b>{sourceLabel}</b>
               {uploaded?.length ? (
                 <button
                   onClick={resetDataset}
@@ -1141,7 +1053,7 @@ export default function ClientRisk() {
           <RiskDashboard clients={clients} />
         </div>
 
-        {/* NEW: Smart Follow-Up Engine block */}
+        {/* Smart Follow-Up Engine block */}
         <div className="col-span-12">
           <FollowUpEngine clients={clients} />
         </div>
