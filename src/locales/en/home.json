@@ -1,145 +1,79 @@
 {
   "hero": {
-    "badge": {
-      "ai": "Integrated AI",
-      "forecast": "Smart Forecast",
-      "beta": "Free beta access"
-    },
+    "badge": { "ai": "Built-in AI", "forecast": "Smart Forecast", "beta": "Free beta access" },
     "title1": "Your",
     "title2": "data",
     "title3": "your",
     "title4": "decisions",
-    "p1": {
-      "before": "A",
-      "bold": "free-access tool",
-      "after": "to visualize your KPIs."
-    },
-    "p2": {
-      "before": "Need to move fast? Our",
-      "bold": "onboarding services",
-      "after": "hook up your data, configure your dashboards, and train the team."
-    },
-    "cta": {
-      "primary": "Try it free in 30s",
-      "secondary": "Help & Onboarding (15 min)"
-    },
-    "disclaimer": "Free access (open beta) • Optional services as needed"
+    "p1": { "before": "A", "bold": "free tool", "after": "to visualize your KPIs." },
+    "p2": { "before": "Need speed? Our", "bold": "onboarding services", "after": "connect your data, configure dashboards, and train the team." },
+    "cta": { "primary": "Try for free in 30s", "secondary": "Help & Onboarding (15 min)" },
+    "disclaimer": "Open access (public beta) • Optional services if needed"
   },
   "kpi": {
-    "time": {
-      "title": "Time saved (auto-reporting)",
-      "abbr": "h",
-      "unit": "/ week",
-      "desc": "Fewer Excel sheets, more concrete action."
-    },
-    "margin": {
-      "title": "Margin (price & mix)",
-      "unitText": "margin",
-      "desc": "Focus on best-sellers, smart price adjustments."
-    },
-    "cash": {
-      "title": "Cash forecasting",
-      "abbr": "d",
-      "unit": "ahead",
-      "desc": "Overdraft alerts before they happen."
-    }
+    "time": { "title": "Time saved (auto reporting)", "abbr": "h", "unit": "/ week", "desc": "Fewer spreadsheets, more actions." },
+    "margin": { "title": "Margin (price & mix)", "unitText": "margin", "desc": "Focus on best-sellers, smart price adjustments." },
+    "cash": { "title": "Cash forecasting", "abbr": "d", "unit": "ahead", "desc": "Overdraft alerts before they happen." }
   },
   "cards": {
-    "title": "What changes the game",
+    "title": "What actually moves the needle",
     "subtitle": "Free tool to explore — services to accelerate and industrialize.",
     "items": [
-      {
-        "title": "Auto forecasts",
-        "desc": "Best model chosen automatically. No obscure tuning."
-      },
-      {
-        "title": "Clear cashflow",
-        "desc": "Project your balance in 30s. Early alert = calmer decisions."
-      },
-      {
-        "title": "AI advice",
-        "desc": "Understandable, action-ready recommendations."
-      },
-      {
-        "title": "Data respect",
-        "desc": "Local imports + read-only connectors. Your sales stay private."
-      }
+      { "title": "Auto-forecast", "desc": "Picks the best model with zero tuning." },
+      { "title": "Clear cash view", "desc": "Project your balance in 30s. Earlier alert = calmer decision." },
+      { "title": "AI guidance", "desc": "Actionable, easy-to-understand recommendations." },
+      { "title": "Data respect", "desc": "Local imports + read-only connectors. Your sales stay private." }
     ]
   },
   "cta": {
     "title": "Take action",
-    "subtitle": "Try it free, then let us connect and put it into production.",
-    "hint": {
-      "before": "Tip:",
-      "after": "to open the command palette (coming soon)"
-    },
+    "subtitle": "Test for free, then let us connect and productionize.",
+    "hint": { "before": "Hint:", "after": "to open the palette (soon)" },
     "sales": {
       "overline": "Main path",
       "title": "Sales demo in 30s",
       "chip": "📈 30-day KPIs",
       "items": [
-        "• Import CSV (or connector), instant KPIs",
+        "• CSV import (or connector), instant KPIs",
         "• Automatic forecasts & smart segmentation",
-        "• Actionable recos (price, mix, best-sellers)"
+        "• Actionable recos (pricing, mix, best-sellers)"
       ],
-      "link": "Launch the demo"
+      "link": "Launch demo"
     }
   },
   "shortcuts": {
-    "clients": {
-      "title": "Customer Analytics",
-      "desc": "Segments, retention, basket size, cohorts. Find the levers."
-    },
-    "pricing": {
-      "title": "Pricing",
-      "desc": "Optimize margin & mix, simulate impact, apply the recommendations."
-    },
-    "eco": {
-      "title": "Eco-Label",
-      "desc": "kg/€ intensity, breakdown, compliant action plan."
-    },
-    "risk": {
-      "title": "Risk",
-      "desc": "Alerts, variability, scenarios. Stay on course without surprises."
-    },
+    "clients": { "title": "Customer Analysis", "desc": "Segments, retention, basket, cohorts. Find the levers." },
+    "pricing": { "title": "Pricing", "desc": "Optimize margin & mix, simulate impact, apply recos." },
+    "eco": { "title": "Eco-Label", "desc": "kg/€ intensity, breakdown, compliant action plan." },
+    "risk": { "title": "Risk", "desc": "Alerts, variability, scenarios. Stay on course." },
     "help": {
       "title": "Help & Onboarding",
-      "desc": {
-        "before": "Turnkey setup, data mapping, training.",
-        "strong": "Free 15-min audit."
-      },
+      "desc": { "before": "Turnkey setup, data mapping, training.", "strong": "Free 15-min audit." },
       "chip": "Service"
     },
     "connectors": {
       "title": "Auto Connectors",
       "titleAttr": "Coming soon",
-      "desc": {
-        "before": "Stripe, Bank (Bridge/Powens), Shopify/Presta…",
-        "em": "visual preview for now"
-      },
+      "desc": { "before": "Stripe, Bank (Bridge/Powens), Shopify/Presta…", "em": "visual preview for now" },
       "chip": "Soon",
       "ribbon": "COMING SOON"
     }
   },
-  "helpstrip": {
-    "items": [
-      "Drag-and-drop your CSV to start",
-      "Onboarding in < 7 days",
-      "Free 15-min audit"
-    ]
-  },
+  "helpstrip": { "items": ["Drag & drop your CSV to start", "Onboarded in < 7 days", "Free 15-min audit"] },
   "about": {
     "overline": "About",
     "titlePrefix": "InsightMate by",
-    "text": "Free tool to test; service to accelerate. We connect your data, put your KPIs in production, and train your team — simply.",
-    "watch": "Watch the video (90s)",
+    "text": "Free tool to try, service to accelerate. We connect your data, productionize KPIs, and train your team — simply.",
+    "watch": "Watch the video (< 1 min)",
     "video": {
-      "placeholder": "Your video is on the way",
-      "tip": "60–90s: who you are + what we do in 3 clicks → great conversion."
+      "placeholder": "Your video is coming",
+      "tip": "< 1 min: who you are + what we do in 3 clicks → great conversion.",
+      "lang": { "label": "Video language", "help": "Tip: change language here.", "fr": "French", "en": "English", "es": "Spanish" }
     }
   },
-  "footer": {
-    "demo": "Demo",
-    "createdBy": "Created by"
-  }
+  "testimonial": {
+    "quote": "InsightMate gave us much better clarity on margins and cash. We stopped guessing and started deciding.",
+    "company": "Boiler installation company"
+  },
+  "footer": { "demo": "Demo", "createdBy": "Created by" }
 }
