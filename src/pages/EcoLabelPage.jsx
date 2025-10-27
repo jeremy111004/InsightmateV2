@@ -172,13 +172,12 @@ function DataHealthBar({ measured = 0, param = 0, proxy = 0, t }) {
   const sum = Math.max(1, measured + param + proxy);
   const m = Math.round((measured / sum) * 100);
   const p = Math.round((param / sum) * 100);
-  const x = Math.round((proxy / sum) * 100);
   return (
     <div className="w-full">
       <div className="flex h-2 rounded overflow-hidden">
         <div className="bg-emerald-500" style={{ width: `${m}%` }} />
         <div className="bg-indigo-500" style={{ width: `${p}%` }} />
-        <div className="bg-slate-400" style={{ width: `${x}%` }} />
+        <div className="bg-slate-400" style={{ width: `${100 - m - p}%` }} />
       </div>
       <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
         <span className="inline-flex items-center gap-1">
@@ -191,7 +190,7 @@ function DataHealthBar({ measured = 0, param = 0, proxy = 0, t }) {
         </span>
         <span className="inline-flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-slate-400" />{" "}
-          {t("health.proxy", { value: x })}
+          {t("health.proxy", { value: Math.max(0, 100 - m - p) })}
         </span>
       </div>
     </div>
@@ -365,6 +364,7 @@ function PressBox({ locale, t }) {
 
 /* ---------- Aides & subventions (switch FR/IE/ES) ---------- */
 function SubsidyBox({ locale, totalKg, electricityDeltaKwhMonth = 0, tCO2eYear, t }) {
+  // Tags and dynamic strings come from your i18n files via t(...)
   let programs = [];
 
   if (locale === "fr") {
@@ -585,7 +585,7 @@ function SubsidyBox({ locale, totalKg, electricityDeltaKwhMonth = 0, tCO2eYear, 
   );
 }
 
-/* ---------- EXECUTIVE SUMMARY (with mobile CSS fallback) ---------- */
+/* ---------- EXECUTIVE SUMMARY (avec fallback CSS mobile) ---------- */
 function ExecutiveSummarySection({
   totalKg,
   intensity,
