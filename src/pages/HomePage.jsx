@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   ArrowRight,
@@ -9,6 +8,7 @@ import {
   PlayCircle,
   Plug,
   Headphones,
+  MessageSquareQuote,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -554,55 +554,76 @@ export default function HomePage({ goTo = () => {} }) {
               </div>
             </FadeInOnView>
 
-            {/* Colonne vidéo */}
+            {/* Colonne vidéo + AVIS CLIENT */}
             <FadeInOnView delay={0.08}>
-              <div
-                id="about-video"
-                className="relative rounded-3xl overflow-hidden border border-white/12 bg-white/6 backdrop-blur p-3"
-              >
-                <div className="relative aspect-video w-full rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900">
-                  <video
-                    key={videoSrc}
-                    className="absolute inset-0 h-full w-full object-cover rounded-2xl"
-                    src={videoSrc}
-                    // poster="/intro-poster.jpg"
-                    controls
-                    autoPlay
-                    muted
-                    playsInline
-                    loop
-                    preload="metadata"
-                    onError={onVideoError}
-                    onLoadedData={() => console.log("VIDEO LOADED", videoSrc)}
-                  >
-                    <source src={videoSrc} type="video/mp4" />
-                    Votre navigateur ne peut pas lire cette vidéo.
-                  </video>
+              <div>
+                {/* Testimonial tile (just above the video) */}
+                <div className="mb-4 rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15 text-white/80">
+                      <MessageSquareQuote className="w-4 h-4" />
+                    </span>
+                    <div className="text-sm text-white/80">
+                      <p className="leading-relaxed">
+                        “InsightMate gave us much better clarity on margins and
+                        cash. We stopped guessing and started deciding.”
+                      </p>
+                      <div className="mt-2 text-white/60 text-xs">
+                        — Boiler installation company
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Barre sous la vidéo : durée + sélecteur de langue */}
-                <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-white/70">
-                  <span className="text-white/60">&lt; 1 min</span>
-
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="video-lang" className="text-white/70">
-                      {t("about.video.lang.label")}
-                    </label>
-                    <select
-                      id="video-lang"
-                      value={videoLang}
-                      onChange={(e) => setVideoLang(e.target.value)}
-                      className="rounded-md bg-white/10 border border-white/15 px-2 py-1 text-white/90"
-                      aria-label={t("about.video.lang.label")}
-                      title={t("about.video.lang.label")}
+                {/* Bloc vidéo */}
+                <div
+                  id="about-video"
+                  className="relative rounded-3xl overflow-hidden border border-white/12 bg-white/6 backdrop-blur p-3"
+                >
+                  <div className="relative aspect-video w-full rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900">
+                    <video
+                      key={videoSrc}
+                      className="absolute inset-0 h-full w-full object-cover rounded-2xl"
+                      src={videoSrc}
+                      // poster="/intro-poster.jpg"
+                      controls
+                      autoPlay
+                      muted
+                      playsInline
+                      loop
+                      preload="metadata"
+                      onError={onVideoError}
+                      onLoadedData={() => console.log("VIDEO LOADED", videoSrc)}
                     >
-                      <option value="fr">{t("about.video.lang.fr")}</option>
-                      <option value="en">{t("about.video.lang.en")}</option>
-                      <option value="es">{t("about.video.lang.es")}</option>
-                    </select>
-                    <span className="text-white/50">
-                      {t("about.video.lang.help")}
-                    </span>
+                      <source src={videoSrc} type="video/mp4" />
+                      Votre navigateur ne peut pas lire cette vidéo.
+                    </video>
+                  </div>
+
+                  {/* Barre sous la vidéo : durée + sélecteur de langue */}
+                  <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-white/70">
+                    <span className="text-white/60">&lt; 1 min</span>
+
+                    <div className="flex items-center gap-2">
+                      <label htmlFor="video-lang" className="text-white/70">
+                        {t("about.video.lang.label")}
+                      </label>
+                      <select
+                        id="video-lang"
+                        value={videoLang}
+                        onChange={(e) => setVideoLang(e.target.value)}
+                        className="rounded-md bg-white/10 border border-white/15 px-2 py-1 text-white/90"
+                        aria-label={t("about.video.lang.label")}
+                        title={t("about.video.lang.label")}
+                      >
+                        <option value="fr">{t("about.video.lang.fr")}</option>
+                        <option value="en">{t("about.video.lang.en")}</option>
+                        <option value="es">{t("about.video.lang.es")}</option>
+                      </select>
+                      <span className="text-white/50">
+                        {t("about.video.lang.help")}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
