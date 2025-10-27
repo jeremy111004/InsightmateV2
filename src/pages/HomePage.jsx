@@ -86,27 +86,21 @@ export default function HomePage({ goTo = () => {} }) {
   const [refMargin, seenMrg] = useOnceInView();
   const [refCash, seenCash] = useOnceInView();
 
-  /* --- Sélecteur de langue vidéo --- */
+  /* --- Video language selector --- */
   const initialLang = (i18n.language || "fr").slice(0, 2);
   const [videoLang, setVideoLang] = React.useState(
     ["fr", "en", "es"].includes(initialLang) ? initialLang : "en"
   );
-
-  // Sync si i18n change (ex: ?lng=es)
   React.useEffect(() => {
     const code = (i18n.language || "fr").slice(0, 2);
     if (["fr", "en", "es"].includes(code)) setVideoLang(code);
   }, [i18n.language]);
 
-  // Fichiers à la racine de /public (pas de /videos/)
+  // Public root files
   const videoSrc = React.useMemo(() => {
-    const map = {
-      fr: "/introfr.mp4",
-      en: "/introen.mp4",
-      es: "/introes.mp4",
-    };
+    const map = { fr: "/introfr.mp4", en: "/introen.mp4", es: "/introes.mp4" };
     const base = map[videoLang] || map.en;
-    return base + "?v=1"; // cache-bust simple
+    return base + "?v=1";
   }, [videoLang]);
 
   const onVideoError = (e) => {
@@ -118,6 +112,11 @@ export default function HomePage({ goTo = () => {} }) {
       currentSrc: v?.currentSrc,
     });
   };
+
+  // Primary CTA (Calendly) with env override + safe fallback
+  const CALENDLY_URL =
+    import.meta.env.VITE_CALENDLY_URL ||
+    "https://calendly.com/yourinsightmate/15min";
 
   return (
     <div className="relative isolate bg-app text-white w-full">
@@ -148,7 +147,10 @@ export default function HomePage({ goTo = () => {} }) {
             </Pill>
           </div>
 
-          <h1 className="text-[56px] md:text-[88px] font-extrabold tracking-[-0.02em] leading-[1.05]">
+          {/* Scope line for beta */}
+          <div className="text-sm text-white/70">{t("hero.scope")}</div>
+
+          <h1 className="mt-2 text-[56px] md:text-[88px] font-extrabold tracking-[-0.02em] leading-[1.05]">
             {t("hero.title1")}{" "}
             <span className="text-glow bg-gradient-to-r from-[#e8ecff] via-[#cfd7ff] to-[#90c9ff] bg-clip-text text-transparent">
               {t("hero.title2")}
@@ -170,21 +172,40 @@ export default function HomePage({ goTo = () => {} }) {
             {t("hero.p2.after")}
           </p>
 
+          {/* Single primary CTA (Calendly) + secondary demo */}
           <div className="mt-9 flex flex-wrap gap-4 justify-center items-center">
-            <button
-              onClick={() => goTo("sales")}
+            <a
+              href={CALENDLY_URL}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 btn-blue-grad text-base md:text-lg font-semibold shadow-lg hover:shadow-xl ring-1 ring-white/10 transition"
             >
               🚀 {t("hero.cta.primary")}
               <ArrowRight className="w-5 h-5" />
-            </button>
+            </a>
 
             <button
-              onClick={() => goTo("pro")}
+              onClick={() => goTo("sales")}
               className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 border border-white/15 bg-white/5 text-white hover:bg-white/10 text-base md:text-lg transition"
             >
               {t("hero.cta.secondary")}
             </button>
+          </div>
+
+          {/* Trust row */}
+          <div className="mt-5 flex flex-wrap gap-2 justify-center text-xs text-white/70">
+            <span className="chip">
+              {t("trust.gdpr", "GDPR")}
+            </span>
+            <span className="chip">
+              {t("trust.euHosting", "EU hosting")}
+            </span>
+            <span className="chip">
+              {t("trust.readOnly", "Read-only connectors")}
+            </span>
+            <span className="chip">
+              {t("trust.csvFallback", "CSV fallback")}
+            </span>
           </div>
 
           <div className="mt-4 text-sm text-white/65">
@@ -280,7 +301,7 @@ export default function HomePage({ goTo = () => {} }) {
         </div>
       </header>
 
-      {/* SECTION cartes */}
+      {/* SECTION cards */}
       <section className="relative py-12 md:py-14">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <h2 className="text-3xl md:text-4xl font-semibold text-white">
@@ -327,7 +348,7 @@ export default function HomePage({ goTo = () => {} }) {
         </div>
       </section>
 
-      {/* CTA / parcours */}
+      {/* CTA / journey */}
       <section className="relative full-bleed panel-surface py-14 md:py-20">
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
@@ -344,7 +365,7 @@ export default function HomePage({ goTo = () => {} }) {
           </div>
 
           <div className="mt-8 grid md:grid-cols-12 gap-5">
-            {/* Ventes */}
+            {/* Sales */}
             <button
               onClick={() => goTo("sales")}
               className="md:col-span-5 text-left rounded-3xl card-glass card-hover p-6 md:p-7"
@@ -381,7 +402,7 @@ export default function HomePage({ goTo = () => {} }) {
               </div>
             </button>
 
-            {/* Raccourcis */}
+            {/* Shortcuts */}
             <div className="md:col-span-7 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               <button
                 onClick={() => goTo("cash")}
@@ -472,7 +493,7 @@ export default function HomePage({ goTo = () => {} }) {
 
               <button
                 onClick={() => goTo("connectors")}
-                className="text-left rounded-3xl card-glass card-hover p-5"
+                className="text-left rounded-3xl card-glass card-hover p-5 relative"
               >
                 <div className="flex items-center gap-3">
                   <span className="inline-grid place-items-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15">
@@ -498,7 +519,7 @@ export default function HomePage({ goTo = () => {} }) {
             </div>
           </div>
 
-          {/* Bande d’aides */}
+          {/* Help chips */}
           <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-white/60">
             <span className="chip">{t("helpstrip.items.0")}</span>
             <span className="chip">{t("helpstrip.items.1")}</span>
@@ -507,11 +528,11 @@ export default function HomePage({ goTo = () => {} }) {
         </div>
       </section>
 
-      {/* À PROPOS + VIDÉO */}
+      {/* ABOUT + VIDEO */}
       <section className="relative py-14 md:py-20">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Colonne texte */}
+            {/* Text column */}
             <FadeInOnView>
               <div className="rounded-3xl bg-white/6 backdrop-blur border border-white/12 p-6">
                 <div className="inline-flex items-center gap-2 text-white/80 text-xs">
@@ -541,7 +562,7 @@ export default function HomePage({ goTo = () => {} }) {
               </div>
             </FadeInOnView>
 
-            {/* Colonne vidéo */}
+            {/* Video column */}
             <FadeInOnView delay={0.08}>
               <div
                 id="about-video"
@@ -552,7 +573,6 @@ export default function HomePage({ goTo = () => {} }) {
                     key={videoSrc}
                     className="absolute inset-0 h-full w-full object-cover rounded-2xl"
                     src={videoSrc}
-                    // poster="/intro-poster.jpg"
                     controls
                     autoPlay
                     muted
@@ -567,7 +587,7 @@ export default function HomePage({ goTo = () => {} }) {
                   </video>
                 </div>
 
-                {/* Barre sous la vidéo : durée + sélecteur de langue */}
+                {/* Under-video bar: duration + lang selector */}
                 <div className="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-white/70">
                   <span className="text-white/60">&lt; 1 min</span>
 
