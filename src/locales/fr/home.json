@@ -48,31 +48,16 @@
     "title": "Ce qui change la donne",
     "subtitle": "Outil gratuit pour explorer — services pour accélérer et industrialiser.",
     "items": [
-      {
-        "title": "Prévisions auto",
-        "desc": "Choix du meilleur modèle sans réglages. Pas de tuning obscur."
-      },
-      {
-        "title": "Trésorerie claire",
-        "desc": "Projetez votre solde en 30 s. Alerte tôt = décision sereine."
-      },
-      {
-        "title": "Conseils IA",
-        "desc": "Recommandations compréhensibles, prêtes à agir."
-      },
-      {
-        "title": "Respect des données",
-        "desc": "Imports locaux + connecteurs en lecture seule. Vos ventes restent privées."
-      }
+      { "title": "Prévisions auto", "desc": "Choix du meilleur modèle sans réglages. Pas de tuning obscur." },
+      { "title": "Trésorerie claire", "desc": "Projetez votre solde en 30 s. Alerte tôt = décision sereine." },
+      { "title": "Conseils IA", "desc": "Recommandations compréhensibles, prêtes à agir." },
+      { "title": "Respect des données", "desc": "Imports locaux + connecteurs en lecture seule. Vos ventes restent privées." }
     ]
   },
   "cta": {
     "title": "Passez à l’action",
     "subtitle": "Testez gratuitement, puis laissez-nous connecter et mettre en production.",
-    "hint": {
-      "before": "Astuce :",
-      "after": "pour ouvrir la palette (bientôt)"
-    },
+    "hint": { "before": "Astuce :", "after": "pour ouvrir la palette (bientôt)" },
     "sales": {
       "overline": "Parcours principal",
       "title": "Démo Ventes en 30 s",
@@ -86,48 +71,24 @@
     }
   },
   "shortcuts": {
-    "clients": {
-      "title": "Analyse Clients",
-      "desc": "Segments, rétention, panier, cohortes. Identifiez les leviers."
-    },
-    "pricing": {
-      "title": "Pricing",
-      "desc": "Optimisez marge & mix, simulez l’impact, appliquez les recos."
-    },
-    "eco": {
-      "title": "Éco-Label",
-      "desc": "Intensité kg/€, décomposition, plan d’actions conforme."
-    },
-    "risk": {
-      "title": "Risque",
-      "desc": "Alertes, variabilité, scénarios. Gardez le cap sans surprise."
-    },
+    "clients": { "title": "Analyse Clients", "desc": "Segments, rétention, panier, cohortes. Identifiez les leviers." },
+    "pricing": { "title": "Pricing", "desc": "Optimisez marge & mix, simulez l’impact, appliquez les recos." },
+    "eco": { "title": "Éco-Label", "desc": "Intensité kg/€, décomposition, plan d’actions conforme." },
+    "risk": { "title": "Risque", "desc": "Alertes, variabilité, scénarios. Gardez le cap sans surprise." },
     "help": {
       "title": "Aide & Onboarding",
-      "desc": {
-        "before": "Setup clé en main, mapping données, formation.",
-        "strong": "Audit 15 min offert."
-      },
+      "desc": { "before": "Setup clé en main, mapping données, formation.", "strong": "Audit 15 min offert." },
       "chip": "Service"
     },
     "connectors": {
       "title": "Connecteurs Auto",
       "titleAttr": "Bientôt disponible",
-      "desc": {
-        "before": "Stripe, Banque (Bridge/Powens), Shopify/Presta…",
-        "em": "aperçu visuel pour l’instant"
-      },
+      "desc": { "before": "Stripe, Banque (Bridge/Powens), Shopify/Presta…", "em": "aperçu visuel pour l’instant" },
       "chip": "Bientôt",
       "ribbon": "DISPO BIENTÔT"
     }
   },
-  "helpstrip": {
-    "items": [
-      "Glissez-déposez votre CSV pour démarrer",
-      "Onboarding en < 7 jours",
-      "Audit gratuit 15 min"
-    ]
-  },
+  "helpstrip": { "items": ["Glissez-déposez votre CSV pour démarrer", "Onboarding en < 7 jours", "Audit gratuit 15 min"] },
   "about": {
     "overline": "À propos",
     "titlePrefix": "InsightMate par",
@@ -136,17 +97,12 @@
     "video": {
       "placeholder": "Votre vidéo arrive",
       "tip": "< 1 min : qui vous êtes + ce qu’on fait en 3 clics → excellent taux de conversion.",
-      "lang": {
-        "label": "Langue de la vidéo",
-        "help": "Astuce : change la langue ici.",
-        "fr": "Français",
-        "en": "Anglais",
-        "es": "Espagnol"
-      }
+      "lang": { "label": "Langue de la vidéo", "help": "Astuce : change la langue ici.", "fr": "Français", "en": "Anglais", "es": "Espagnol" }
     }
   },
-  "footer": {
-    "demo": "Démo",
-    "createdBy": "Créé par"
-  }
+  "testimonial": {
+    "quote": "InsightMate nous a apporté une bien meilleure clarté sur les marges et la trésorerie. On a arrêté de deviner, on a commencé à décider.",
+    "company": "Entreprise d’installation de chaudières"
+  },
+  "footer": { "demo": "Démo", "createdBy": "Créé par" }
 }
