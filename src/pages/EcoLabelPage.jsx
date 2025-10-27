@@ -58,7 +58,7 @@ const ACCENT_DARK = "#059669"; // emerald-600
 const GRID_REGIONS = { EU: 0.233, FR: 0.053, ES: 0.2 };
 const SECTOR_OTHER_SHARE = 0.5;
 
-/* --- CSV fallback --- */
+/* --- CSV fallback (si un connecteur renvoie une string) --- */
 function parseCsvText(csvText) {
   if (typeof csvText !== "string") return [];
   const lines = csvText
@@ -172,12 +172,13 @@ function DataHealthBar({ measured = 0, param = 0, proxy = 0, t }) {
   const sum = Math.max(1, measured + param + proxy);
   const m = Math.round((measured / sum) * 100);
   const p = Math.round((param / sum) * 100);
+  const x = Math.round((proxy / sum) * 100);
   return (
     <div className="w-full">
       <div className="flex h-2 rounded overflow-hidden">
         <div className="bg-emerald-500" style={{ width: `${m}%` }} />
         <div className="bg-indigo-500" style={{ width: `${p}%` }} />
-        <div className="bg-slate-400" style={{ width: `${100 - m - p}%` }} />
+        <div className="bg-slate-400" style={{ width: `${x}%` }} />
       </div>
       <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
         <span className="inline-flex items-center gap-1">
@@ -190,114 +191,118 @@ function DataHealthBar({ measured = 0, param = 0, proxy = 0, t }) {
         </span>
         <span className="inline-flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-slate-400" />{" "}
-          {t("health.proxy", { value: Math.max(0, 100 - m - p) })}
+          {t("health.proxy", { value: x })}
         </span>
       </div>
     </div>
   );
 }
 
-/* ---------- Presse (switch FR/IE/ES) ---------- */
-function getAppLocale(i18n) {
-  const lang = (i18n?.language || "en").toLowerCase();
-  if (lang.startsWith("fr")) return "fr";
-  if (lang.startsWith("es")) return "es";
-  return "en"; // default → EN (Ireland content)
+/* ---------- CONSEILLER IA PAYSAGE  ---------- */
+function IAAdvisorLandscape({ actions = [], t }) {
+  const list = actions.slice(0, 3);
+  return (
+    <motion.div
+      initial={{ y: 8, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-h-0"
+    >
+      <motion.div
+        aria-hidden={true}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 0.25 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6 }}
+        className="pointer-events-none absolute -inset-1 blur-2xl"
+        style={{
+          background:
+            "radial-gradient(60% 60% at 10% 10%, rgba(16,185,129,.18), transparent 60%), radial-gradient(60% 60% at 90% 90%, rgba(99,102,241,.16), transparent 60%)",
+        }}
+      />
+      <div className="flex items-center justify-between relative">
+        <div className="text-sm font-medium flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-emerald-600" /> {t("advisor.title")}
+        </div>
+        <div className="text-xs text-slate-500">{t("advisor.subhead")}</div>
+      </div>
+
+      <div className="mt-3 grid md:grid-cols-3 gap-3 auto-rows-min min-h-0">
+        {list.map((a, idx) => (
+          <motion.div
+            initial={false}
+            key={a.id}
+            whileHover={{ y: -2 }}
+            className="rounded-2xl border bg-white/80 dark:bg-slate-900/80 p-4 ring-1 ring-black/5 hover:ring-emerald-500 transition"
+          >
+            <div className="text-[11px] uppercase tracking-wide text-emerald-700">
+              {t("advisor.tipN", { n: idx + 1 })}
+            </div>
+            <div className="mt-0.5 font-semibold leading-snug">{a.problem}</div>
+
+            <div className="mt-2 text-[12px]">
+              <div className="text-slate-500">
+                <span className="font-medium text-slate-700">
+                  {t("advisor.causeLabel")}{" "}
+                </span>
+                {a.cause}
+              </div>
+              <div className="mt-1">
+                <span className="font-medium">
+                  {t("advisor.solutionLabel")}{" "}
+                </span>
+                {a.solution}
+              </div>
+            </div>
+
+            {a.impactKg > 0 && (
+              <div className="mt-3">
+                <span className="text-[11px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">
+                  {t("advisor.impact", { kg: a.impactKg.toLocaleString() })}
+                </span>
+              </div>
+            )}
+          </motion.div>
+        ))}
+        {!list.length && (
+          <div className="text-sm text-slate-500">{t("advisor.empty")}</div>
+        )}
+      </div>
+
+      <div className="mt-3 text-[11px] text-slate-500 relative">
+        {t("advisor.disclaimer")}
+      </div>
+    </motion.div>
+  );
 }
 
-function getPressSelection(locale) {
-  if (locale === "fr") {
-    return [
-      {
-        title: "Entreprises : passer à l’action pour réduire les émissions",
-        source: "ADEME",
-        date: "2024–2025",
-        url: "https://agirpourlatransition.ademe.fr/entreprises/passer-a-laction",
-        tagline:
-          "Parcours d’actions et aides pour PME/ETI (sobriété, efficacité, mobilité).",
-        thumbnail: null,
-      },
-      {
-        title:
-          "Le trop lent démarrage de la décarbonation industrielle en France",
-        source: "Le Monde",
-        date: "18 sept. 2025",
-        url: "https://www.lemonde.fr/economie/article/2025/09/18/en-france-le-trop-lent-demarrage-de-la-decarbonation-industrielle_6641615_3234.html",
-        tagline: "État des lieux 2025 et enjeux d’investissement.",
-        thumbnail: null,
-      },
-      {
-        title: "Net-zero supply chains: where to start",
-        source: "The Economist Impact",
-        date: "2025",
-        url: "https://impact.economist.com/projects/next-gen-supply-chains/article/navigating-the-path-to-net-zero-supply-chains/",
-        tagline:
-          "Prioriser les postes Scope 3 et outiller le suivi fournisseurs.",
-        thumbnail: null,
-      },
-    ];
-  }
-  if (locale === "es") {
-    return [
-      {
-        title: "Guía IDAE para la descarbonización empresarial",
-        source: "IDAE",
-        date: "2024–2025",
-        url: "https://www.idae.es/ayudas-y-financiacion",
-        tagline:
-          "Programas y recursos para eficiencia energética y renovables en pymes.",
-        thumbnail: null,
-      },
-      {
-        title: "PREE y MOVES: rehabilitación y movilidad eficiente",
-        source: "MITERD / IDAE",
-        date: "2025",
-        url: "https://www.idae.es/ayudas-y-financiacion/programa-pree",
-        tagline:
-          "Líneas de ayuda para rehabilitación energética y electrificación de flotas.",
-        thumbnail: null,
-      },
-      {
-        title: "Cadenas de suministro net-zero: por dónde empezar",
-        source: "The Economist Impact",
-        date: "2025",
-        url: "https://impact.economist.com/projects/next-gen-supply-chains/article/navigating-the-path-to-net-zero-supply-chains/",
-        tagline:
-          "Prioriza emisiones de Alcance 3 y colaboración con proveedores.",
-        thumbnail: null,
-      },
-    ];
-  }
-  // EN → Ireland
-  return [
-    {
-      title: "SEAI: Business supports to cut energy and carbon",
-      source: "SEAI",
-      date: "2024–2025",
-      url: "https://www.seai.ie/business-and-public-sector/business-grants-and-supports/",
-      tagline:
-        "Grants, audits and toolkits for Irish SMEs and public sector bodies.",
-      thumbnail: null,
-    },
-    {
-      title: "Green Transition Fund: where to start",
-      source: "Enterprise Ireland",
-      date: "2025",
-      url: "https://www.enterprise-ireland.com/en/funding-supports/climate-sustainability/green-transition-fund/",
-      tagline:
-        "Funding pathways for process efficiency, circularity and net-zero.",
-      thumbnail: null,
-    },
-    {
-      title: "Net-zero supply chains: where to start",
-      source: "The Economist Impact",
-      date: "2025",
-      url: "https://impact.economist.com/projects/next-gen-supply-chains/article/navigating-the-path-to-net-zero-supply-chains/",
-      tagline: "Scope 3 hotspots and supplier engagement made practical.",
-      thumbnail: null,
-    },
-  ];
-}
+/* ---------- Presse (sélection courte) ---------- */
+const PRESS_SELECTION = [
+  {
+    title: "Entreprises : passer à l’action pour réduire les émissions",
+    source: "ADEME",
+    date: "2024–2025",
+    url: "https://agirpourlatransition.ademe.fr/entreprises/passer-a-laction",
+    tagline:
+      "Parcours d’actions et aides pour PME/ETI (sobriété, efficacité, mobilité).",
+    thumbnail: null,
+  },
+  {
+    title: "Le trop lent démarrage de la décarbonation industrielle en France",
+    source: "Le Monde",
+    date: "18 sept. 2025",
+    url: "https://www.lemonde.fr/economie/article/2025/09/18/en-france-le-trop-lent-demarrage-de-la-decarbonation-industrielle_6641615_3234.html",
+    tagline: "État des lieux 2025 et enjeux d’investissement.",
+    thumbnail: null,
+  },
+  {
+    title: "Net-zero supply chains: where to start",
+    source: "The Economist Impact",
+    date: "2025",
+    url: "https://impact.economist.com/projects/next-gen-supply-chains/article/navigating-the-path-to-net-zero-supply-chains/",
+    tagline: "Prioriser les postes Scope 3 et outiller le suivi fournisseurs.",
+    thumbnail: null,
+  },
+];
 
 function getFavicon(url) {
   try {
@@ -308,8 +313,7 @@ function getFavicon(url) {
   }
 }
 
-function PressBox({ locale, t }) {
-  const items = getPressSelection(locale);
+function PressBox({ items = PRESS_SELECTION, t }) {
   return (
     <Section title={t("press.title")} icon={<Newspaper className="w-5 h-5" />}>
       <div className="grid md:grid-cols-3 gap-3 auto-rows-min min-h-0">
@@ -362,170 +366,67 @@ function PressBox({ locale, t }) {
   );
 }
 
-/* ---------- Aides & subventions (switch FR/IE/ES) ---------- */
-function SubsidyBox({ locale, totalKg, electricityDeltaKwhMonth = 0, tCO2eYear, t }) {
-  // Tags and dynamic strings come from your i18n files via t(...)
-  let programs = [];
-
-  if (locale === "fr") {
-    programs = [
-      {
-        key: "diag",
-        title: "Diag Décarbon’Action (Bpifrance + ADEME)",
-        coverage:
-          "Subvention ~40% du diagnostic (pack ~10 000€ HT → reste à charge ~6 000€)",
-        criteria: [
-          "Entreprise en France",
-          "< 500 salariés",
-          "> 1 an d’activité",
-          "Pas de bilan GES < 5 ans",
-        ],
-        link: "https://www.bpifrance.fr/catalogue-offres/diag-decarbonaction",
-        potential: "≈ 4 000 € sur le diagnostic",
-        tag: t("subsidies.tag.diagnostic"),
-      },
-      {
-        key: "cee",
-        title: "CEE — Certificats d’économies d’énergie",
-        coverage:
-          "Prime variable selon opérations (isolation, éclairage, process…).",
-        criteria: [
-          "Toutes tailles",
-          "Travaux éligibles / fiches standardisées",
-          "Prime versée par un obligé (fournisseur d’énergie)",
-        ],
-        link: "https://opera-energie.com/prime-energie/",
-        potential:
-          electricityDeltaKwhMonth > 0
-            ? t("subsidies.dynamic.ceePotential", {
-                kwh: (electricityDeltaKwhMonth * 12).toLocaleString(),
-              })
-            : t("subsidies.dynamic.ceeSimulate"),
-        tag: t("subsidies.tag.workGrant"),
-      },
-      {
-        key: "fondsChaleur",
-        title: "ADEME — Fonds/Contrat Chaleur Renouvelable",
-        coverage:
-          "Subvention CAPEX projets chaleur EnR&R (PAC, biomasse, géothermie…)",
-        criteria: ["Entreprises/collectivités/asso", "Projet EnR&R éligible"],
-        link: "https://agir.ademe.fr/aides-financieres/2025/contrat-chaleur-renouvelable",
-        potential: t("subsidies.dynamic.heatCheck"),
-        tag: t("subsidies.tag.capex"),
-      },
-      {
-        key: "eu",
-        title: "UE — LIFE / Innovation Fund (projets ambitieux)",
-        coverage:
-          "Financement projets de décarbonation/énergie propre (appels annuels).",
-        criteria: ["Projet démonstrateur / industriel", "Calendrier d’appel"],
-        link: "https://cinea.ec.europa.eu/life-calls-proposals-2025_en",
-        potential:
-          tCO2eYear >= 1000
-            ? t("subsidies.dynamic.euPotential")
-            : t("subsidies.dynamic.euOutOfScope"),
-        tag: t("subsidies.tag.euCalls"),
-      },
-    ];
-  } else if (locale === "es") {
-    programs = [
-      {
-        key: "idae-ee",
-        title: "IDAE — Eficiencia energética en PYME y Gran Empresa",
-        coverage:
-          "Subvenciones para auditorías, iluminación, climatización y procesos.",
-        criteria: ["Empresas en España", "Medidas elegibles IDAE"],
-        link: "https://www.idae.es/ayudas-y-financiacion",
-        potential: t("subsidies.dynamic.ceeSimulate"),
-        tag: t("subsidies.tag.diagnostic"),
-      },
-      {
-        key: "moves",
-        title: "Programa MOVES (electrificación y logística)",
-        coverage:
-          "Ayudas para vehículos eléctricos, infraestructura de recarga y flotas.",
-        criteria: ["Empresas/autónomos", "Convocatoria autonómica vigente"],
-        link: "https://www.idae.es/ayudas-y-financiacion/programa-moves-iii",
-        potential: t("subsidies.dynamic.heatCheck"),
-        tag: t("subsidies.tag.workGrant"),
-      },
-      {
-        key: "pree",
-        title: "Programa PREE — Rehabilitación Energética de Edificios",
-        coverage:
-          "Subvenciones para envolvente, instalaciones térmicas y renovables.",
-        criteria: ["Edificios existentes", "Mejoras de eficiencia energética"],
-        link: "https://www.idae.es/ayudas-y-financiacion/programa-pree",
-        potential: t("subsidies.dynamic.ceeSimulate"),
-        tag: t("subsidies.tag.capex"),
-      },
-      {
-        key: "perte",
-        title: "PERTE de Descarbonización Industrial",
-        coverage:
-          "Financiación para proyectos industriales de reducción de emisiones.",
-        criteria: ["Proyectos tractores/industriales", "Bases reguladoras"],
-        link: "https://www.mincotur.gob.es/PortalAyudas/Paginas/perte-descarbonizacion-industrial.aspx",
-        potential:
-          tCO2eYear >= 1000
-            ? t("subsidies.dynamic.euPotential")
-            : t("subsidies.dynamic.euOutOfScope"),
-        tag: t("subsidies.tag.euCalls"),
-      },
-    ];
-  } else {
-    // EN → Ireland
-    programs = [
-      {
-        key: "seai-audit",
-        title: "SEAI — SME Support Scheme for Energy Audits",
-        coverage:
-          "Grant support towards professional energy audits for Irish SMEs.",
-        criteria: ["SMEs based in Ireland", "Eligible sectors/NAICS"],
-        link: "https://www.seai.ie/business-and-public-sector/small-and-medium-business/supports/sme-support-scheme-for-energy-audits/",
-        potential: t("subsidies.dynamic.ceeSimulate"),
-        tag: t("subsidies.tag.diagnostic"),
-      },
-      {
-        key: "seai-ssrh",
-        title: "SEAI — Support Scheme for Renewable Heat (SSRH)",
-        coverage:
-          "Operational tariffs for renewable heat + capital grants for heat pumps.",
-        criteria: ["Irish businesses/public sector", "Eligible technologies"],
-        link: "https://www.seai.ie/business-and-public-sector/business-grants-and-supports/support-scheme-for-renewable-heat/",
-        potential:
-          electricityDeltaKwhMonth > 0
-            ? t("subsidies.dynamic.ceePotential", {
-                kwh: (electricityDeltaKwhMonth * 12).toLocaleString(),
-              })
-            : t("subsidies.dynamic.heatCheck"),
-        tag: t("subsidies.tag.capex"),
-      },
-      {
-        key: "aca",
-        title: "Accelerated Capital Allowance (ACA)",
-        coverage:
-          "100% first-year tax write-off for qualifying energy-efficient equipment.",
-        criteria: ["Companies in Ireland", "Equipment on SEAI register"],
-        link: "https://www.revenue.ie/en/companies-and-charities/incentives/accelerated-capital-allowances/index.aspx",
-        potential: t("subsidies.dynamic.ceeSimulate"),
-        tag: t("subsidies.tag.workGrant"),
-      },
-      {
-        key: "ei-green",
-        title: "Enterprise Ireland — Green Transition Fund",
-        coverage:
-          "Funding for decarbonisation, process efficiency and circularity projects.",
-        criteria: ["EI client companies", "Project eligibility assessment"],
-        link: "https://www.enterprise-ireland.com/en/funding-supports/climate-sustainability/green-transition-fund/",
-        potential:
-          tCO2eYear >= 1000
-            ? t("subsidies.dynamic.euPotential")
-            : t("subsidies.dynamic.euOutOfScope"),
-        tag: t("subsidies.tag.euCalls"),
-      },
-    ];
-  }
+/* ---------- Aides & subventions ---------- */
+function SubsidyBox({ totalKg, electricityDeltaKwhMonth = 0, tCO2eYear, t }) {
+  const programs = [
+    {
+      key: "diag",
+      title: "Diag Décarbon’Action (Bpifrance + ADEME)",
+      coverage:
+        "Subvention ~40% du diagnostic (pack ~10 000€ HT → reste à charge ~6 000€)",
+      criteria: [
+        "Entreprise en France",
+        "< 500 salariés",
+        "> 1 an d’activité",
+        "Pas de bilan GES < 5 ans",
+      ],
+      link: "https://www.bpifrance.fr/catalogue-offres/diag-decarbonaction",
+      potential: "≈ 4 000 € sur le diagnostic",
+      tag: t("subsidies.tag.diagnostic"),
+    },
+    {
+      key: "cee",
+      title: "CEE — Certificats d’économies d’énergie",
+      coverage:
+        "Prime variable selon opérations (isolation, éclairage, process…).",
+      criteria: [
+        "Toutes tailles",
+        "Travaux éligibles / fiches standardisées",
+        "Prime versée par un obligé (fournisseur d’énergie)",
+      ],
+      link: "https://opera-energie.com/prime-energie/",
+      potential:
+        electricityDeltaKwhMonth > 0
+          ? t("subsidies.dynamic.ceePotential", {
+              kwh: (electricityDeltaKwhMonth * 12).toLocaleString(),
+            })
+          : t("subsidies.dynamic.ceeSimulate"),
+      tag: t("subsidies.tag.workGrant"),
+    },
+    {
+      key: "fondsChaleur",
+      title: "ADEME — Fonds/Contrat Chaleur Renouvelable",
+      coverage:
+        "Subvention CAPEX projets chaleur EnR&R (PAC, biomasse, géothermie…)",
+      criteria: ["Entreprises/collectivités/asso", "Projet EnR&R éligible"],
+      link: "https://agir.ademe.fr/aides-financieres/2025/contrat-chaleur-renouvelable",
+      potential: t("subsidies.dynamic.heatCheck"),
+      tag: t("subsidies.tag.capex"),
+    },
+    {
+      key: "eu",
+      title: "UE — LIFE / Innovation Fund (projets ambitieux)",
+      coverage:
+        "Financement projets de décarbonation/énergie propre (appels annuels).",
+      criteria: ["Projet démonstrateur / industriel", "Calendrier d’appel"],
+      link: "https://cinea.ec.europa.eu/life-calls-proposals-2025_en",
+      potential:
+        tCO2eYear >= 1000
+          ? t("subsidies.dynamic.euPotential")
+          : t("subsidies.dynamic.euOutOfScope"),
+      tag: t("subsidies.tag.euCalls"),
+    },
+  ];
 
   return (
     <Section
@@ -585,7 +486,7 @@ function SubsidyBox({ locale, totalKg, electricityDeltaKwhMonth = 0, tCO2eYear, 
   );
 }
 
-/* ---------- EXECUTIVE SUMMARY (avec fallback CSS mobile) ---------- */
+/* ---------- EXECUTIVE SUMMARY ---------- */
 function ExecutiveSummarySection({
   totalKg,
   intensity,
@@ -720,7 +621,7 @@ function ExecutiveSummarySection({
             </div>
           </div>
 
-          {/* Trend compact */}
+          {/* Trend compact (MiniSparkline + légende) */}
           <div className="rounded-3xl border bg-gradient-to-br from-white/80 to-indigo-50/60 dark:from-slate-900/70 dark:to-indigo-900/20 p-4 shadow-[0_6px_24px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-600">{t("summary.trendTitle")}</div>
@@ -999,12 +900,10 @@ function TablePreview({ rows = [], title, max = 25, t }) {
 
 /* ===================== PAGE ===================== */
 export default function EcoLabelPage() {
-  const { t, i18n } = useTranslation("ecoLabel");
+  const { t } = useTranslation("ecoLabel");
 
   const rootRef = useRef(null);
   const chartNonce = useResizeRerender(rootRef);
-
-  const locale = getAppLocale(i18n); // ← "fr" | "en" | "es"
 
   /* --- Demo CSVs loaded by default on first visit --- */
   const DEMO_SALES_CSV = `date,order_id,product,qty,price
@@ -1555,9 +1454,8 @@ export default function EcoLabelPage() {
         t={t}
       />
 
-      {/* Aides + Presse (localisées) */}
+      {/* Aides + Presse */}
       <SubsidyBox
-        locale={locale}
         totalKg={totalKg}
         electricityDeltaKwhMonth={
           aiPlan.find((a) => a.id === "elec")?.kwhDelta || 0
@@ -1565,7 +1463,7 @@ export default function EcoLabelPage() {
         tCO2eYear={(totalKg * 12) / 1000}
         t={t}
       />
-      <PressBox locale={locale} t={t} />
+      <PressBox t={t} />
 
       {/* ====== Décomposition quotidienne (30j) ====== */}
       <Section
