@@ -1,145 +1,79 @@
 {
   "hero": {
-    "badge": {
-      "ai": "IA integrada",
-      "forecast": "Pronóstico inteligente",
-      "beta": "Acceso beta gratuito"
-    },
+    "badge": { "ai": "IA integrada", "forecast": "Smart Forecast", "beta": "Acceso beta gratis" },
     "title1": "Tus",
     "title2": "datos",
     "title3": "tus",
     "title4": "decisiones",
-    "p1": {
-      "before": "Una",
-      "bold": "herramienta de acceso libre",
-      "after": "para visualizar tus KPI."
-    },
-    "p2": {
-      "before": "¿Necesitas ir rápido? Nuestros",
-      "bold": "servicios de onboarding",
-      "after": "conectan tus datos, configuran tus paneles y forman al equipo."
-    },
-    "cta": {
-      "primary": "Probar gratis en 30 s",
-      "secondary": "Ayuda y Onboarding (15 min)"
-    },
-    "disclaimer": "Acceso libre (beta abierta) • Servicios opcionales según necesidad"
+    "p1": { "before": "Herramienta", "bold": "de acceso libre", "after": "para visualizar tus KPI." },
+    "p2": { "before": "¿Con prisa? Nuestros", "bold": "servicios de onboarding", "after": "conectan tus datos, configuran los paneles y forman al equipo." },
+    "cta": { "primary": "Probar gratis en 30 s", "secondary": "Ayuda & Onboarding (15 min)" },
+    "disclaimer": "Acceso abierto (beta pública) • Servicios opcionales según necesidad"
   },
   "kpi": {
-    "time": {
-      "title": "Tiempo ahorrado (reporting automático)",
-      "abbr": "h",
-      "unit": "/ semana",
-      "desc": "Menos Excel, más acción concreta."
-    },
-    "margin": {
-      "title": "Margen (precio y mix)",
-      "unitText": "de margen",
-      "desc": "Enfoque en best-sellers, ajustes de precios inteligentes."
-    },
-    "cash": {
-      "title": "Anticipación de tesorería",
-      "abbr": "d",
-      "unit": "de antelación",
-      "desc": "Alertas de descubierto antes de que ocurra."
-    }
+    "time": { "title": "Tiempo ahorrado (reporting auto)", "abbr": "h", "unit": "/ semana", "desc": "Menos Excel, más acciones concretas." },
+    "margin": { "title": "Margen (precio y mix)", "unitText": "de margen", "desc": "Enfoque en best-sellers y precios inteligentes." },
+    "cash": { "title": "Anticipación de caja", "abbr": "d", "unit": "de antelación", "desc": "Alertas de descubierto antes de que ocurra." }
   },
   "cards": {
-    "title": "Lo que marca la diferencia",
-    "subtitle": "Herramienta gratuita para explorar — servicios para acelerar e industrializar.",
+    "title": "Lo que de verdad marca la diferencia",
+    "subtitle": "Herramienta gratis para explorar — servicios para acelerar e industrializar.",
     "items": [
-      {
-        "title": "Previsiones automáticas",
-        "desc": "Elección del mejor modelo sin ajustes. Nada de tuning opaco."
-      },
-      {
-        "title": "Tesorería clara",
-        "desc": "Proyecta tu saldo en 30 s. Alerta temprana = decisión serena."
-      },
-      {
-        "title": "Consejos de IA",
-        "desc": "Recomendaciones comprensibles, listas para actuar."
-      },
-      {
-        "title": "Respeto de los datos",
-        "desc": "Importaciones locales + conectores de solo lectura. Tus ventas permanecen privadas."
-      }
+      { "title": "Previsiones automáticas", "desc": "Elige el mejor modelo sin ajustes. Nada de tuning oscuro." },
+      { "title": "Caja clara", "desc": "Proyecta tu saldo en 30 s. Alerta temprana = decisión tranquila." },
+      { "title": "Guía con IA", "desc": "Recomendaciones claras y accionables." },
+      { "title": "Respeto de datos", "desc": "Importaciones locales + conectores de solo lectura. Tus ventas siguen privadas." }
     ]
   },
   "cta": {
     "title": "Pasa a la acción",
-    "subtitle": "Prueba gratis y luego déjanos conectar y poner en producción.",
-    "hint": {
-      "before": "Truco:",
-      "after": "para abrir la paleta de comandos (próximamente)"
-    },
+    "subtitle": "Prueba gratis y después deja que conectemos y llevemos a producción.",
+    "hint": { "before": "Truco:", "after": "para abrir la paleta (pronto)" },
     "sales": {
-      "overline": "Recorrido principal",
+      "overline": "Ruta principal",
       "title": "Demo de Ventas en 30 s",
-      "chip": "📈 KPI 30d",
+      "chip": "📈 KPI 30 días",
       "items": [
-        "• Importa CSV (o conector), KPI al instante",
+        "• Importar CSV (o conector), KPI al instante",
         "• Previsiones automáticas y segmentación inteligente",
-        "• Recomendaciones accionables (precio, mix, best-sellers)"
+        "• Recos accionables (precios, mix, best-sellers)"
       ],
-      "link": "Lanzar la demo"
+      "link": "Lanzar demo"
     }
   },
   "shortcuts": {
-    "clients": {
-      "title": "Análisis de Clientes",
-      "desc": "Segmentos, retención, ticket medio, cohortes. Identifica las palancas."
-    },
-    "pricing": {
-      "title": "Pricing",
-      "desc": "Optimiza margen y mix, simula el impacto y aplica las recomendaciones."
-    },
-    "eco": {
-      "title": "Eco-Label",
-      "desc": "Intensidad kg/€, descomposición, plan de acción conforme."
-    },
-    "risk": {
-      "title": "Riesgo",
-      "desc": "Alertas, variabilidad y escenarios. Mantén el rumbo sin sorpresas."
-    },
+    "clients": { "title": "Análisis de Clientes", "desc": "Segmentos, retención, cesta, cohortes. Encuentra las palancas." },
+    "pricing": { "title": "Pricing", "desc": "Optimiza margen y mix, simula impacto, aplica recos." },
+    "eco": { "title": "Eco-Label", "desc": "Intensidad kg/€, desglose, plan de acción conforme." },
+    "risk": { "title": "Riesgo", "desc": "Alertas, variabilidad, escenarios. Mantén el rumbo." },
     "help": {
-      "title": "Ayuda y Onboarding",
-      "desc": {
-        "before": "Puesta en marcha llave en mano, mapeo de datos, formación.",
-        "strong": "Auditoría de 15 min gratuita."
-      },
+      "title": "Ayuda & Onboarding",
+      "desc": { "before": "Puesta en marcha llave en mano, mapeo de datos, formación.", "strong": "Auditoría de 15 min gratis." },
       "chip": "Servicio"
     },
     "connectors": {
       "title": "Conectores Auto",
-      "titleAttr": "Disponible pronto",
-      "desc": {
-        "before": "Stripe, Banco (Bridge/Powens), Shopify/Presta…",
-        "em": "vista previa por ahora"
-      },
+      "titleAttr": "Próximamente",
+      "desc": { "before": "Stripe, Banco (Bridge/Powens), Shopify/Presta…", "em": "vista previa visual por ahora" },
       "chip": "Pronto",
       "ribbon": "PRÓXIMAMENTE"
     }
   },
-  "helpstrip": {
-    "items": [
-      "Arrastra y suelta tu CSV para empezar",
-      "Onboarding en < 7 días",
-      "Auditoría gratuita de 15 min"
-    ]
-  },
+  "helpstrip": { "items": ["Arrastra y suelta tu CSV para empezar", "Onboarding en < 7 días", "Auditoría gratis de 15 min"] },
   "about": {
     "overline": "Acerca de",
     "titlePrefix": "InsightMate por",
-    "text": "Herramienta gratuita para probar; servicio para acelerar. Conectamos tus datos, llevamos tus KPI a producción y formamos a tu equipo — de forma simple.",
-    "watch": "Ver el vídeo (90s)",
+    "text": "Herramienta gratuita para probar; servicio para acelerar. Conectamos tus datos, ponemos tus KPI en producción y formamos al equipo — de forma simple.",
+    "watch": "Ver el vídeo (< 1 min)",
     "video": {
-      "placeholder": "Tu vídeo llega en breve",
-      "tip": "60–90s: quién eres + qué hacemos en 3 clics → gran conversión."
+      "placeholder": "Tu vídeo está en camino",
+      "tip": "< 1 min: quién eres + qué hacemos en 3 clics → gran conversión.",
+      "lang": { "label": "Idioma del vídeo", "help": "Truco: cambia el idioma aquí.", "fr": "Francés", "en": "Inglés", "es": "Español" }
     }
   },
-  "footer": {
-    "demo": "Demo",
-    "createdBy": "Creado por"
-  }
+  "testimonial": {
+    "quote": "InsightMate nos dio mucha más claridad sobre márgenes y caja. Dejamos de adivinar y empezamos a decidir.",
+    "company": "Empresa de instalación de calderas"
+  },
+  "footer": { "demo": "Demo", "createdBy": "Creado por" }
 }
