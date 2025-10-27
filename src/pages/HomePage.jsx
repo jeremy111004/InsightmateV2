@@ -1,3 +1,4 @@
+okay i'm send u the home page and send it back edited based on ur beta cheklist stuff : // src/pages/HomePage.jsx
 import React from "react";
 import {
   ArrowRight,
@@ -171,53 +172,19 @@ export default function HomePage({ goTo = () => {} }) {
 
           <div className="mt-9 flex flex-wrap gap-4 justify-center items-center">
             <button
-  onClick={() => goTo("sales")}
-  className="relative group md:col-span-5 text-left rounded-3xl p-7 md:p-8 bg-gradient-to-br from-white/8 via-white/5 to-transparent backdrop-blur-md border border-white/10 hover:border-indigo-400/30 shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)] transition-all duration-300 overflow-hidden"
->
-  {/* subtle animated gradient overlay */}
-  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              onClick={() => goTo("sales")}
+              className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 btn-blue-grad text-base md:text-lg font-semibold shadow-lg hover:shadow-xl ring-1 ring-white/10 transition"
+            >
+              🚀 {t("hero.cta.primary")}
+              <ArrowRight className="w-5 h-5" />
+            </button>
 
-  {/* HEADER */}
-  <div className="relative flex items-start justify-between gap-4">
-    <div>
-      <div className="text-white/70 text-sm font-medium tracking-wide uppercase">
-        {t("cta.sales.overline")}
-      </div>
-      <div className="mt-1 text-2xl md:text-3xl font-bold text-white leading-snug">
-        {t("cta.sales.title")}
-      </div>
-    </div>
-    <div className="chip bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm">
-      {t("cta.sales.chip")}
-    </div>
-  </div>
-
-  {/* CONTENT LIST */}
-  <ul className="mt-5 space-y-2 text-sm text-white/80">
-    <li className="flex items-center gap-2">
-      <span className="text-indigo-400">•</span>
-      {t("cta.sales.items.0")}
-    </li>
-    <li className="flex items-center gap-2">
-      <span className="text-indigo-400">•</span>
-      {t("cta.sales.items.1")}
-    </li>
-    <li className="flex items-center gap-2">
-      <span className="text-indigo-400">•</span>
-      {t("cta.sales.items.2")}
-    </li>
-  </ul>
-
-  {/* CTA LINK */}
-  <div className="relative mt-6 inline-flex items-center gap-2 text-indigo-300 font-medium group-hover:text-indigo-200 transition">
-    {t("cta.sales.link")}
-    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-  </div>
-
-  {/* Decorative pulse ring */}
-  <div className="absolute -right-10 -bottom-10 w-32 h-32 rounded-full bg-indigo-500/10 blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700" />
-</button>
-
+            <button
+              onClick={() => goTo("pro")}
+              className="inline-flex items-center gap-2 rounded-full px-8 md:px-9 py-4 md:py-5 border border-white/15 bg-white/5 text-white hover:bg-white/10 text-base md:text-lg transition"
+            >
+              {t("hero.cta.secondary")}
+            </button>
           </div>
 
           <div className="mt-4 text-sm text-white/65">
@@ -379,40 +346,53 @@ export default function HomePage({ goTo = () => {} }) {
           <div className="mt-8 grid md:grid-cols-12 gap-5">
             {/* Ventes */}
             <button
-              onClick={() => goTo("sales")}
-              className="md:col-span-5 text-left rounded-3xl card-glass card-hover p-6 md:p-7"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-white/80 text-sm">
-                    {t("cta.sales.overline")}
-                  </div>
-                  <div className="mt-1 text-xl md:text-2xl font-semibold text-white">
-                    {t("cta.sales.title")}
-                  </div>
-                </div>
-                <div className="chip">{t("cta.sales.chip")}</div>
-              </div>
+  onClick={() => goTo("sales")}
+  className="relative group md:col-span-5 text-left rounded-3xl p-7 md:p-8 bg-gradient-to-br from-white/8 via-white/5 to-transparent backdrop-blur-md border border-white/10 hover:border-indigo-400/30 shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)] transition-all duration-300 overflow-hidden"
+>
+  {/* subtle animated gradient overlay */}
+  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              <ul className="mt-4 space-y-2 text-sm text-white/80">
-                <li>{t("cta.sales.items.0")}</li>
-                <li>{t("cta.sales.items.1")}</li>
-                <li>{t("cta.sales.items.2")}</li>
-              </ul>
+  {/* HEADER */}
+  <div className="relative flex items-start justify-between gap-4">
+    <div>
+      <div className="text-white/70 text-sm font-medium tracking-wide uppercase">
+        {t("cta.sales.overline")}
+      </div>
+      <div className="mt-1 text-2xl md:text-3xl font-bold text-white leading-snug">
+        {t("cta.sales.title")}
+      </div>
+    </div>
+    <div className="chip bg-indigo-500/20 text-indigo-200 border border-indigo-400/20 backdrop-blur-sm">
+      {t("cta.sales.chip")}
+    </div>
+  </div>
 
-              <div className="mt-5 inline-flex items-center gap-2 text-indigo-200">
-                {t("cta.sales.link")}
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M5 12h14m0 0-6-6m6 6-6 6"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </button>
+  {/* CONTENT LIST */}
+  <ul className="mt-5 space-y-2 text-sm text-white/80">
+    <li className="flex items-center gap-2">
+      <span className="text-indigo-400">•</span>
+      {t("cta.sales.items.0")}
+    </li>
+    <li className="flex items-center gap-2">
+      <span className="text-indigo-400">•</span>
+      {t("cta.sales.items.1")}
+    </li>
+    <li className="flex items-center gap-2">
+      <span className="text-indigo-400">•</span>
+      {t("cta.sales.items.2")}
+    </li>
+  </ul>
+
+  {/* CTA LINK */}
+  <div className="relative mt-6 inline-flex items-center gap-2 text-indigo-300 font-medium group-hover:text-indigo-200 transition">
+    {t("cta.sales.link")}
+    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+  </div>
+
+  {/* Decorative pulse ring */}
+  <div className="absolute -right-10 -bottom-10 w-32 h-32 rounded-full bg-indigo-500/10 blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700" />
+</button>
+
 
             {/* Raccourcis */}
             <div className="md:col-span-7 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
