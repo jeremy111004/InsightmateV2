@@ -50,7 +50,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-/* ====== STYLE “premium vert” ====== */
+/* ====== STYLE ====== */
 const ACCENT = "#10b981"; // emerald-500
 const ACCENT_DARK = "#059669"; // emerald-600
 
@@ -138,6 +138,19 @@ function useResizeRerender(ref) {
     };
   }, [ref]);
   return nonce;
+}
+
+/* Detect tiny screens to switch to CSS-only render */
+function useIsTinyScreen() {
+  const [tiny, setTiny] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia?.("(max-width: 480px)");
+    const update = () => setTiny(Boolean(mq?.matches));
+    update();
+    mq?.addEventListener?.("change", update);
+    return () => mq?.removeEventListener?.("change", update);
+  }, []);
+  return tiny;
 }
 
 function ConfidencePill({ value = 0, t }) {
@@ -473,7 +486,7 @@ function SubsidyBox({ totalKg, electricityDeltaKwhMonth = 0, tCO2eYear, t }) {
   );
 }
 
-/* ---------- EXECUTIVE SUMMARY + COURBE AVEC FORECAST ---------- */
+/* ---------- EXECUTIVE SUMMARY ---------- */
 function ExecutiveSummarySection({
   totalKg,
   intensity,
@@ -485,51 +498,180 @@ function ExecutiveSummarySection({
   spark = [],
   aiPlan = [],
   targetIntensity = null,
-  chartNonce = 0, // 🔧 re-render key
+  chartNonce = 0,
   t,
 }) {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
+  const isTiny = useIsTinyScreen(); // ← switch CSS
 
   const hasInt = Number.isFinite(intensity) && sectorMedian > 0;
 
-  // Composition donut
+  // Composition (for both modes)
   const comp = [
     { key: t("summary.comp.electricity"), value: Math.max(0, electricity || 0), color: ACCENT_DARK },
-    { key: t("summary.comp.fuel"), value: Math.max(0, fuel || 0), color: "#ef4444" },
-    { key: t("summary.comp.shipping"), value: Math.max(0, shipping || 0), color: "#14b8a6" },
+    { key: t("summary.comp.fuel"),        value: Math.max(0, fuel || 0),        color: "#ef4444"   },
+    { key: t("summary.comp.shipping"),    value: Math.max(0, shipping || 0),    color: "#14b8a6"   },
   ];
   const totalVar = Math.max(1, comp.reduce((s, d) => s + d.value, 0));
   const pct = (v) => Math.round((Math.max(0, v) / totalVar) * 100);
 
-  // Baseline (<= 60 pts) + Forecast (30j)
-  const base =
+  /* =========================
+     TINY SCREEN: CSS fallback
+     ========================= */
+  if (isTiny) {
+    return (
+      <Section
+        title={t("summary.title")}
+        icon={<TrendingUp className="w-5 h-5" />}
+        actions={<div className="text-xs text-slate-500">{t("summary.intensityUnit")}</div>}
+      >
+        <div className="grid gap-4">
+          {/* KPI */}
+          <div className="rounded-3xl border bg-gradient-to-br from-white/80 to-emerald-50/70 dark:from-slate-900/70 dark:to-emerald-900/20 p-4 shadow-[0_6px_24px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5">
+            <div className="text-sm text-slate-600">{t("summary.thisMonth")}</div>
+            <div className="mt-1 text-3xl font-semibold tracking-tight">
+              {fmt(totalKg)} <span className="text-base">kgCO₂e</span>
+            </div>
+            <div className="mt-1 text-[11px] text-slate-500">
+              {t("summary.confidence", { value: fmt(displayConf) })}
+            </div>
+            <div className="mt-2 h-12">
+              <MiniSparkline data={spark} />
+            </div>
+          </div>
+
+          {/* Intensité: barre CSS */}
+          <div className="rounded-3xl border bg-gradient-to-br from-white/80 to-slate-50/70 dark:from-slate-900/70 dark:to-slate-800/40 p-4 shadow-[0_6px_24px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5">
+            <div className="text-sm text-slate-600">{t("summary.currentIntensity")}</div>
+            <div className="mt-1 text-2xl font-semibold">
+              {hasInt ? fmt(intensity, 2) : "—"}{" "}
+              <span className="text-sm">{t("summary.intensityUnit")}</span>
+            </div>
+            <div className="mt-3">
+              {hasInt ? (
+                <>
+                  <div className="relative h-3 rounded-full bg-slate-200/80 dark:bg-slate-800/80 overflow-hidden">
+                    <div
+                      className="absolute left-0 top-0 h-3 rounded-full"
+                      style={{
+                        width: `${Math.min(100, (intensity / (sectorMedian * 2)) * 100)}%`,
+                        background:
+                          "linear-gradient(90deg, rgba(15,23,42,1) 0%, rgba(15,23,42,0.85) 60%, rgba(15,23,42,0.65) 100%)",
+                      }}
+                    />
+                    {/* repère médiane */}
+                    <div
+                      className="absolute top-[-4px] w-0.5 h-5 bg-slate-500/80"
+                      style={{ left: "50%" }}
+                      title={t("summary.ref.median")}
+                    />
+                    {/* repère cible */}
+                    {Number.isFinite(targetIntensity) && (
+                      <div
+                        className="absolute top-[-6px] w-[3px] h-7 bg-emerald-600"
+                        style={{
+                          left: `${Math.min(100, (targetIntensity / (sectorMedian * 2)) * 100)}%`,
+                        }}
+                        title={t("summary.ref.target")}
+                      />
+                    )}
+                  </div>
+                  <div className="mt-1 flex justify-between text-[11px] text-slate-500">
+                    <span>0</span>
+                    <span>{t("summary.median", { value: fmt(sectorMedian, 2) })}</span>
+                    <span>{fmt(sectorMedian * 2, 2)}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="h-3 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse" />
+              )}
+            </div>
+          </div>
+
+          {/* Composition: micro-barres */}
+          <div className="rounded-3xl border bg-gradient-to-br from-white/80 to-teal-50/60 dark:from-slate-900/70 dark:to-teal-900/20 p-4 shadow-[0_6px_24px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5">
+            <div className="text-sm text-slate-600">{t("summary.compositionTitle")}</div>
+            <div className="mt-3 space-y-3">
+              {comp.map((d) => (
+                <div key={d.key}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="inline-flex items-center gap-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shadow"
+                        style={{ background: d.color }}
+                      />
+                      {d.key}
+                    </span>
+                    <span className="font-medium">
+                      {fmt(d.value)} kg • {pct(d.value)}%
+                    </span>
+                  </div>
+                  <div className="mt-1 h-2.5 rounded-full bg-white/60 dark:bg-slate-800/80 ring-1 ring-black/5 overflow-hidden">
+                    <div
+                      className="h-2.5 rounded-full"
+                      style={{
+                        width: `${pct(d.value)}%`,
+                        background: `linear-gradient(90deg, ${d.color}, ${d.color}cc)`,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Trend compact (MiniSparkline + légende) */}
+          <div className="rounded-3xl border bg-gradient-to-br from-white/80 to-indigo-50/60 dark:from-slate-900/70 dark:to-indigo-900/20 p-4 shadow-[0_6px_24px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-slate-600">{t("summary.trendTitle")}</div>
+              <div className="text-[11px] text-slate-500">{t("summary.intensityUnit")}</div>
+            </div>
+            <div className="mt-2 h-14">
+              <MiniSparkline data={spark} />
+            </div>
+            <div className="mt-2 text-[11px] text-slate-500">{t("summary.assumptions")}</div>
+          </div>
+
+          {/* Conseiller IA */}
+          <IAAdvisorLandscape actions={aiPlan} t={t} />
+        </div>
+      </Section>
+    );
+  }
+
+  /* =========================
+     LARGE SCREEN: Recharts
+     ========================= */
+  // Build base + forecast for chart
+  const sparkBase =
     spark && spark.length
       ? spark.map((p, i) => ({ i, y: p.y }))
       : Array.from({ length: 60 }).map((_, i) => ({
           i,
-          y: Math.max(0.2, (sectorMedian || 0.6) * (0.85 + Math.sin(i / 9) * 0.08)),
+          y: Math.max(
+            0.2,
+            (sectorMedian || 0.6) * (0.85 + Math.sin(i / 9) * 0.08)
+          ),
         }));
-  const lastY = base.length ? base[base.length - 1].y : sectorMedian || 0.6;
+  const lastY = sparkBase.length ? sparkBase[sparkBase.length - 1].y : sectorMedian || 0.6;
 
-  // Impact cumulé des conseils → ratio amélioration plafonné
   const monthlySavingsKg = aiPlan.reduce((s, a) => s + (a.impactKg || 0), 0);
   const currentMonthKg = Math.max(1, totalKg);
   const improvementRatio = Math.max(0, Math.min(0.45, monthlySavingsKg / currentMonthKg));
 
-  // Forecast lissé (30j)
   const ease = (t_) => (t_ < 0.5 ? 4 * t_ * t_ * t_ : 1 - Math.pow(-2 * t_ + 2, 3) / 2);
   const forecastHorizon = 30;
   const forecast = Array.from({ length: forecastHorizon }).map((_, k) => {
     const t_ = ease((k + 1) / forecastHorizon);
     const targetY = lastY * (1 - improvementRatio);
     const y = lastY + (targetY - lastY) * t_;
-    return { i: base.length + k, y };
+    return { i: sparkBase.length + k, y };
   });
 
-  const baseLen = base.length;
+  const baseLen = sparkBase.length;
   const chartData = [
-    ...base.map((d) => ({ i: d.i, baseline: d.y, forecast: null })),
+    ...sparkBase.map((d) => ({ i: d.i, baseline: d.y, forecast: null })),
     ...forecast.map((d) => ({ i: d.i, baseline: null, forecast: d.y })),
   ];
 
@@ -540,35 +682,33 @@ function ExecutiveSummarySection({
       actions={
         <div className="text-xs text-slate-500">
           <span className="inline-flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-slate-900" /> {t("summary.legend.baseline")}
+            <span className="w-2 h-2 rounded-full bg-slate-900" />{" "}
+            {t("summary.legend.baseline")}
           </span>
           <span className="inline-flex items-center gap-1 ml-3">
-            <span className="w-2 h-2 rounded-full" style={{ background: ACCENT_DARK }} /> {t("summary.legend.forecast")}
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ background: ACCENT_DARK }}
+            />{" "}
+            {t("summary.legend.forecast")}
           </span>
         </div>
       }
     >
-      {/* ligne 1 : 3 tuiles compactes */}
+      {/* ligne 1 : 3 tuiles */}
       <div className="grid lg:grid-cols-12 gap-5 auto-rows-min items-start min-h-0">
-        {/* Ce mois-ci */}
+        {/* KPI */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          whileHover={{ y: -2 }}
+          initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} whileHover={{ y: -2 }}
           className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
         >
-          <motion.div
-            aria-hidden={true}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.18 }}
-            className="pointer-events-none absolute -inset-1 blur-lg"
-            style={{ background: "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)" }}
-          />
-          <div className="text-sm text-slate-600 relative">{t("summary.thisMonth")}</div>
-          <div className="mt-1 text-4xl font-semibold tracking-tight relative">
+          <motion.div aria-hidden className="pointer-events-none absolute -inset-1 blur-lg" style={{ background:
+            "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)"}} />
+          <div className="text-sm text-slate-600">{t("summary.thisMonth")}</div>
+          <div className="mt-1 text-4xl font-semibold tracking-tight">
             {fmt(totalKg)} <span className="text-xl">kgCO₂e</span>
           </div>
-          <div className="mt-1 text-[11px] text-slate-500 relative">
+          <div className="mt-1 text-[11px] text-slate-500">
             {t("summary.confidence", { value: fmt(displayConf) })}
           </div>
           <div className="mt-3 h-14 relative min-h-[3.5rem]">
@@ -576,11 +716,9 @@ function ExecutiveSummarySection({
           </div>
         </motion.div>
 
-        {/* Intensité & jauge */}
+        {/* Jauge radiale */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          whileHover={{ y: -2 }}
+          initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} whileHover={{ y: -2 }}
           className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 min-w-0 min-h-0 md:overflow-hidden"
         >
           <div className="text-sm text-slate-600">{t("summary.currentIntensity")}</div>
@@ -589,27 +727,11 @@ function ExecutiveSummarySection({
           </div>
           <div className="w-full h-[220px] min-h-[220px] min-w-0">
             {isClient ? (
-              <ResponsiveContainer
-                key={`radial-${chartNonce}`}
-                width="100%"
-                height={220} // FIX: mobile height
-              >
-                <RadialBarChart
-                  innerRadius="65%"
-                  outerRadius="100%"
-                  startAngle={180}
-                  endAngle={0}
-                  data={[{ name: "value", value: hasInt ? intensity : 0 }]}
-                >
+              <ResponsiveContainer key={`radial-${chartNonce}`} width="100%" height={220}>
+                <RadialBarChart innerRadius="65%" outerRadius="100%" startAngle={180} endAngle={0}
+                  data={[{ name: "value", value: hasInt ? intensity : 0 }]}>
                   <PolarAngleAxis type="number" domain={[0, Math.max(0.01, (sectorMedian || 0) * 2)]} tick={false} />
-                  <RadialBar
-                    dataKey="value"
-                    minAngle={4}
-                    clockWise
-                    cornerRadius={24}
-                    fill="#0f172a"
-                    background={{ fill: "rgba(2,6,23,.06)" }}
-                  />
+                  <RadialBar dataKey="value" minAngle={4} clockWise cornerRadius={24} fill="#0f172a" background={{ fill: "rgba(2,6,23,.06)" }} />
                 </RadialBarChart>
               </ResponsiveContainer>
             ) : (
@@ -618,50 +740,30 @@ function ExecutiveSummarySection({
           </div>
           <div className="mt-1 flex gap-4 text-[11px] text-slate-500">
             <span>{t("summary.median", { value: fmt(sectorMedian, 2) })}</span>
-            {Number.isFinite(targetIntensity) && <span>{t("summary.target", { value: fmt(targetIntensity, 2) })}</span>}
+            {Number.isFinite(targetIntensity) && (
+              <span>{t("summary.target", { value: fmt(targetIntensity, 2) })}</span>
+            )}
           </div>
         </motion.div>
 
-        {/* Donut composition */}
+        {/* Donut */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          whileHover={{ y: -2 }}
+          initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} whileHover={{ y: -2 }}
           className="lg:col-span-4 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
         >
-          <motion.div
-            aria-hidden={true}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.22 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6 }}
+          <motion.div aria-hidden initial={{ opacity: 0 }} whileInView={{ opacity: 0.22 }}
+            viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
             className="pointer-events-none absolute -inset-1 blur-2xl"
-            style={{ background: "radial-gradient(60% 60% at 0% 100%, rgba(20,184,166,.15), transparent 60%)" }}
-          />
+            style={{ background:"radial-gradient(60% 60% at 0% 100%, rgba(20,184,166,.15), transparent 60%)"}}/>
           <div className="text-sm text-slate-600">{t("summary.compositionTitle")}</div>
           <div className="mt-2 grid grid-cols-2 gap-2 relative min-h-0">
             <div className="h-[220px] min-h-[220px] min-w-0">
               {isClient ? (
-                <ResponsiveContainer
-                  key={`pie-${chartNonce}`}
-                  width="100%"
-                  height={220} // FIX: mobile height
-                >
+                <ResponsiveContainer key={`pie-${chartNonce}`} width="100%" height={220}>
                   <PieChart>
-                    <Pie
-                      data={comp}
-                      dataKey="value"
-                      nameKey="key"
-                      innerRadius={52}
-                      outerRadius={78}
-                      startAngle={90}
-                      endAngle={450}
-                      padAngle={3}
-                      cornerRadius={6}
-                    >
-                      {comp.map((d) => (
-                        <Cell key={d.key} fill={d.color} />
-                      ))}
+                    <Pie data={comp} dataKey="value" nameKey="key" innerRadius={52} outerRadius={78}
+                      startAngle={90} endAngle={450} padAngle={3} cornerRadius={6}>
+                      {comp.map((d) => <Cell key={d.key} fill={d.color} />)}
                     </Pie>
                     <Tooltip formatter={(v, n) => [`${fmt(v)} kg`, n]} />
                   </PieChart>
@@ -691,31 +793,21 @@ function ExecutiveSummarySection({
       <div className="mt-5 grid xl:grid-cols-12 gap-5 auto-rows-min items-start min-h-0">
         {/* Courbe */}
         <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
+          initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
           className="xl:col-span-7 rounded-3xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-5 shadow-[0_6px_30px_-12px_rgba(2,6,23,0.25)] ring-1 ring-black/5 relative md:overflow-hidden min-w-0 min-h-0"
         >
-          <motion.div
-            aria-hidden={true}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.2 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6 }}
+          <motion.div aria-hidden initial={{ opacity: 0 }} whileInView={{ opacity: 0.2 }}
+            viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
             className="pointer-events-none absolute -inset-1 blur-2xl"
-            style={{ background: "radial-gradient(60% 60% at 100% 100%, rgba(99,102,241,.16), transparent 60%)" }}
-          />
-          <div className="flex items-center justify-between relative">
+            style={{ background:"radial-gradient(60% 60% at 100% 100%, rgba(99,102,241,.16), transparent 60%)"}}/>
+          <div className="flex items-center justify-between">
             <div className="text-sm text-slate-600">{t("summary.trendTitle")}</div>
             <div className="text-[11px] text-slate-500">{t("summary.intensityUnit")}</div>
           </div>
           <div className="mt-2 relative min-w-0">
-            <div className="w-full" style={{ height: 224 }}> {/* FIX: mobile height (explicit px) */}
+            <div className="h-56 min-h-[14rem] w-full">
               {isClient ? (
-                <ResponsiveContainer
-                  key={`area-${chartNonce}`}
-                  width="100%"
-                  height={224} // FIX: mobile height
-                >
+                <ResponsiveContainer key={`area-${chartNonce}`} width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
                       <linearGradient id="gBase" x1="0" y1="0" x2="0" y2="1">
@@ -731,40 +823,15 @@ function ExecutiveSummarySection({
                     <XAxis dataKey="i" tick={false} domain={["dataMin", "dataMax"]} />
                     <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => Number(v).toFixed(2)} />
                     {Number.isFinite(sectorMedian) && sectorMedian > 0 && (
-                      <ReferenceLine
-                        y={sectorMedian}
-                        stroke="#64748b"
-                        strokeDasharray="3 3"
-                        label={{ value: t("summary.ref.median"), position: "right", fill: "#64748b", fontSize: 10 }}
-                      />
+                      <ReferenceLine y={sectorMedian} stroke="#64748b" strokeDasharray="3 3"
+                        label={{ value: t("summary.ref.median"), position: "right", fill: "#64748b", fontSize: 10 }} />
                     )}
                     {Number.isFinite(targetIntensity) && (
-                      <ReferenceLine
-                        y={targetIntensity}
-                        stroke={ACCENT_DARK}
-                        strokeDasharray="4 2"
-                        label={{ value: t("summary.ref.target"), position: "right", fill: ACCENT_DARK, fontSize: 10 }}
-                      />
+                      <ReferenceLine y={targetIntensity} stroke={ACCENT_DARK} strokeDasharray="4 2"
+                        label={{ value: t("summary.ref.target"), position: "right", fill: ACCENT_DARK, fontSize: 10 }} />
                     )}
-                    <Area
-                      type="monotone"
-                      dataKey="baseline"
-                      stroke="#0f172a"
-                      fill="url(#gBase)"
-                      dot={false}
-                      connectNulls={false}
-                      name={t("summary.legend.baseline")}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="forecast"
-                      stroke={ACCENT_DARK}
-                      strokeDasharray="6 4"
-                      fill="url(#gForecast)"
-                      dot={false}
-                      connectNulls={false}
-                      name={t("summary.legend.forecast")}
-                    />
+                    <Area type="monotone" dataKey="baseline" stroke="#0f172a" fill="url(#gBase)" dot={false} connectNulls={false} name={t("summary.legend.baseline")} />
+                    <Area type="monotone" dataKey="forecast" stroke={ACCENT_DARK} strokeDasharray="6 4" fill="url(#gForecast)" dot={false} connectNulls={false} name={t("summary.legend.forecast")} />
                     <Tooltip
                       formatter={(v, n) => [`${Number(v).toFixed(3)} ${t("summary.intensityUnit")}`, n]}
                       labelFormatter={(l) =>
@@ -781,7 +848,7 @@ function ExecutiveSummarySection({
           <div className="mt-2 text-[11px] text-slate-500">{t("summary.assumptions")}</div>
         </motion.div>
 
-        {/* Conseiller IA paysage */}
+        {/* Conseiller IA */}
         <div className="xl:col-span-5 min-w-0 min-h-0">
           <IAAdvisorLandscape actions={aiPlan} t={t} />
         </div>
@@ -821,7 +888,10 @@ function TablePreview({ rows = [], title, max = 25, t }) {
           </tbody>
         </table>
         <div className="text-[11px] text-gray-500 p-2">
-          {t("table.preview", { shown: Math.min(rows.length, max), total: rows.length })}
+          {t("table.preview", {
+            shown: Math.min(rows.length, max),
+            total: rows.length,
+          })}
         </div>
       </div>
     </div>
@@ -833,7 +903,7 @@ export default function EcoLabelPage() {
   const { t } = useTranslation("ecoLabel");
 
   const rootRef = useRef(null);
-  const chartNonce = useResizeRerender(rootRef); // 🔧 force remount of charts on size changes
+  const chartNonce = useResizeRerender(rootRef);
 
   /* --- Demo CSVs loaded by default on first visit --- */
   const DEMO_SALES_CSV = `date,order_id,product,qty,price
@@ -875,9 +945,13 @@ export default function EcoLabelPage() {
   const { rows: salesRowsStore } = useDataset("sales") || { rows: [] };
 
   const bankingRowsBase =
-    Array.isArray(bankingRowsStore) && bankingRowsStore.length ? bankingRowsStore : [];
+    Array.isArray(bankingRowsStore) && bankingRowsStore.length
+      ? bankingRowsStore
+      : [];
   const salesRowsBase =
-    Array.isArray(salesRowsStore) && salesRowsStore.length ? salesRowsStore : [];
+    Array.isArray(salesRowsStore) && salesRowsStore.length
+      ? salesRowsStore
+      : [];
 
   /* --- CSV upload overrides --- */
   const fileInputRef = useRef(null);
@@ -899,7 +973,8 @@ export default function EcoLabelPage() {
     const has = (k) => keys.includes(k);
     const any = (...ks) => ks.some((k) => has(k));
     if (has("amount") || has("montant")) return "bank";
-    if (has("qty") && any("price", "unit_price", "amount", "total")) return "sales";
+    if (has("qty") && any("price", "unit_price", "amount", "total"))
+      return "sales";
     return has("price") || has("qty") ? "sales" : "bank";
   };
 
@@ -942,14 +1017,19 @@ export default function EcoLabelPage() {
   );
 
   /* --- Auto-extraction (banque → paramètres) --- */
-  const auto = useMemo(() => ecoExtractFromBank(bankingRows, salesRowsInput), [bankingRows, salesRowsInput]);
+  const auto = useMemo(
+    () => ecoExtractFromBank(bankingRows, salesRowsInput),
+    [bankingRows, salesRowsInput]
+  );
 
   /* --- Ventes 30j --- */
   const { last30Revenue, last30Orders } = useMemo(() => {
     const base = salesRowsInput || [];
     const rows = (base || [])
       .map((r) => ({
-        date: toDateKey(r.date || r.Date || r.created_at || r.order_date || new Date()),
+        date: toDateKey(
+          r.date || r.Date || r.created_at || r.order_date || new Date()
+        ),
         qty: Number(r.qty || r.quantity || 1),
         price: Number(r.price || r.unit_price || r.amount || r.total || 0),
       }))
@@ -966,17 +1046,24 @@ export default function EcoLabelPage() {
   const [sector, setSector] = useState("ecommerce");
   const [kwhMonth, setKwhMonth] = useState("450");
   const [dieselL, setDieselL] = useState("60");
-  const [shipKgOrder, setShipKgOrder] = useState(ECO_FACTORS.shippingKgPerOrder);
+  const [shipKgOrder, setShipKgOrder] = useState(
+    ECO_FACTORS.shippingKgPerOrder
+  );
   const [gridRegion, setGridRegion] = useState("EU");
 
-  const elecFactor = GRID_REGIONS[gridRegion] ?? ECO_FACTORS.electricityKgPerKWh;
+  const elecFactor =
+    GRID_REGIONS[gridRegion] ?? ECO_FACTORS.electricityKgPerKWh;
   const DIESEL_PER_L = ECO_FACTORS?.dieselKgPerL ?? 2.68;
 
   /* --- Banque 30j --- */
   const sinceISO30 = toDateKey(Date.now() - 30 * 864e5);
-  const txCarbon = useMemo(() => estimateCO2eFromBankTx(bankingRows, sinceISO30), [bankingRows, sinceISO30]);
+  const txCarbon = useMemo(
+    () => estimateCO2eFromBankTx(bankingRows, sinceISO30),
+    [bankingRows, sinceISO30]
+  );
 
-  const demoMode = Number(last30Revenue) === 0 && !(bankingRows && bankingRows.length);
+  const demoMode =
+    Number(last30Revenue) === 0 && !(bankingRows && bankingRows.length);
   const displayOrders = demoMode ? 320 : last30Orders;
   const displayConf = demoMode ? 65 : txCarbon?.confidence || 0;
 
@@ -996,14 +1083,23 @@ export default function EcoLabelPage() {
   const fuel = bankFuel ?? fuelBase;
   const shipping = bankShipping ?? shippingBase;
 
-  const sectorOther = Math.max(0, sectorEmissions - (electricity + fuel + shipping) * SECTOR_OTHER_SHARE);
+  const sectorOther = Math.max(
+    0,
+    sectorEmissions - (electricity + fuel + shipping) * SECTOR_OTHER_SHARE
+  );
 
-  const totalKg = Math.max(0, Math.round(electricity + fuel + shipping + sectorOther));
+  const totalKg = Math.max(
+    0,
+    Math.round(electricity + fuel + shipping + sectorOther)
+  );
 
   const rawIntensity = last30Revenue > 0 ? totalKg / last30Revenue : NaN;
-  const intensity = Number.isFinite(rawIntensity) && rawIntensity >= 0 ? rawIntensity : null;
+  const intensity =
+    Number.isFinite(rawIntensity) && rawIntensity >= 0 ? rawIntensity : null;
   const { grade: gradeLetter, color: gradeColor } = ecoGradeFromIntensity(
-    Number.isFinite(rawIntensity) && rawIntensity >= 0 ? rawIntensity : sectorFactor || 1
+    Number.isFinite(rawIntensity) && rawIntensity >= 0
+      ? rawIntensity
+      : sectorFactor || 1
   );
 
   /* --- Séries intensité (pour spark) --- */
@@ -1011,7 +1107,9 @@ export default function EcoLabelPage() {
   const salesDaily = useMemo(() => {
     const rows = (salesRowsInput || [])
       .map((r) => ({
-        date: toDateKey(r.date || r.Date || r.created_at || r.order_date || new Date()),
+        date: toDateKey(
+          r.date || r.Date || r.created_at || r.order_date || new Date()
+        ),
         qty: Number(r.qty || r.quantity || 1),
         price: Number(r.price || r.unit_price || r.amount || r.total || 0),
       }))
@@ -1048,7 +1146,15 @@ export default function EcoLabelPage() {
         sectorKg,
       };
     });
-  }, [salesDaily, sectorFactor, shipKgOrder, kwhMonth, dieselL, elecFactor, DIESEL_PER_L]);
+  }, [
+    salesDaily,
+    sectorFactor,
+    shipKgOrder,
+    kwhMonth,
+    dieselL,
+    elecFactor,
+    DIESEL_PER_L,
+  ]);
 
   const ecoSpark = useMemo(
     () =>
@@ -1063,11 +1169,16 @@ export default function EcoLabelPage() {
     const out = [];
     if ((electricity || 0) > 0) {
       const perKwh = elecFactor;
-      const kwhDelta = Math.ceil(((electricity || 0) * 0.25) / Math.max(perKwh, 0.0001));
+      const kwhDelta = Math.ceil(
+        ((electricity || 0) * 0.25) / Math.max(perKwh, 0.0001)
+      );
       out.push({
         id: "elec",
         problem: t("advisor.pb.elec"),
-        cause: t("advisor.cause.elec", { kwh: fmt((electricity || 0) / Math.max(perKwh, 0.0001), 0), factor: fmt(elecFactor, 3) }),
+        cause: t("advisor.cause.elec", {
+          kwh: fmt((electricity || 0) / Math.max(perKwh, 0.0001), 0),
+          factor: fmt(elecFactor, 3),
+        }),
         solution: t("advisor.solution.elec"),
         impactKg: Math.round(kwhDelta * perKwh),
         kwhDelta,
@@ -1079,7 +1190,9 @@ export default function EcoLabelPage() {
       out.push({
         id: "fuel",
         problem: t("advisor.pb.fuel"),
-        cause: t("advisor.cause.fuel", { liters: fmt((fuel || 0) / perL, 0) }),
+        cause: t("advisor.cause.fuel", {
+          liters: fmt((fuel || 0) / perL, 0),
+        }),
         solution: t("advisor.solution.fuel"),
         impactKg: Math.round(lDelta * perL),
         lDelta,
@@ -1098,7 +1211,15 @@ export default function EcoLabelPage() {
       });
     }
     return out;
-  }, [electricity, fuel, shipKgOrder, displayOrders, elecFactor, DIESEL_PER_L, t]);
+  }, [
+    electricity,
+    fuel,
+    shipKgOrder,
+    displayOrders,
+    elecFactor,
+    DIESEL_PER_L,
+    t,
+  ]);
 
   /* --- RENDER --- */
   const sectorMedian = sectorFactor || 0;
@@ -1109,7 +1230,10 @@ export default function EcoLabelPage() {
     const sinceISO = toDateKey(Date.now() - 30 * 864e5);
     const rows = intensitySeries.filter((d) => d.date >= sinceISO);
     return rows.map((d) => {
-      const baseOther = Math.max(0, d.sectorKg - (d.elecKg + d.fuelKg + d.shipKg) * SECTOR_OTHER_SHARE);
+      const baseOther = Math.max(
+        0,
+        d.sectorKg - (d.elecKg + d.fuelKg + d.shipKg) * SECTOR_OTHER_SHARE
+      );
       return {
         date: d.date,
         Électricité: d.elecKg,
@@ -1121,14 +1245,25 @@ export default function EcoLabelPage() {
   }, [intensitySeries]);
 
   return (
-    <div ref={rootRef} className="p-6 max-w-7xl mx-auto w-full relative min-h-0 overflow-visible">
+    <div
+      ref={rootRef}
+      className="p-6 max-w-7xl mx-auto w-full relative min-h-0 overflow-visible"
+    >
       {/* Header */}
-      <motion.header initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-6">
+      <motion.header
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="mb-6"
+      >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between min-h-0">
           <div>
             <h1 className="text-2xl font-bold">{t("page.title")}</h1>
             <p className="text-sm text-slate-500 mt-1">{t("page.tagline")}</p>
-            <div className="text-[11.5px] text-slate-500 mt-2" dangerouslySetInnerHTML={{ __html: t("page.csvHintHtml") }} />
+            <div
+              className="text-[11.5px] text-slate-500 mt-2"
+              dangerouslySetInnerHTML={{ __html: t("page.csvHintHtml") }}
+            />
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button
@@ -1144,7 +1279,9 @@ export default function EcoLabelPage() {
                     (txCarbon?.byTag?.fuel ?? 0) +
                     (txCarbon?.byTag?.shipping ?? 0),
                   paramKg:
-                    (txCarbon?.byTag?.electricity == null ? electricityBase : 0) +
+                    (txCarbon?.byTag?.electricity == null
+                      ? electricityBase
+                      : 0) +
                     (txCarbon?.byTag?.fuel == null ? fuelBase : 0) +
                     (txCarbon?.byTag?.shipping == null ? shippingBase : 0),
                   proxyKg: sectorOther,
@@ -1154,13 +1291,17 @@ export default function EcoLabelPage() {
                     last30Revenue,
                     last30Orders: displayOrders,
                     totalKg,
-                    intensity: Number.isFinite(intensity) ? +intensity.toFixed(3) : null,
+                    intensity: Number.isFinite(intensity)
+                      ? +intensity.toFixed(3)
+                      : null,
                   },
                   generatedAt: new Date().toISOString(),
                   windowDays: 30,
                   factorsVersion: "IM-0.4",
                 };
-                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+                const blob = new Blob([JSON.stringify(payload, null, 2)], {
+                  type: "application/json",
+                });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
@@ -1183,7 +1324,15 @@ export default function EcoLabelPage() {
               <Upload className="w-4 h-4" />
               {t("actions.addCsv")}
             </motion.button>
-            <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={handleCsvUpload} className="sr-only" aria-hidden="true" tabIndex={-1} />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              onChange={handleCsvUpload}
+              className="sr-only"
+              aria-hidden="true"
+              tabIndex={-1}
+            />
           </div>
         </div>
       </motion.header>
@@ -1201,7 +1350,10 @@ export default function EcoLabelPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.18 }}
             className="pointer-events-none absolute -inset-1 blur-lg"
-            style={{ background: "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)" }}
+            style={{
+              background:
+                "radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.8), transparent 60%)",
+            }}
           />
           {gradeLetter}
         </motion.div>
@@ -1219,7 +1371,11 @@ export default function EcoLabelPage() {
             {t("panel.estimatedIntensity")}{" "}
             <b>
               {(() => {
-                const { value } = computeIntensity({ totalKg, last30Revenue, sectorMedian });
+                const { value } = computeIntensity({
+                  totalKg,
+                  last30Revenue,
+                  sectorMedian,
+                });
                 return Number.isFinite(value) ? value.toFixed(2) : "—";
               })()}{" "}
               {t("panel.intensityUnit")}
@@ -1234,7 +1390,11 @@ export default function EcoLabelPage() {
                   : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
               }`}
             >
-              {t((salesRowsInput?.length || 0) > 0 ? "connect.sales.connected" : "connect.sales.missing")}
+              {t(
+                (salesRowsInput?.length || 0) > 0
+                  ? "connect.sales.connected"
+                  : "connect.sales.missing"
+              )}
             </span>
             <span
               className={`px-2 py-0.5 rounded ${
@@ -1243,13 +1403,21 @@ export default function EcoLabelPage() {
                   : "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300"
               }`}
             >
-              {t((bankingRows?.length || 0) > 0 ? "connect.bank.connected" : "connect.bank.missing")}
+              {t(
+                (bankingRows?.length || 0) > 0
+                  ? "connect.bank.connected"
+                  : "connect.bank.missing"
+              )}
             </span>
           </div>
 
           <div className="mt-2">
             <DataHealthBar
-              measured={(txCarbon?.byTag?.electricity ?? 0) + (txCarbon?.byTag?.fuel ?? 0) + (txCarbon?.byTag?.shipping ?? 0)}
+              measured={
+                (txCarbon?.byTag?.electricity ?? 0) +
+                (txCarbon?.byTag?.fuel ?? 0) +
+                (txCarbon?.byTag?.shipping ?? 0)
+              }
               param={
                 (txCarbon?.byTag?.electricity == null ? electricityBase : 0) +
                 (txCarbon?.byTag?.fuel == null ? fuelBase : 0) +
@@ -1273,7 +1441,15 @@ export default function EcoLabelPage() {
         displayConf={displayConf}
         spark={ecoSpark}
         aiPlan={aiPlan}
-        targetIntensity={gradeLetter === "A" || gradeLetter === "B" ? 0.2 : gradeLetter === "C" ? 0.5 : gradeLetter === "D" ? 1.0 : 1.5}
+        targetIntensity={
+          gradeLetter === "A" || gradeLetter === "B"
+            ? 0.2
+            : gradeLetter === "C"
+            ? 0.5
+            : gradeLetter === "D"
+            ? 1.0
+            : 1.5
+        }
         chartNonce={chartNonce}
         t={t}
       />
@@ -1281,7 +1457,9 @@ export default function EcoLabelPage() {
       {/* Aides + Presse */}
       <SubsidyBox
         totalKg={totalKg}
-        electricityDeltaKwhMonth={aiPlan.find((a) => a.id === "elec")?.kwhDelta || 0}
+        electricityDeltaKwhMonth={
+          aiPlan.find((a) => a.id === "elec")?.kwhDelta || 0
+        }
         tCO2eYear={(totalKg * 12) / 1000}
         t={t}
       />
@@ -1291,24 +1469,63 @@ export default function EcoLabelPage() {
       <Section
         title={t("decomp.title")}
         icon={<Sparkles className="w-5 h-5" />}
-        actions={<div className="text-xs text-slate-500">{t("decomp.actions")}</div>}
+        actions={
+          <div className="text-xs text-slate-500">{t("decomp.actions")}</div>
+        }
       >
         <div className="rounded-2xl border bg-white/70 dark:bg-slate-900/60 supports-[backdrop-filter]:backdrop-blur-xl p-4 min-w-0 min-h-0 md:overflow-hidden">
-          <ResponsiveContainer key={`stack-${chartNonce}`} width="100%" height={280}>
-            {/* FIX: mobile height (explicit px) */}
+          <ResponsiveContainer
+            key={`stack-${chartNonce}`}
+            width="100%"
+            height={280}
+          >
             <ComposedChart data={dailyComp30}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip formatter={(v, n) => [`${formatNumber(v, 0)} kg`, n]} />
               <Legend />
-              <Area type="monotone" dataKey="Électricité" name={t("summary.comp.electricity")} stackId="kg" fill={ACCENT_DARK} stroke={ACCENT_DARK} fillOpacity={0.35} />
-              <Area type="monotone" dataKey="Carburant" name={t("summary.comp.fuel")} stackId="kg" fill="#ef4444" stroke="#ef4444" fillOpacity={0.25} />
-              <Area type="monotone" dataKey="Expéditions" name={t("summary.comp.shipping")} stackId="kg" fill="#14b8a6" stroke="#14b8a6" fillOpacity={0.25} />
-              <Area type="monotone" dataKey="Autres" name={t("summary.comp.other")} stackId="kg" fill="#64748b" stroke="#64748b" fillOpacity={0.2} />
+              <Area
+                type="monotone"
+                dataKey="Électricité"
+                name={t("summary.comp.electricity")}
+                stackId="kg"
+                fill={ACCENT_DARK}
+                stroke={ACCENT_DARK}
+                fillOpacity={0.35}
+              />
+              <Area
+                type="monotone"
+                dataKey="Carburant"
+                name={t("summary.comp.fuel")}
+                stackId="kg"
+                fill="#ef4444"
+                stroke="#ef4444"
+                fillOpacity={0.25}
+              />
+              <Area
+                type="monotone"
+                dataKey="Expéditions"
+                name={t("summary.comp.shipping")}
+                stackId="kg"
+                fill="#14b8a6"
+                stroke="#14b8a6"
+                fillOpacity={0.25}
+              />
+              <Area
+                type="monotone"
+                dataKey="Autres"
+                name={t("summary.comp.other")}
+                stackId="kg"
+                fill="#64748b"
+                stroke="#64748b"
+                fillOpacity={0.2}
+              />
             </ComposedChart>
           </ResponsiveContainer>
-          <div className="mt-2 text-[11px] text-slate-500">{t("decomp.note")}</div>
+          <div className="mt-2 text-[11px] text-slate-500">
+            {t("decomp.note")}
+          </div>
         </div>
       </Section>
     </div>
