@@ -4,6 +4,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Papa from "papaparse";
 import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import { useTranslation } from "react-i18next";
 
 import useDataset from "../hooks/useDataset";
@@ -695,85 +696,68 @@ function SalesDemo() {
   }
 
   // Export PDF (version simple autonome)
+  // Export PDF: snapshot the forecast tile as-is
   async function exportOnePagerPDF() {
     try {
+      // 1) Ensure the tile is in view & fully rendered
+      const el =
+        chartRef.current ||
+        document.querySelector("[data-forecast-card]") ||
+        document.getElementById("forecastCard");
+      if (!el) {
+        alert(t("pdf.errorExport"));
+        return;
+      }
+      el.scrollIntoView({ behavior: "instant", block: "center" });
+      await new Promise((r) => setTimeout(r, 180)); // let layout/fonts settle
+
+      // 2) Rasterize the tile
+      const canvas = await html2canvas(el, {
+        backgroundColor: null,
+        useCORS: true,
+        scale: 2,
+        logging: false,
+        windowWidth: document.documentElement.clientWidth,
+      });
+      const dataUrl = canvas.toDataURL("image/png");
+
+      // 3) Fit into an A4 PDF with margins
       const doc = new jsPDF({ unit: "pt", format: "a4" });
       const margin = 36;
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
+      const maxW = pageW - margin * 2;
+      const maxH = pageH - margin * 2;
 
-      // Header
-      doc.setFillColor(31, 41, 55);
-      doc.rect(0, 0, pageW, 64, "F");
+      const imgW = canvas.width;
+      const imgH = canvas.height;
+      const ratio = Math.min(maxW / imgW, maxH / imgH);
+      const w = imgW * ratio;
+      const h = imgH * ratio;
+
+      // Header (localized)
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.setTextColor(255, 255, 255);
-      doc.text(t("pdf.headerTitle"), margin, 32);
-      doc.setFontSize(10);
-      doc.setTextColor(209, 213, 219);
-      doc.text(t("pdf.headerSubtitle"), margin, 48);
-
-      const y0 = 88;
-      // KPIs
+      doc.setFontSize(14);
+      doc.text(t("pdf.headerTitle"), margin, 26);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.setTextColor(55, 65, 81);
-      const cf = (v, d = 0) => formatNumber(v || 0, d);
-      const changeTxt =
-        typeof change === "number"
-          ? change >= 0
-            ? t("kpi.changeUp", { v: formatNumber(change, 1) })
-            : t("kpi.changeDown", { v: formatNumber(change, 1) })
-          : "—";
-      const kpiLines = [
-        t("pdf.kpi.ca30", {
-          v: cf(kpis?.ca30, 0),
-          cur: currency,
-          change: changeTxt,
-        }),
-        t("pdf.kpi.basket", { v: cf(kpis?.basket, 2), cur: currency }),
-        t("pdf.kpi.unique", { v: cf(kpis?.unique, 0) }),
-      ];
-      doc.text(kpiLines, margin, y0);
+      doc.text(t("pdf.headerSubtitle"), margin, 42);
 
-      // Forecast résumé
-      const y1 = y0 + 56;
-      const ftxt = forecastText
-        ? t("pdf.forecast", {
-            sign: forecastText.growth >= 0 ? "+" : "",
-            growth: formatNumber(forecastText.growth, 1),
-            unc: formatNumber(forecastText.uncertaintyPct, 0),
-          })
-        : t("pdf.forecastNA");
-      doc.text(ftxt, margin, y1);
-
-      // Actions
-      const y2 = y1 + 28;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(17, 24, 39);
-      doc.text(t("actions.title"), margin, y2);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      doc.setTextColor(55, 65, 81);
-      const actions = (Array.isArray(topActions) ? topActions : tips).slice(
-        0,
-        3
-      );
-      const bullet = actions.length
-        ? actions.map((tline) => `• ${sanitizePdfText(tline)}`)
-        : [`• ${t("actions.none")}`];
-      doc.text(bullet, margin, y2 + 18);
+      // Image below header
+      const topOffset = 56;
+      const availableH = pageH - margin - topOffset;
+      const h2 = Math.min(h, availableH);
+      const w2 = (h2 / imgH) * imgW;
+      const x = margin + (maxW - w2) / 2;
+      doc.addImage(dataUrl, "PNG", x, topOffset, w2, h2);
 
       // Footer
-      doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      doc.setTextColor(120);
-      doc.text(t("pdf.footer"), margin, pageH - 24);
+      doc.text(t("pdf.footer"), margin, pageH - 18);
 
-      doc.save("InsightMate_OnePager.pdf");
+      doc.save("InsightMate_Tile.pdf");
     } catch (e) {
-      console.error("[Export PDF] Erreur", e);
+      console.error("[Export PDF] snapshot error", e);
       alert(t("pdf.errorExport"));
     }
   }
