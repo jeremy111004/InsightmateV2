@@ -1,25 +1,30 @@
 {
   "import": {
     "title": "Import sales (CSV)",
-    "currency": { "eur": "EUR (€)", "usd": "USD ($)", "gbp": "GBP (£)" },
+    "currency": {
+      "eur": "EUR (€)",
+      "usd": "USD ($)",
+      "gbp": "GBP (£)",
+      "aria": "Currency selector"
+    },
     "loadSample": "Load sample",
     "downloadSample": "Download sample",
-    "upload": { "title": "Upload your CSV file", "cta": "Upload a CSV" },
-    "drop": {
-      "title": "Drag-and-drop a CSV here",
-      "hint": "Tip: drag-and-drop a CSV file here to import it."
+    "upload": {
+      "title": "Upload your CSV file",
+      "cta": "Upload CSV"
     },
-    "altSelect": { "label": "Or pick a file:" },
+    "drop": {
+      "title": "Drag & drop a CSV here",
+      "hint": "Tip: drag and drop a CSV file here to import."
+    },
+    "altSelect": {
+      "label": "Or select a file:",
+      "aria": "Select a CSV file to import"
+    },
     "requiredCols": { "label": "Required columns:" }
   },
-  "upload": {
-    "errorParse": "Could not read the CSV."
-  },
-  "filters": {
-    "smooth": "Smoothing (days)",
-    "from": "From",
-    "to": "To"
-  },
+  "upload": { "errorParse": "Error reading the CSV." },
+  "filters": { "smooth": "Smoothing (days)", "from": "From", "to": "To" },
   "kpi": {
     "ca30": { "label": "Revenue (30d)" },
     "changeUp": "↗ +{{v}}%",
@@ -29,65 +34,173 @@
     "clients": { "label": "Unique customers", "note": "Last 30 days" }
   },
   "forecast": {
-    "sectionTitle": "History & Forecast (30d)",
+    "sectionTitle": "History & 30-day forecast",
     "exportPdf": "Export PDF (1 page)",
     "badge": { "smart": "Smart forecast" },
-    "quality": { "prefix": "Quality:", "mape": "MAPE ≈" },
-    "growthTitle": "Expected average growth vs last 14 days",
-    "uncertaintyTitle": "Average uncertainty (±)",
+    "quality": {
+      "prefix": "Quality:",
+      "mape": "MAPE ≈",
+      "level": {
+        "strong": "strong",
+        "moderate": "moderate",
+        "limited": "limited"
+      },
+      "text": {
+        "weeklyStrong": "Strong weekly seasonality detected",
+        "weeklyLight": "Light weekly seasonality detected",
+        "limited": "Limited history — forecast with caution",
+        "noPattern": "No clear pattern detected"
+      }
+    },
+    "tone": { "up": "up", "down": "down", "flat": "flat" },
+    "growthTitle": "Avg. growth vs last 14 days",
+    "uncertaintyTitle": "Avg. uncertainty (±)",
     "legend": {
       "historical": "Historical",
       "ciLo": "95% band (low)",
       "ciHi": "95% band (high)",
       "scenarioPrudent": "Prudent scenario",
       "scenarioOptimistic": "Optimistic scenario",
-      "scenarioKeyword": "scenario",
+      "scenarioKeyword": "Scenario",
       "bandKeyword": "95% band"
     },
     "chips": {
       "historical": "Historical",
       "central": "Central forecast",
-      "optimistic": "Optimistic scenario",
-      "prudent": "Prudent scenario"
+      "optimistic": "Optimistic",
+      "prudent": "Prudent"
     },
-    "summaryTail": "over 30 days · Uncertainty ±{{unc}}%"
+    "summaryTail": "in 30 days · Uncertainty ±{{unc}}%"
   },
-  "chart": {
-    "forecastLabel": "Forecast (Smart)"
-  },
+  "chart": { "forecastLabel": "Forecast (Smart)" },
   "top": {
     "title": "Top products (revenue)",
-    "barName": "Revenue"
+    "barName": "Revenue",
+    "empty": "Not enough product data yet."
+  },
+  "rfm": {
+    "title": "RFM segmentation",
+    "note": "Recency, Frequency, Monetary — automatic segmentation.",
+    "subtitle": "Recency, Frequency, Monetary — automatic segmentation.",
+    "segment": {
+      "Champions": "Champions",
+      "Loyal": "Loyal",
+      "Promising": "Promising",
+      "Regulars": "Regulars",
+      "At-Risk Loyal": "At-Risk Loyal",
+      "Hibernating": "Hibernating"
+    }
+  },
+  "affinity": {
+    "title": "Recommended bundles (product affinity)",
+    "empty": "Not enough multi-item orders yet to infer pairs.",
+    "topPairsTitle": "Frequent pairs with high lift",
+    "howto": {
+      "title": "How to use",
+      "li1": "Create bundles with −10% on high-lift pairs.",
+      "li2": "Highlight these pairs on product pages or at checkout.",
+      "li3": "Test email/SMS with these combinations."
+    }
+  },
+  "bundle": {
+    "title": "Recommended bundles (product affinity)",
+    "empty": "Not enough multi-item orders yet to infer pairs.",
+    "topPairs": "Frequent pairs with high lift",
+    "howto": {
+      "title": "How to use",
+      "item1": "Create bundles with −10% on high-lift pairs.",
+      "item2": "Highlight these pairs on the product page or at checkout.",
+      "item3": "Test email/SMS with these combinations."
+    }
+  },
+  "cohorts": {
+    "title": "Cohorts (First-purchase month → Retention)",
+    "badge": {
+      "live": "Live",
+      "demo": "Demo",
+      "window": "Data · M+0..M+5",
+      "hint": "M+0..M+5",
+      "higher": "Higher bar = better retention"
+    },
+    "legend": "Higher bar = better retention",
+    "table": {
+      "cohort": "Cohort",
+      "mprefix": "M+",
+      "retainedTitle": "{{p}}% retained"
+    },
+    "col": { "cohort": "Cohort", "month": "M+{{m}}" },
+    "cell": { "title": "{{p}}% retained" },
+    "demoHint": "Upload a CSV with returning customers to see real cohorts:",
+    "demoHintTail": "with multiple orders per customer.",
+    "demoNote": "Upload a CSV with returning customers to see real cohorts."
+  },
+  "seasonality": {
+    "title": "Best day of the week",
+    "ofAvg": "of average",
+    "tip": "Plan promos and staffing on the strongest days.",
+    "legend": "The 100% line is the weekly average.",
+    "hint": "Day-by-day comparison (100% = average).",
+    "radar": "Weekly pattern",
+    "tooltip": {
+      "pct": "% of average",
+      "rev": "Revenue"
+    },
+    "kpi": {
+      "best": "Best: {{day}} (+{{v}}%)",
+      "worst": "Weakest: {{day}} (−{{v}}%)",
+      "weekendLift": "Weekend vs weekdays: {{sign}}{{v}}%"
+    },
+    "empty": "Not enough data to compute weekday strength.",
+    "cell": { "title": "{{pct}}% of average" }
+  },
+  "weekdays": {
+    "0": "Sun",
+    "1": "Mon",
+    "2": "Tue",
+    "3": "Wed",
+    "4": "Thu",
+    "5": "Fri",
+    "6": "Sat"
+  },
+  "weekdaysShort": {
+    "Sun": "Sun",
+    "Mon": "Mon",
+    "Tue": "Tue",
+    "Wed": "Wed",
+    "Thu": "Thu",
+    "Fri": "Fri",
+    "Sat": "Sat"
   },
   "advice": {
     "sectionTitle": "Advisor",
     "badge": "Actionable tips",
     "basedOn": "Based on your recent data",
-    "toggle": {
-      "local": "Local tips",
-      "ai": "Personalized AI"
-    },
+    "toggle": { "local": "Local tips", "ai": "Personalized AI" },
     "ai": {
-      "title": "Personalized AI tips",
-      "subtitle": "from your KPIs & forecasts",
+      "title": "AI-personalized suggestions",
+      "subtitle": "from your KPIs and forecasts",
       "loading": "Analyzing…",
       "regenerate": "Regenerate",
-      "hint": "Enable AI then click “Regenerate”."
+      "hint": "Enable AI and click “Regenerate”."
     },
     "local": {
-      "uptrend": "Uptrend: +{{change}}% over the period. Increase stock on best-sellers and test a slightly higher price (+2–3%).",
-      "downtrend": "Downtrend: {{change}}%. Run a targeted 7-day promo (10–15%) on the top 2 products.",
-      "stable": "Stable sales: launch a loyalty offer (buy 10, get 1) to boost retention.",
-      "slowDay": "Slow day: {{day}}. Run a special offer on that day (2×1 or SMS push).",
+      "uptrend": "Uptrend: +{{change}}% over the period. Increase stock of best-sellers and test a slightly higher price (+2–3%).",
+      "downtrend": "Downtrend: {{change}}%. Run a 7-day promo (10–15%) on the top 2 products.",
+      "stable": "Stable sales: enable a loyalty offer (10 purchases = 1 free) to boost retention.",
+      "slowDay": "Slow day: {{day}}. Run a special offer that day (2-for-1 or SMS).",
       "topProduct": "Lead product: {{name}}. Feature it at checkout and on the homepage.",
-      "bundle": "Bundle: {{top}} + {{other}} (-10%) to grow AOV.",
+      "bundle": "Bundle: {{top}} + {{other}} (−10%) to raise average basket.",
       "none": "No tips available"
+    },
+    "rank": {
+      "downtrendKey": "downtrend",
+      "slowDayKey": "Slow day"
     }
   },
   "actions": {
-    "title": "To do this week",
-    "subtitle": "Based on your recent data (trend, slow days, top products).",
-    "clipboardTitle": "To do this week:",
+    "title": "For this week",
+    "subtitle": "Based on trend, slow day, and top products.",
+    "clipboardTitle": "This week’s tasks:",
     "none": "No prioritized actions"
   },
   "preview": {
@@ -97,38 +210,37 @@
   "ai": {
     "summaryTitle": "Executive summary (local AI):",
     "kpi": {
-      "ca30": "• 30d revenue: {{v}} {{cur}}",
-      "basket": "• Avg basket: {{v}} {{cur}}",
+      "ca30": "• Revenue 30d: {{v}} {{cur}}",
+      "basket": "• Average basket: {{v}} {{cur}}",
       "clients": "• Customers: {{v}}"
     },
     "topProduct": "• Lead product: {{name}}",
-    "actions": "Actions: push best-sellers, treat the slow day with an offer, and test a short promo (-10%)."
+    "actions": "Actions: push best-sellers, cover the slow day with an offer, and test a short promo (−10%)."
   },
   "pdf": {
     "headerTitle": "InsightMate · OnePager",
-    "headerSubtitle": "Report generated automatically — your data stays local",
+    "headerSubtitle": "Auto-generated report — your data stays local",
     "kpi": {
-      "ca30": "30d revenue: {{v}} {{cur}} ({{change}})",
+      "ca30": "Revenue 30d: {{v}} {{cur}} ({{change}})",
       "basket": "Average basket: {{v}} {{cur}}",
       "unique": "Unique customers (30d): {{v}}"
     },
-    "forecast": "30d forecast: {{sign}}{{growth}}% · Uncertainty ±{{unc}}%",
-    "forecastNA": "30d forecast: n/a",
+    "forecast": "30-day forecast: {{sign}}{{growth}}% · Uncertainty ±{{unc}}%",
+    "forecastNA": "30-day forecast: n/a",
     "footer": "© 2025 InsightMate — Demo. Your data stays local.",
-    "errorExport": "PDF export failed."
-  },
-  "weekdays": {
-    "0": "Sun.",
-    "1": "Mon.",
-    "2": "Tue.",
-    "3": "Wed.",
-    "4": "Thu.",
-    "5": "Fri.",
-    "6": "Sat."
+    "errorExport": "Error exporting PDF."
   },
   "common": {
     "copy": "Copy",
     "share": "Share",
-    "shareAlert": "“Share” feature to be connected"
+    "shareAlert": "Connect sharing action",
+    "support": "support",
+    "lift": "lift",
+    "view": "View",
+    "lastPurchase": "Last purchase",
+    "recency": "Recency (d)",
+    "orders": "Orders",
+    "revenue": "Revenue",
+    "empty": "No items"
   }
 }
