@@ -1,30 +1,32 @@
 {
   "import": {
     "title": "Importer les ventes (CSV)",
-    "currency": { "eur": "EUR (€)", "usd": "USD ($)", "gbp": "GBP (£)" },
+    "currency": {
+      "eur": "EUR (€)",
+      "usd": "USD ($)",
+      "gbp": "GBP (£)",
+      "aria": "Sélecteur de devise"
+    },
     "loadSample": "Charger un exemple",
     "downloadSample": "Télécharger l’exemple",
     "upload": {
-      "title": "Importer votre fichier CSV",
-      "cta": "Charger un CSV"
+      "title": "Téléverser votre fichier CSV",
+      "cta": "Téléverser un CSV"
     },
     "drop": {
       "title": "Glissez-déposez un CSV ici",
       "hint": "Astuce : glissez-déposez un fichier CSV ici pour l’importer."
     },
-    "altSelect": { "label": "Ou sélectionnez un fichier :" },
-    "requiredCols": { "label": "Colonnes requises:" }
+    "altSelect": {
+      "label": "Ou sélectionnez un fichier :",
+      "aria": "Sélectionner un fichier CSV à importer"
+    },
+    "requiredCols": { "label": "Colonnes requises :" }
   },
-  "upload": {
-    "errorParse": "Erreur de lecture du CSV."
-  },
-  "filters": {
-    "smooth": "Lissage (jours)",
-    "from": "Du",
-    "to": "Au"
-  },
+  "upload": { "errorParse": "Erreur de lecture du CSV." },
+  "filters": { "smooth": "Lissage (jours)", "from": "Du", "to": "Au" },
   "kpi": {
-    "ca30": { "label": "CA 30 jours" },
+    "ca30": { "label": "Chiffre d’affaires (30 j)" },
     "changeUp": "↗ +{{v}}%",
     "changeDown": "↘ {{v}}%",
     "stable": "Stable",
@@ -32,93 +34,124 @@
     "clients": { "label": "Clients uniques", "note": "30 derniers jours" }
   },
   "forecast": {
-    "sectionTitle": "Historique & Prévision (30j)",
-    "exportPdf": "Exporter PDF (1 page)",
-    "badge": { "smart": "Smart forecast" },
-    "quality": { "prefix": "Qualité :", "mape": "MAPE ≈" },
-    "growthTitle": "Croissance moyenne prévue vs 14 derniers jours",
+    "sectionTitle": "Historique & prévision (30 j)",
+    "exportPdf": "Exporter en PDF (1 page)",
+    "badge": { "smart": "Prévision intelligente" },
+    "quality": {
+      "prefix": "Qualité :",
+      "mape": "MAPE ≈",
+      "level": {
+        "strong": "forte",
+        "moderate": "modérée",
+        "limited": "limitée"
+      },
+      "text": {
+        "weeklyStrong": "Forte saisonnalité hebdomadaire détectée",
+        "weeklyLight": "Saisonnière hebdomadaire légère détectée",
+        "limited": "Historique limité — prévision prudente",
+        "noPattern": "Aucun motif clair détecté"
+      }
+    },
+    "tone": { "up": "hausse", "down": "baisse", "flat": "stable" },
+    "growthTitle": "Croissance moy. vs 14 derniers jours",
     "uncertaintyTitle": "Incertitude moyenne (±)",
     "legend": {
       "historical": "Historique",
-      "ciLo": "Borne 95% (basse)",
-      "ciHi": "Borne 95% (haute)",
+      "ciLo": "Bande 95% (basse)",
+      "ciHi": "Bande 95% (haute)",
       "scenarioPrudent": "Scénario prudent",
       "scenarioOptimistic": "Scénario optimiste",
       "scenarioKeyword": "Scénario",
-      "bandKeyword": "Borne 95%"
+      "bandKeyword": "Bande 95%"
     },
     "chips": {
       "historical": "Historique",
       "central": "Prévision centrale",
-      "optimistic": "Scénario optimiste",
-      "prudent": "Scénario prudent"
+      "optimistic": "Optimiste",
+      "prudent": "Prudent"
     },
-    "summaryTail": "sur 30 jours · Incertitude ±{{unc}}%"
+    "summaryTail": "à 30 jours · Incertitude ±{{unc}}%"
   },
-  "chart": {
-    "forecastLabel": "Prévision (Smart)"
-  },
+  "chart": { "forecastLabel": "Prévision (Smart)" },
   "top": {
-    "title": "Top produits (CA)",
-    "barName": "CA"
+    "title": "Produits top (CA)",
+    "barName": "Chiffre d’affaires",
+    "empty": "Pas encore assez de données produit."
   },
-  "advice": {
-    "sectionTitle": "Conseiller",
-    "badge": "Conseils actionnables",
-    "basedOn": "Basé sur vos données récentes",
-    "toggle": {
-      "local": "Conseils locaux",
-      "ai": "IA personnalisée"
-    },
-    "ai": {
-      "title": "Conseils IA personnalisés",
-      "subtitle": "à partir de vos KPI & prévisions",
-      "loading": "Analyse…",
-      "regenerate": "Regénérer",
-      "hint": "Activez l’IA puis cliquez sur « Regénérer »."
-    },
-    "local": {
-      "uptrend": "Tendance haussière: +{{change}}% sur la période. Augmente le stock des best-sellers et teste un prix légèrement plus élevé (+2–3%).",
-      "downtrend": "Tendance baissière: {{change}}%. Lance une promo ciblée 7 jours (10–15%) sur les 2 produits principaux.",
-      "stable": "Ventes stables: active une offre fidélité (10 achats = 1 offert) pour doper la rétention.",
-      "slowDay": "Jour creux: {{day}}. Propose une offre spéciale ce jour-là (2×1 ou push SMS).",
-      "topProduct": "Produit leader: {{name}}. Mets-le en avant sur la caisse et sur la home.",
-      "bundle": "Bundle: {{top}} + {{other}} (-10%) pour augmenter le panier moyen.",
-      "none": "Aucun conseil disponible"
+  "rfm": {
+    "title": "Segmentation RFM",
+    "note": "Récence, Fréquence, Montant — segmentation automatique.",
+    "subtitle": "Récence, Fréquence, Montant — segmentation automatique.",
+    "segment": {
+      "Champions": "Champions",
+      "Loyal": "Fidèles",
+      "Promising": "Prometteurs",
+      "Regulars": "Réguliers",
+      "At-Risk Loyal": "Fidèles à risque",
+      "Hibernating": "En hibernation"
     }
   },
-  "actions": {
-    "title": "À faire cette semaine",
-    "subtitle": "Basé sur vos données récentes (tendance, jours creux, top produits).",
-    "clipboardTitle": "À faire cette semaine:",
-    "none": "Aucune action priorisée"
+  "affinity": {
+    "title": "Bundles recommandés (affinité produits)",
+    "empty": "Pas encore assez de commandes multi-articles pour déduire des paires.",
+    "topPairsTitle": "Paires fréquentes à lift élevé",
+    "howto": {
+      "title": "Comment l’utiliser",
+      "li1": "Créer des bundles avec −10% sur les paires à fort lift.",
+      "li2": "Mettre en avant ces paires en fiche produit ou au panier.",
+      "li3": "Tester email/SMS avec ces combinaisons."
+    }
   },
-  "preview": {
-    "title": "Aperçu des données",
-    "footer": "Aperçu (30 lignes max)"
+  "bundle": {
+    "title": "Bundles recommandés (affinité produits)",
+    "empty": "Pas encore assez de commandes multi-articles pour déduire des paires.",
+    "topPairs": "Paires fréquentes à lift élevé",
+    "howto": {
+      "title": "Comment l’utiliser",
+      "item1": "Créer des bundles avec −10% sur les paires à fort lift.",
+      "item2": "Mettre en avant ces paires en fiche produit ou au panier.",
+      "item3": "Tester email/SMS avec ces combinaisons."
+    }
   },
-  "ai": {
-    "summaryTitle": "Résumé exécutif (IA locale) :",
-    "kpi": {
-      "ca30": "• CA 30j: {{v}} {{cur}}",
-      "basket": "• Panier moyen: {{v}} {{cur}}",
-      "clients": "• Clients: {{v}}"
+  "cohorts": {
+    "title": "Cohortes (Mois du 1er achat → Rétention)",
+    "badge": {
+      "live": "Temps réel",
+      "demo": "Démo",
+      "window": "Données · M+0..M+5",
+      "hint": "M+0..M+5",
+      "higher": "Barre plus haute = meilleure rétention"
     },
-    "topProduct": "• Produit leader: {{name}}",
-    "actions": "Actions: pousse best-sellers, traite le jour creux avec une offre, et teste une promo courte (-10%)."
-  },
-  "pdf": {
-    "headerTitle": "InsightMate · OnePager",
-    "headerSubtitle": "Rapport généré automatiquement — vos données restent locales",
-    "kpi": {
-      "ca30": "CA 30 jours: {{v}} {{cur}} ({{change}})",
-      "basket": "Panier moyen: {{v}} {{cur}}",
-      "unique": "Clients uniques (30j): {{v}}"
+    "legend": "Barre plus haute = meilleure rétention",
+    "table": {
+      "cohort": "Cohorte",
+      "mprefix": "M+",
+      "retainedTitle": "{{p}}% retenus"
     },
-    "forecast": "Prévision 30j : {{sign}}{{growth}}% · Incertitude ±{{unc}}%",
-    "forecastNA": "Prévision 30j : n/a",
-    "footer": "© 2025 InsightMate — Démo. Vos données restent locales.",
-    "errorExport": "Export PDF impossible."
+    "col": { "cohort": "Cohorte", "month": "M+{{m}}" },
+    "cell": { "title": "{{p}}% retenus" },
+    "demoHint": "Importez un CSV avec des clients récurrents pour voir des cohortes réelles :",
+    "demoHintTail": "avec plusieurs commandes par client.",
+    "demoNote": "Importez un CSV avec des clients récurrents pour voir des cohortes réelles."
+  },
+  "seasonality": {
+    "title": "Meilleur jour de la semaine",
+    "ofAvg": "de la moyenne",
+    "tip": "Planifiez promos et staffing selon les jours forts.",
+    "legend": "La ligne 100% correspond à la moyenne hebdomadaire.",
+    "hint": "Comparaison par jour (100% = moyenne).",
+    "radar": "Motif hebdomadaire",
+    "tooltip": {
+      "pct": "% de la moyenne",
+      "rev": "Chiffre d’affaires"
+    },
+    "kpi": {
+      "best": "Meilleur : {{day}} (+{{v}}%)",
+      "worst": "Plus faible : {{day}} (−{{v}}%)",
+      "weekendLift": "Week-end vs semaine : {{sign}}{{v}}%"
+    },
+    "empty": "Pas assez de données pour calculer la force par jour.",
+    "cell": { "title": "{{pct}}% de la moyenne" }
   },
   "weekdays": {
     "0": "dim.",
@@ -129,9 +162,85 @@
     "5": "ven.",
     "6": "sam."
   },
+  "weekdaysShort": {
+    "Sun": "Dim",
+    "Mon": "Lun",
+    "Tue": "Mar",
+    "Wed": "Mer",
+    "Thu": "Jeu",
+    "Fri": "Ven",
+    "Sat": "Sam"
+  },
+  "advice": {
+    "sectionTitle": "Conseiller",
+    "badge": "Conseils actionnables",
+    "basedOn": "Basé sur vos données récentes",
+    "toggle": { "local": "Conseils locaux", "ai": "IA personnalisée" },
+    "ai": {
+      "title": "Suggestions personnalisées par IA",
+      "subtitle": "à partir de vos KPIs et prévisions",
+      "loading": "Analyse…",
+      "regenerate": "Régénérer",
+      "hint": "Activez l’IA puis cliquez « Régénérer »."
+    },
+    "local": {
+      "uptrend": "Tendance haussière : +{{change}}% sur la période. Augmentez le stock des best-sellers et testez un léger sur-prix (+2–3%).",
+      "downtrend": "Tendance baissière : {{change}}%. Lancez une promo 7 jours (10–15%) sur les 2 produits phares.",
+      "stable": "Ventes stables : mettez en place une offre fidélité (10 achats = 1 offert) pour doper la rétention.",
+      "slowDay": "Jour creux : {{day}}. Proposez une offre spéciale ce jour-là (2-pour-1 ou SMS).",
+      "topProduct": "Produit leader : {{name}}. Mettez-le en avant au panier et en page d’accueil.",
+      "bundle": "Bundle : {{top}} + {{other}} (−10%) pour relever le panier moyen.",
+      "none": "Aucun conseil disponible"
+    },
+    "rank": {
+      "downtrendKey": "baisse",
+      "slowDayKey": "Jour creux"
+    }
+  },
+  "actions": {
+    "title": "Pour cette semaine",
+    "subtitle": "Selon la tendance, le jour creux et les top produits.",
+    "clipboardTitle": "Tâches de la semaine :",
+    "none": "Aucune action priorisée"
+  },
+  "preview": {
+    "title": "Aperçu des données",
+    "footer": "Aperçu (30 lignes max)"
+  },
+  "ai": {
+    "summaryTitle": "Résumé exécutif (IA locale) :",
+    "kpi": {
+      "ca30": "• CA 30 j : {{v}} {{cur}}",
+      "basket": "• Panier moyen : {{v}} {{cur}}",
+      "clients": "• Clients : {{v}}"
+    },
+    "topProduct": "• Produit leader : {{name}}",
+    "actions": "Actions : pousser les best-sellers, couvrir le jour creux avec une offre et tester une promo courte (−10%)."
+  },
+  "pdf": {
+    "headerTitle": "InsightMate · OnePager",
+    "headerSubtitle": "Rapport auto-généré — vos données restent locales",
+    "kpi": {
+      "ca30": "CA 30 j : {{v}} {{cur}} ({{change}})",
+      "basket": "Panier moyen : {{v}} {{cur}}",
+      "unique": "Clients uniques (30 j) : {{v}}"
+    },
+    "forecast": "Prévision 30 j : {{sign}}{{growth}}% · Incertitude ±{{unc}}%",
+    "forecastNA": "Prévision 30 j : n/d",
+    "footer": "© 2025 InsightMate — Démo. Vos données restent locales.",
+    "errorExport": "Erreur lors de l’export PDF."
+  },
   "common": {
     "copy": "Copier",
     "share": "Partager",
-    "shareAlert": "Fonction « Partager » à connecter"
+    "shareAlert": "Action « Partager » à connecter",
+    "support": "support",
+    "lift": "lift",
+    "view": "Voir",
+    "lastPurchase": "Dernier achat",
+    "recency": "Récence (j)",
+    "orders": "Commandes",
+    "revenue": "Chiffre d’affaires",
+    "empty": "Aucun élément"
   }
 }
