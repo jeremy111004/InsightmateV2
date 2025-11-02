@@ -15,6 +15,7 @@ import {
   XCircle,
   CalendarDays,
   ListChecks,
+  Mail, // <-- added
 } from "lucide-react";
 import Papa from "papaparse";
 import {
@@ -146,6 +147,29 @@ function suggestedAction(c) {
   if (clamp01(c.probability_recovery) < 0.5) return "call_email_plan";
   return "email_reminder";
 }
+
+/** Email helpers (using provided i18n keys) */
+function emailSubject(c, t) {
+  return t("priority.email.subjectWithId", {
+    name: safeStr(c.name, t("priority.email.defaultClient")),
+    id: safeStr(c.id),
+  });
+}
+function emailBody(c, t) {
+  return t("priority.email.body", {
+    name: safeStr(c.name, t("priority.email.defaultGreeting")),
+    amount: eur(c.outstanding),
+    id: safeStr(c.id),
+    overdue: Number(c.overdue) || 0,
+  });
+}
+function mailtoHref(c, t) {
+  const to = c.email || "";
+  const subject = encodeURIComponent(emailSubject(c, t));
+  const body = encodeURIComponent(emailBody(c, t));
+  return `mailto:${to}?subject=${subject}&body=${body}`;
+}
+const hasValidEmail = (c) => !!(c.email && String(c.email).includes("@"));
 
 /** Build Next-Actions CSV rows (top N by priority) */
 function buildNextActions(filteredClients, t, topN = 50) {
@@ -617,7 +641,23 @@ function PriorityList({ clients, query, onQuery }) {
             <div className="col-span-2 text-sm">{Number(c.overdue) || 0}</div>
             <div className="col-span-2 text-sm">{eur(c.outstanding)}</div>
             <div className="col-span-2 text-sm">{eur(recoveryEstimate(c))}</div>
-            <div className="col-span-1 flex justify-end">{/* CSV-only page: no per-row email button */}</div>
+            <div className="col-span-1 flex justify-end">
+              {hasValidEmail(c) ? (
+                <a
+                  href={mailtoHref(c, t)}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-700/20 ring-1 ring-emerald-500/30 hover:bg-emerald-700/30 text-emerald-200"
+                >
+                  <Mail size={16} />
+                </a>
+              ) : (
+                <button
+                  disabled
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 ring-1 ring-white/15 text-slate-400 opacity-60 cursor-not-allowed"
+                >
+                  <Mail size={16} />
+                </button>
+              )}
+            </div>
           </motion.div>
         ))}
         {!filtered.length && <div className="text-xs text-slate-400 px-2 py-3">{t("priority.noMatch")}</div>}
